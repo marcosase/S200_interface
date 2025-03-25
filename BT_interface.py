@@ -7,9 +7,6 @@ import sys, os
 import numpy as np
 from PyQt5 import QtGui	
 from PyQt5 import QtWidgets, uic
-#from PyQt5.QtWidgets import QFileDialog
-#from PyQt5.QtWidgets import QMessageBox
-#from PyQt5.QtWidgets import QVBoxLayout
 from PyQt5.QtWidgets import *
 from zipfile import ZipFile
 from PyQt5.QtCore import QProcess, QTimer
@@ -52,10 +49,6 @@ class Ui(QtWidgets.QMainWindow):
 		self.alignment = AlignSample()
 		self.loading = LoadSample()
 		self.tool_id, self.session_id = generate_session_ID()
-		self.git_commit_file_name = "c:/temp/git_commit_id.yml"
-		self.git_commit_id = {"GIT commit ID" : get_git_commit_id(cur_dir = ".")}
-		#with open(self.git_commit_file_name,'w') as outfile:
-			#yaml.dump(self.git_commit_id, outfile, default_flow_style=False)
 		self.camera_picture_file_list = [] # list of file names of taken pictures
 		self.quick_analysis_file_list = [] # list of output file names from quick analysis routine
 		self._cell_probing_counter = 0 # counter of probing of the same cell
@@ -70,21 +63,14 @@ class Ui(QtWidgets.QMainWindow):
 		###Variable
 		self.job_folder_path1 = ''
 		self.job_folder_path2 = ''
-		#Methods to save align and save theta
-		self.btn_theta1.clicked.connect(self.align_wafer1)
-		self.btn_theta2.clicked.connect(self.align_wafer2)
-		self.btn_theta3.clicked.connect(self.align_wafer3)
-		self.btn_theta4.clicked.connect(self.align_wafer4)
 		#Methods to perform the first touchdown and save it 
-		self.btn_touch1.clicked.connect(self.touch_wafer1)
-		self.btn_touch2.clicked.connect(self.touch_wafer2)
-		self.btn_touch3.clicked.connect(self.touch_wafer3)
-		self.btn_touch4.clicked.connect(self.touch_wafer4)
+		self.btn_touch1.clicked.connect(self.touch_bar1)
+		self.btn_touch2.clicked.connect(self.touch_bar2)
+		self.btn_touch3.clicked.connect(self.touch_bar3)
+		self.btn_touch4.clicked.connect(self.touch_bar4)
 		#Method to select job files for the wafers and show it in the dialog
 		self.btn_job1.clicked.connect(self.select_job1)
-		self.btn_job2.clicked.connect(self.select_job2)
-		self.btn_job3.clicked.connect(self.select_job3)
-		self.btn_job4.clicked.connect(self.select_job4)
+		
 		self.start_jobs_btn.clicked.connect(self.start_jobs)
 		self.unload_btn.clicked.connect(self.move_unload)
 		self.probe_btn.clicked.connect(self.go_probe)
@@ -105,8 +91,6 @@ class Ui(QtWidgets.QMainWindow):
 		self.Wafer2.setValue(0)
 		self.Wafer3.setValue(0)
 		self.Wafer4.setValue(0)
-		#
-		#self.stop_btn.clicked.connect(self.stop_all)
 		self.write_values()
 		self.showMaximized()
 	def gross_up(self):
@@ -154,7 +138,7 @@ class Ui(QtWidgets.QMainWindow):
 			pass
 	def ser_connect(self):
 		try:
-			self.ser = serial.Serial(port = 'COM3', baudrate = 38400, parity = serial.PARITY_EVEN, bytesize = serial.SEVENBITS, stopbits = serial.STOPBITS_TWO, timeout = 0.2)
+			self.ser = serial.Serial(port = 'COM1', baudrate = 38400, parity = serial.PARITY_EVEN, bytesize = serial.SEVENBITS, stopbits = serial.STOPBITS_TWO, timeout = 0.2)
 			return self.ser
 		except ValueError:
 			self.ser.close()
@@ -190,12 +174,7 @@ class Ui(QtWidgets.QMainWindow):
 		df = pd.DataFrame(dic)
 		df.to_csv('backup_values.csv')
 	def collect(self):
-		#Theta values
-		theta_arr = [self.table_wfr1.item(0, 0).text(),
-					self.table_wfr2.item(0, 0).text(), 
-					self.table_wfr3.item(0, 0).text(),
-					self.table_wfr4.item(0, 0).text()]
-		#X and Y values
+		
 		x_td_arr      = [self.table_wfr1.item(0, 1).text(),
 					self.table_wfr2.item(0, 1).text(),
 					self.table_wfr3.item(0, 1).text(),
@@ -205,86 +184,26 @@ class Ui(QtWidgets.QMainWindow):
 					self.table_wfr3.item(0, 2).text(),
 					self.table_wfr4.item(0, 2).text()]
 		#Job file names
-		job_file_arr   = [self.job_id1.text(), 
-					self.job_id2.text(),
-					self.job_id3.text(), 
-					self.job_id4.text()]
-		val_array = [*theta_arr, *x_td_arr, *y_td_arr, *job_file_arr]
+		job_file_arr   = [self.job_id1.text()]
+		val_array = [*x_td_arr, *y_td_arr, *job_file_arr]
 		return val_array
-	def align_wafer1(self):
-		self.start_jobs_btn.setStyleSheet('background-color: rgb(255, 255, 0)')
-		self.start_jobs_btn.setStyleSheet('border: 2px solid red')
-		self.start_jobs_btn.setText("Correct Wafer1 rotation")
-		self.start_jobs_btn.repaint()
-		
-		self.send_command(b'LDALN\n') # Run alignment screen without focus setting
-		self.wait_ser()
-		th1 = self.send_command(b'PSTH\n') # asks for the theta value
-		th1 = int(re.findall("-?\d+", th1)[-1])
-		self.table_wfr1.setItem(0, 0, QTableWidgetItem(str(th1)))
-		#save values
-		self.file_save(self.collect())
-		self.reset_start_btn()
-	def align_wafer2(self):
-		self.start_jobs_btn.setStyleSheet('background-color: rgb(255, 255, 0)')
-		self.start_jobs_btn.setStyleSheet('border: 2px solid red')
-		self.start_jobs_btn.setText("Correct Wafer2 rotation")
-		self.start_jobs_btn.repaint()
-		self.send_command(b'LDALN\n') # Run alignment screen without focus setting
-		self.wait_ser()
-		th2 = self.send_command(b'PSTH\n') # asks for the theta value
-		th2 = int(re.findall("-?\d+", th2)[-1])
-		self.table_wfr2.setItem(0, 0, QTableWidgetItem(str(th2)))
-		self.file_save('Th2', th2)
-		#save values
-		self.file_save(self.collect())
-		self.reset_start_btn()
-	def align_wafer3(self):
-		self.start_jobs_btn.setStyleSheet('background-color: rgb(255, 255, 0)')
-		self.start_jobs_btn.setStyleSheet('border: 2px solid red')
-		self.start_jobs_btn.setText("Correct Wafer3 rotation")
-		self.start_jobs_btn.repaint()
-		self.send_command(b'LDALN\n') # Run alignment screen without focus setting
-		self.wait_ser()
-		th3 = self.send_command(b'PSTH\n') # asks for the theta value
-		th3 = int(re.findall("-?\d+", th3)[-1])
-		self.table_wfr3.setItem(0, 0, QTableWidgetItem(str(th3)))		
-		#save values
-		self.file_save(self.collect())
-		self.reset_start_btn()
-	def align_wafer4(self):
-		self.start_jobs_btn.setStyleSheet('background-color: rgb(255, 255, 0)')
-		self.start_jobs_btn.setStyleSheet('border: 2px solid red')
-		self.start_jobs_btn.setText("Correct Wafer4 rotation")
-		self.start_jobs_btn.repaint()
-		self.send_command(b'LDALN\n') # Run alignment screen without focus setting
-		self.wait_ser()
-		th4 = self.send_command(b'PSTH\n') # asks for the theta value
-		th4 = int(re.findall("-?\d+", th4)[-1])
-		self.table_wfr4.setItem(0, 0, QTableWidgetItem(str(th4)))
-		#save values
-		self.file_save(self.collect())
-		self.reset_start_btn()
-	def touch_wafer1(self):
+	def touch_bar1(self):
 		self.start_jobs_btn.setStyleSheet('background-color: rgb(255, 255, 0)')
 		self.start_jobs_btn.setStyleSheet('border: 2px solid red')
 		self.start_jobs_btn.setText("Wafer1 touchdown")
 		self.start_jobs_btn.repaint()
 		self.send_command(b'GUP\n') # Do a Gross up
-		theta = self.table_wfr1.item(0, 0).text()
-		command = f'GTTH {theta}\n'.encode()
-		self.send_command(command)
 		self.send_command(b'LDPH 0\n') #Go to local and the asks the user to perform a touchdown
 		self.wait_ser()
 		xy = self.send_command(b'PSXY\n')
 		x1 = float(re.findall("-?\d+", xy)[-2])
 		y1 = float(re.findall("-?\d+", xy)[-1])
-		self.table_wfr1.setItem(0, 1, QTableWidgetItem(str(x1)))
-		self.table_wfr1.setItem(0, 2, QTableWidgetItem(str(y1)))
+		self.table_bar1.setItem(0, 1, QTableWidgetItem(str(x1)))
+		self.table_bar1.setItem(0, 2, QTableWidgetItem(str(y1)))
 		#save values
 		self.file_save(self.collect())
 		self.reset_start_btn()
-	def touch_wafer2(self):
+	def touch_bar2(self):
 		self.start_jobs_btn.setStyleSheet('background-color: rgb(255, 255, 0)')
 		self.start_jobs_btn.setStyleSheet('border: 2px solid red')
 		self.start_jobs_btn.setText("Wafer2 touchdown")
@@ -303,7 +222,7 @@ class Ui(QtWidgets.QMainWindow):
 		#save values
 		self.file_save(self.collect())
 		self.reset_start_btn()
-	def touch_wafer3(self):
+	def touch_bar3(self):
 		self.start_jobs_btn.setStyleSheet('background-color: rgb(255, 255, 0)')
 		self.start_jobs_btn.setStyleSheet('border: 2px solid red')
 		self.start_jobs_btn.setText("Wafer3 touchdown")
@@ -323,7 +242,7 @@ class Ui(QtWidgets.QMainWindow):
 		#save values
 		self.file_save(self.collect())
 		self.reset_start_btn()
-	def touch_wafer4(self):
+	def touch_bar4(self):
 		self.start_jobs_btn.setStyleSheet('background-color: rgb(255, 255, 0)')
 		self.start_jobs_btn.setStyleSheet('border: 2px solid red')
 		self.start_jobs_btn.setText("Wafer4 touchdown")
@@ -355,36 +274,6 @@ class Ui(QtWidgets.QMainWindow):
 		job_folder_corr = [ i.replace('\\','/') for i in job_folder_corr]
 		self.update_combo_box(self.jobs_combo_box1, job_folder_selection)
 		self.update_info1()	
-	def select_job2(self):
-		job_root='C:/Users/S300/OneDrive - Smart Photonics/Test  Measurement - Engineering/Internal Projects/Job generation'
-		self.job_folder_path2 = QFileDialog.getExistingDirectory(self,("Open Batch Folder"), job_root)
-		self.jobs_combo_box2.clear()
-		#Fill the first combo box with Jobs available
-		job_folder_selection = glob.glob(self.job_folder_path2+'/*JOB.yaml')
-		job_folder_corr = [r'{}'.format(i) for i in job_folder_selection]
-		job_folder_corr = [ i.replace('\\','/') for i in job_folder_corr]
-		self.update_combo_box(self.jobs_combo_box2, job_folder_selection)
-		self.update_info2()			
-	def select_job3(self):
-		job_root='C:/Users/S300/OneDrive - Smart Photonics/Test  Measurement - Engineering/Internal Projects/Job generation'
-		self.job_folder_path3 = QFileDialog.getExistingDirectory(self,("Open Batch Folder"), job_root)
-		self.jobs_combo_box3.clear()
-		#Fill the first combo box with Jobs available
-		job_folder_selection = glob.glob(self.job_folder_path3+'/*JOB.yaml')
-		job_folder_corr = [r'{}'.format(i) for i in job_folder_selection]
-		job_folder_corr = [ i.replace('\\','/') for i in job_folder_corr]
-		self.update_combo_box(self.jobs_combo_box3, job_folder_selection)
-		self.update_info3()	
-	def select_job4(self):
-		job_root='C:/Users/S300/OneDrive - Smart Photonics/Test  Measurement - Engineering/Internal Projects/Job generation'
-		self.job_folder_path4 = QFileDialog.getExistingDirectory(self,("Open Batch Folder"), job_root)
-		self.jobs_combo_box4.clear()
-		#Fill the first combo box with Jobs available
-		job_folder_selection = glob.glob(self.job_folder_path4+'/*JOB.yaml')
-		job_folder_corr = [r'{}'.format(i) for i in job_folder_selection]
-		job_folder_corr = [ i.replace('\\','/') for i in job_folder_corr]
-		self.update_combo_box(self.jobs_combo_box4, job_folder_selection)
-		self.update_info4()	
 	def update_info1(self, path1=''):
 		#Open selected jobfile
 		if path1 is not '':
@@ -424,129 +313,6 @@ class Ui(QtWidgets.QMainWindow):
 		df = pd.read_csv(mmf_path)
 		first_td = df.iloc[0][0]
 		self.td_id1.setText(first_td)
-		total_files = sum(df.sum(axis=1))
-		self.file_save(self.collect())	
-	def update_info2(self,path2=''):
-		#Open selected jobfile
-		if path2 is not '':
-			path2 = r'{}'.format(path2)
-			path2 = path2.replace('\\','/')
-			job_selected = path2
-			filename = path2
-		else:
-			job_selected = self.jobs_combo_box2.currentText()
-			job_selected_raw = r'{}'.format(job_selected)
-			job_selected_corr = job_selected_raw.replace('\\','/')
-			filename = job_selected_corr
-		job_root_folder = '/'.join(filename.split('/')[0:-1]) +'/'
-		job_folder_selection = glob.glob(job_root_folder+'/*JOB.yaml')
-		job_folder_corr = [r'{}'.format(i) for i in job_folder_selection]
-		job_folder_corr = [ i.replace('\\','/') for i in job_folder_corr]
-		self.update_combo_box(self.jobs_combo_box2, job_folder_selection)
-		with open(filename, 'r') as f:
-			yaml_open = yaml.safe_load(f)
-		acq_dict = yaml_open['acquisition settings']
-		batch_dict = yaml_open['batch_information']
-		cust_id = batch_dict['customer']
-		batch_id =batch_dict['batch'] 
-		wafer_id = batch_dict['wafers']
-		prod_id = batch_dict['product']
-		mmf_file = acq_dict['mmf']
-		ccf_file = acq_dict['ccf']
-		mdf_file = acq_dict['mdf']
-		#Update the labels
-		self.cust_id2.setText(cust_id)
-		self.batch_id2.setText(batch_id)
-		self.wafer_id2.setText(wafer_id)
-		self.prod_id2.setText(prod_id)
-		self.job_id2.setText(filename)
-		#getting MMF
-		mmf_path =  job_root_folder+ mmf_file
-		df = pd.read_csv(mmf_path)
-		first_td = df.iloc[0][0]
-		self.td_id2.setText(first_td)
-		total_files = sum(df.sum(axis=1))
-		self.file_save(self.collect())	
-	def update_info3(self, path3=''):
-		#Open selected jobfile
-		if path3 is not '':
-			path3 = r'{}'.format(path3)
-			path3 = path3.replace('\\','/')
-			job_selected = path3
-			filename = path3
-		else:
-			job_selected = self.jobs_combo_box3.currentText()
-			job_selected_raw = r'{}'.format(job_selected)
-			job_selected_corr = job_selected_raw.replace('\\','/')
-			filename = job_selected_corr
-		job_root_folder = '/'.join(filename.split('/')[0:-1]) +'/'
-		job_folder_selection = glob.glob(job_root_folder+'/*JOB.yaml')
-		job_folder_corr = [r'{}'.format(i) for i in job_folder_selection]
-		job_folder_corr = [ i.replace('\\','/') for i in job_folder_corr]
-		self.update_combo_box(self.jobs_combo_box3, job_folder_selection)
-		with open(filename, 'r') as f:
-			yaml_open = yaml.safe_load(f)
-		acq_dict = yaml_open['acquisition settings']
-		batch_dict = yaml_open['batch_information']
-		cust_id = batch_dict['customer']
-		batch_id =batch_dict['batch'] 
-		wafer_id = batch_dict['wafers']
-		prod_id = batch_dict['product']
-		mmf_file = acq_dict['mmf']
-		ccf_file = acq_dict['ccf']
-		mdf_file = acq_dict['mdf']
-		#Update the labels
-		self.cust_id3.setText(cust_id)
-		self.batch_id3.setText(batch_id)
-		self.wafer_id3.setText(wafer_id)
-		self.prod_id3.setText(prod_id)
-		self.job_id3.setText(filename)
-		#getting the MMF
-		mmf_path =  job_root_folder+ mmf_file
-		df = pd.read_csv(mmf_path)
-		first_td = df.iloc[0][0]
-		self.td_id3.setText(first_td)
-		total_files = sum(df.sum(axis=1))
-		self.file_save(self.collect())	
-	def update_info4(self, path4=''):
-		#Open selected jobfile
-		if path4 is not '':
-			path4 = r'{}'.format(path4)
-			path4 = path4.replace('\\','/')
-			job_selected = path4
-			filename = path4
-		else:
-			job_selected = self.jobs_combo_box4.currentText()
-			job_selected_raw = r'{}'.format(job_selected)
-			job_selected_corr = job_selected_raw.replace('\\','/')
-			filename = job_selected_corr
-		job_root_folder = '/'.join(filename.split('/')[0:-1]) +'/'
-		job_folder_selection = glob.glob(job_root_folder+'/*JOB.yaml')
-		job_folder_corr = [r'{}'.format(i) for i in job_folder_selection]
-		job_folder_corr = [ i.replace('\\','/') for i in job_folder_corr]
-		self.update_combo_box(self.jobs_combo_box4, job_folder_selection)
-		with open(filename, 'r') as f:
-			yaml_open = yaml.safe_load(f)
-		acq_dict = yaml_open['acquisition settings']
-		batch_dict = yaml_open['batch_information']
-		cust_id = batch_dict['customer']
-		batch_id =batch_dict['batch'] 
-		wafer_id = batch_dict['wafers']
-		prod_id = batch_dict['product']
-		mmf_file = acq_dict['mmf']
-		ccf_file = acq_dict['ccf']
-		mdf_file = acq_dict['mdf']
-		#Update the labels
-		self.cust_id4.setText(cust_id)
-		self.batch_id4.setText(batch_id)
-		self.wafer_id4.setText(wafer_id)
-		self.prod_id4.setText(prod_id)
-		self.job_id4.setText(filename)
-		#getting the MMF
-		mmf_path =  job_root_folder+ mmf_file
-		df = pd.read_csv(mmf_path)
-		first_td = df.iloc[0][0]
-		self.td_id4.setText(first_td)
 		total_files = sum(df.sum(axis=1))
 		self.file_save(self.collect())	
 	def go_td1(self):

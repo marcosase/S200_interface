@@ -157,7 +157,7 @@ UP</string>
      </font>
     </property>
     <property name="text">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Step-by-Step&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;1 - Place each wafer in its respective position&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;2 - Click on Theta alignment and follow the instructions  on the probe monitor&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;3 - Click on touchdown and perform the first touchdown according to the working instrunctions&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;4 - Select the folder containing the job files and select the disered job files from the drop-down menu.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;5 - Select the wafers you want to measure by checking the buttons Wafer1, Wafer2,... If its checked it is going to be measure.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;6 -  Click on START&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Step-by-Step&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;1 - Place each bar in its respective position.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;2 - Click on touchdown and perform the touchdown in each bar.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;4 - Select the folder containing the job files and select the disered job files from the drop-down menu.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;5 - Select the bars you want to measure by checking the buttons Bar1, Bar2,... If its checked it is going to be measure.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;6 - Click on START&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="scaledContents">
      <bool>false</bool>
@@ -178,8 +178,30 @@ UP</string>
       <height>941</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <family>Arial</family>
+      <pointsize>12</pointsize>
+      <weight>9</weight>
+      <italic>false</italic>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font: 75 12pt &quot;Arial&quot;;
+selection-background-color: rgb(85, 255, 255);</string>
+    </property>
+    <property name="tabShape">
+     <enum>QTabWidget::Triangular</enum>
+    </property>
     <property name="currentIndex">
      <number>0</number>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>20</width>
+      <height>20</height>
+     </size>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -190,7 +212,7 @@ UP</string>
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>931</width>
+        <width>811</width>
         <height>881</height>
        </rect>
       </property>
@@ -227,6 +249,15 @@ UP</string>
               </color>
              </brush>
             </colorrole>
+            <colorrole role="Highlight">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>85</red>
+               <green>255</green>
+               <blue>255</blue>
+              </color>
+             </brush>
+            </colorrole>
            </active>
            <inactive>
             <colorrole role="Button">
@@ -252,6 +283,15 @@ UP</string>
               <color alpha="255">
                <red>244</red>
                <green>246</green>
+               <blue>255</blue>
+              </color>
+             </brush>
+            </colorrole>
+            <colorrole role="Highlight">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>85</red>
+               <green>255</green>
                <blue>255</blue>
               </color>
              </brush>
@@ -285,13 +325,25 @@ UP</string>
               </color>
              </brush>
             </colorrole>
+            <colorrole role="Highlight">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>85</red>
+               <green>255</green>
+               <blue>255</blue>
+              </color>
+             </brush>
+            </colorrole>
            </disabled>
           </palette>
          </property>
          <property name="font">
           <font>
            <family>Arial</family>
-           <pointsize>11</pointsize>
+           <pointsize>12</pointsize>
+           <weight>9</weight>
+           <italic>false</italic>
+           <bold>false</bold>
           </font>
          </property>
          <property name="toolTip">
@@ -323,9 +375,11 @@ UP</string>
           </property>
           <property name="font">
            <font>
-            <pointsize>10</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
+            <family>Arial</family>
+            <pointsize>12</pointsize>
+            <weight>9</weight>
+            <italic>false</italic>
+            <bold>false</bold>
            </font>
           </property>
           <property name="toolTip">
@@ -351,9 +405,10 @@ Job FOLDER</string>
           <property name="font">
            <font>
             <family>Arial</family>
-            <pointsize>10</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
+            <pointsize>12</pointsize>
+            <weight>9</weight>
+            <italic>false</italic>
+            <bold>false</bold>
            </font>
           </property>
           <property name="text">
@@ -372,9 +427,10 @@ Job FOLDER</string>
           <property name="font">
            <font>
             <family>Arial</family>
-            <pointsize>10</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
+            <pointsize>12</pointsize>
+            <weight>9</weight>
+            <italic>false</italic>
+            <bold>false</bold>
            </font>
           </property>
           <property name="text">
@@ -393,9 +449,10 @@ Job FOLDER</string>
           <property name="font">
            <font>
             <family>Arial</family>
-            <pointsize>10</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
+            <pointsize>12</pointsize>
+            <weight>9</weight>
+            <italic>false</italic>
+            <bold>false</bold>
            </font>
           </property>
           <property name="text">
@@ -414,9 +471,10 @@ Job FOLDER</string>
           <property name="font">
            <font>
             <family>Arial</family>
-            <pointsize>10</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
+            <pointsize>12</pointsize>
+            <weight>9</weight>
+            <italic>false</italic>
+            <bold>false</bold>
            </font>
           </property>
           <property name="text">
@@ -435,9 +493,10 @@ Job FOLDER</string>
           <property name="font">
            <font>
             <family>Arial</family>
-            <pointsize>11</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
+            <pointsize>12</pointsize>
+            <weight>9</weight>
+            <italic>false</italic>
+            <bold>false</bold>
            </font>
           </property>
           <property name="styleSheet">
@@ -459,9 +518,10 @@ Job FOLDER</string>
           <property name="font">
            <font>
             <family>Arial</family>
-            <pointsize>11</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
+            <pointsize>12</pointsize>
+            <weight>9</weight>
+            <italic>false</italic>
+            <bold>false</bold>
            </font>
           </property>
           <property name="styleSheet">
@@ -483,9 +543,10 @@ Job FOLDER</string>
           <property name="font">
            <font>
             <family>Arial</family>
-            <pointsize>11</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
+            <pointsize>12</pointsize>
+            <weight>9</weight>
+            <italic>false</italic>
+            <bold>false</bold>
            </font>
           </property>
           <property name="styleSheet">
@@ -507,9 +568,10 @@ Job FOLDER</string>
           <property name="font">
            <font>
             <family>Arial</family>
-            <pointsize>11</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
+            <pointsize>12</pointsize>
+            <weight>9</weight>
+            <italic>false</italic>
+            <bold>false</bold>
            </font>
           </property>
           <property name="styleSheet">
@@ -531,9 +593,10 @@ Job FOLDER</string>
           <property name="font">
            <font>
             <family>Arial</family>
-            <pointsize>10</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
+            <pointsize>12</pointsize>
+            <weight>9</weight>
+            <italic>false</italic>
+            <bold>false</bold>
            </font>
           </property>
           <property name="text">
@@ -545,16 +608,17 @@ Job FOLDER</string>
            <rect>
             <x>110</x>
             <y>200</y>
-            <width>771</width>
+            <width>671</width>
             <height>61</height>
            </rect>
           </property>
           <property name="font">
            <font>
             <family>Arial</family>
-            <pointsize>11</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
+            <pointsize>12</pointsize>
+            <weight>9</weight>
+            <italic>false</italic>
+            <bold>false</bold>
            </font>
           </property>
           <property name="styleSheet">
@@ -582,9 +646,10 @@ Job FOLDER</string>
           <property name="font">
            <font>
             <family>Arial</family>
-            <pointsize>10</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
+            <pointsize>12</pointsize>
+            <weight>9</weight>
+            <italic>false</italic>
+            <bold>false</bold>
            </font>
           </property>
           <property name="text">
@@ -603,9 +668,10 @@ Job FOLDER</string>
           <property name="font">
            <font>
             <family>Arial</family>
-            <pointsize>11</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
+            <pointsize>12</pointsize>
+            <weight>9</weight>
+            <italic>false</italic>
+            <bold>false</bold>
            </font>
           </property>
           <property name="styleSheet">
@@ -642,7 +708,7 @@ Job FOLDER</string>
            <rect>
             <x>140</x>
             <y>20</y>
-            <width>761</width>
+            <width>641</width>
             <height>31</height>
            </rect>
           </property>
@@ -651,21 +717,22 @@ Job FOLDER</string>
 background-color: rgb(234, 237, 255);</string>
           </property>
          </widget>
-         <widget class="QProgressBar" name="Wafer2">
+         <widget class="QProgressBar" name="bar">
           <property name="geometry">
            <rect>
             <x>10</x>
             <y>820</y>
-            <width>891</width>
+            <width>781</width>
             <height>31</height>
            </rect>
           </property>
           <property name="font">
            <font>
             <family>Arial</family>
-            <pointsize>10</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
+            <pointsize>12</pointsize>
+            <weight>9</weight>
+            <italic>false</italic>
+            <bold>false</bold>
            </font>
           </property>
           <property name="mouseTracking">
@@ -696,9 +763,10 @@ background-color: rgb(234, 237, 255);</string>
           <property name="font">
            <font>
             <family>Arial</family>
-            <pointsize>11</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
+            <pointsize>12</pointsize>
+            <weight>9</weight>
+            <italic>false</italic>
+            <bold>false</bold>
            </font>
           </property>
           <property name="styleSheet">
@@ -713,9 +781,18 @@ background-color: rgb(234, 237, 255);</string>
            <rect>
             <x>10</x>
             <y>370</y>
-            <width>891</width>
+            <width>781</width>
             <height>80</height>
            </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Arial</family>
+            <pointsize>12</pointsize>
+            <weight>9</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
           </property>
           <property name="frameShape">
            <enum>QFrame::Box</enum>
@@ -726,7 +803,7 @@ background-color: rgb(234, 237, 255);</string>
           <property name="lineWidth">
            <number>2</number>
           </property>
-          <widget class="QCheckBox" name="check_wafer2">
+          <widget class="QCheckBox" name="check_bar1">
            <property name="geometry">
             <rect>
              <x>20</x>
@@ -737,16 +814,18 @@ background-color: rgb(234, 237, 255);</string>
            </property>
            <property name="font">
             <font>
-             <pointsize>14</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
+             <family>Arial</family>
+             <pointsize>12</pointsize>
+             <weight>9</weight>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="text">
             <string>Bar1</string>
            </property>
           </widget>
-          <widget class="QPushButton" name="btn_touch2">
+          <widget class="QPushButton" name="btn_touch1">
            <property name="geometry">
             <rect>
              <x>350</x>
@@ -757,9 +836,11 @@ background-color: rgb(234, 237, 255);</string>
            </property>
            <property name="font">
             <font>
-             <pointsize>10</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
+             <family>Arial</family>
+             <pointsize>12</pointsize>
+             <weight>9</weight>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="styleSheet">
@@ -769,7 +850,7 @@ background-color: rgb(234, 237, 255);</string>
             <string>TouchDown</string>
            </property>
           </widget>
-          <widget class="QPushButton" name="btn_go_td2">
+          <widget class="QPushButton" name="btn_go_td1">
            <property name="geometry">
             <rect>
              <x>460</x>
@@ -780,9 +861,11 @@ background-color: rgb(234, 237, 255);</string>
            </property>
            <property name="font">
             <font>
-             <pointsize>10</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
+             <family>Arial</family>
+             <pointsize>12</pointsize>
+             <weight>9</weight>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="styleSheet">
@@ -793,7 +876,7 @@ background-color: rgb(234, 237, 255);</string>
  touchdown</string>
            </property>
           </widget>
-          <widget class="QTableWidget" name="table_wfr2">
+          <widget class="QTableWidget" name="table_bar1">
            <property name="geometry">
             <rect>
              <x>570</x>
@@ -953,9 +1036,10 @@ background-color: rgb(234, 237, 255);</string>
            <property name="font">
             <font>
              <family>Arial</family>
-             <pointsize>10</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
+             <pointsize>12</pointsize>
+             <weight>9</weight>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="text">
@@ -974,16 +1058,17 @@ background-color: rgb(234, 237, 255);</string>
            <property name="font">
             <font>
              <family>Arial</family>
-             <pointsize>10</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
+             <pointsize>12</pointsize>
+             <weight>9</weight>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="text">
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Last Cell ID:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
           </widget>
-          <widget class="QLineEdit" name="lineEdit">
+          <widget class="QLineEdit" name="line_start1">
            <property name="geometry">
             <rect>
              <x>200</x>
@@ -995,14 +1080,17 @@ background-color: rgb(234, 237, 255);</string>
            <property name="font">
             <font>
              <family>Arial</family>
-             <pointsize>11</pointsize>
+             <pointsize>12</pointsize>
+             <weight>9</weight>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="styleSheet">
             <string notr="true">background-color: rgb(85, 255, 127);</string>
            </property>
           </widget>
-          <widget class="QLineEdit" name="lineEdit_2">
+          <widget class="QLineEdit" name="line_end1">
            <property name="geometry">
             <rect>
              <x>200</x>
@@ -1014,7 +1102,10 @@ background-color: rgb(234, 237, 255);</string>
            <property name="font">
             <font>
              <family>Arial</family>
-             <pointsize>11</pointsize>
+             <pointsize>12</pointsize>
+             <weight>9</weight>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="styleSheet">
@@ -1034,9 +1125,10 @@ background-color: rgb(234, 237, 255);</string>
           <property name="font">
            <font>
             <family>Arial</family>
-            <pointsize>11</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
+            <pointsize>12</pointsize>
+            <weight>9</weight>
+            <italic>false</italic>
+            <bold>false</bold>
            </font>
           </property>
           <property name="styleSheet">
@@ -1058,9 +1150,10 @@ background-color: rgb(234, 237, 255);</string>
           <property name="font">
            <font>
             <family>Arial</family>
-            <pointsize>10</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
+            <pointsize>12</pointsize>
+            <weight>9</weight>
+            <italic>false</italic>
+            <bold>false</bold>
            </font>
           </property>
           <property name="text">
@@ -1071,7 +1164,7 @@ background-color: rgb(234, 237, 255);</string>
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>300</y>
+            <y>290</y>
             <width>121</width>
             <height>21</height>
            </rect>
@@ -1079,9 +1172,10 @@ background-color: rgb(234, 237, 255);</string>
           <property name="font">
            <font>
             <family>Arial</family>
-            <pointsize>10</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
+            <pointsize>12</pointsize>
+            <weight>9</weight>
+            <italic>false</italic>
+            <bold>false</bold>
            </font>
           </property>
           <property name="text">
@@ -1103,9 +1197,10 @@ background-color: rgb(234, 237, 255);</string>
           <property name="font">
            <font>
             <family>Arial</family>
-            <pointsize>11</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
+            <pointsize>12</pointsize>
+            <weight>9</weight>
+            <italic>false</italic>
+            <bold>false</bold>
            </font>
           </property>
           <property name="styleSheet">
@@ -1119,7 +1214,7 @@ background-color: rgb(234, 237, 255);</string>
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>330</y>
+            <y>320</y>
             <width>181</width>
             <height>21</height>
            </rect>
@@ -1127,9 +1222,10 @@ background-color: rgb(234, 237, 255);</string>
           <property name="font">
            <font>
             <family>Arial</family>
-            <pointsize>10</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
+            <pointsize>12</pointsize>
+            <weight>9</weight>
+            <italic>false</italic>
+            <bold>false</bold>
            </font>
           </property>
           <property name="text">
@@ -1141,7 +1237,7 @@ background-color: rgb(234, 237, 255);</string>
            <rect>
             <x>10</x>
             <y>460</y>
-            <width>891</width>
+            <width>781</width>
             <height>80</height>
            </rect>
           </property>
@@ -1154,27 +1250,29 @@ background-color: rgb(234, 237, 255);</string>
           <property name="lineWidth">
            <number>2</number>
           </property>
-          <widget class="QCheckBox" name="check_wafer2_3">
+          <widget class="QCheckBox" name="check_bar2">
            <property name="geometry">
             <rect>
              <x>20</x>
              <y>20</y>
-             <width>101</width>
+             <width>71</width>
              <height>31</height>
             </rect>
            </property>
            <property name="font">
             <font>
-             <pointsize>14</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
+             <family>Arial</family>
+             <pointsize>12</pointsize>
+             <weight>9</weight>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="text">
             <string>Bar2</string>
            </property>
           </widget>
-          <widget class="QPushButton" name="btn_touch2_3">
+          <widget class="QPushButton" name="btn_touch2">
            <property name="geometry">
             <rect>
              <x>350</x>
@@ -1185,9 +1283,11 @@ background-color: rgb(234, 237, 255);</string>
            </property>
            <property name="font">
             <font>
-             <pointsize>10</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
+             <family>Arial</family>
+             <pointsize>12</pointsize>
+             <weight>9</weight>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="styleSheet">
@@ -1197,7 +1297,7 @@ background-color: rgb(234, 237, 255);</string>
             <string>TouchDown</string>
            </property>
           </widget>
-          <widget class="QPushButton" name="btn_go_td2_3">
+          <widget class="QPushButton" name="btn_go_td2">
            <property name="geometry">
             <rect>
              <x>460</x>
@@ -1208,9 +1308,11 @@ background-color: rgb(234, 237, 255);</string>
            </property>
            <property name="font">
             <font>
-             <pointsize>10</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
+             <family>Arial</family>
+             <pointsize>12</pointsize>
+             <weight>9</weight>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="styleSheet">
@@ -1221,7 +1323,7 @@ background-color: rgb(234, 237, 255);</string>
  touchdown</string>
            </property>
           </widget>
-          <widget class="QTableWidget" name="table_wfr2_3">
+          <widget class="QTableWidget" name="table_bar2">
            <property name="geometry">
             <rect>
              <x>570</x>
@@ -1381,9 +1483,10 @@ background-color: rgb(234, 237, 255);</string>
            <property name="font">
             <font>
              <family>Arial</family>
-             <pointsize>10</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
+             <pointsize>12</pointsize>
+             <weight>9</weight>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="text">
@@ -1402,16 +1505,17 @@ background-color: rgb(234, 237, 255);</string>
            <property name="font">
             <font>
              <family>Arial</family>
-             <pointsize>10</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
+             <pointsize>12</pointsize>
+             <weight>9</weight>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="text">
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Last Cell ID:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
           </widget>
-          <widget class="QLineEdit" name="lineEdit_5">
+          <widget class="QLineEdit" name="line_start2">
            <property name="geometry">
             <rect>
              <x>200</x>
@@ -1423,14 +1527,17 @@ background-color: rgb(234, 237, 255);</string>
            <property name="font">
             <font>
              <family>Arial</family>
-             <pointsize>11</pointsize>
+             <pointsize>12</pointsize>
+             <weight>9</weight>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="styleSheet">
             <string notr="true">background-color: rgb(85, 255, 127);</string>
            </property>
           </widget>
-          <widget class="QLineEdit" name="lineEdit_6">
+          <widget class="QLineEdit" name="line_end2">
            <property name="geometry">
             <rect>
              <x>200</x>
@@ -1442,7 +1549,10 @@ background-color: rgb(234, 237, 255);</string>
            <property name="font">
             <font>
              <family>Arial</family>
-             <pointsize>11</pointsize>
+             <pointsize>12</pointsize>
+             <weight>9</weight>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="styleSheet">
@@ -1455,7 +1565,7 @@ background-color: rgb(234, 237, 255);</string>
            <rect>
             <x>10</x>
             <y>550</y>
-            <width>891</width>
+            <width>781</width>
             <height>80</height>
            </rect>
           </property>
@@ -1468,27 +1578,29 @@ background-color: rgb(234, 237, 255);</string>
           <property name="lineWidth">
            <number>2</number>
           </property>
-          <widget class="QCheckBox" name="check_wafer2_4">
+          <widget class="QCheckBox" name="check_bar3">
            <property name="geometry">
             <rect>
              <x>20</x>
              <y>20</y>
-             <width>101</width>
+             <width>71</width>
              <height>31</height>
             </rect>
            </property>
            <property name="font">
             <font>
-             <pointsize>14</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
+             <family>Arial</family>
+             <pointsize>12</pointsize>
+             <weight>9</weight>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="text">
             <string>Bar3</string>
            </property>
           </widget>
-          <widget class="QPushButton" name="btn_touch2_4">
+          <widget class="QPushButton" name="btn_touch3">
            <property name="geometry">
             <rect>
              <x>350</x>
@@ -1499,9 +1611,11 @@ background-color: rgb(234, 237, 255);</string>
            </property>
            <property name="font">
             <font>
-             <pointsize>10</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
+             <family>Arial</family>
+             <pointsize>12</pointsize>
+             <weight>9</weight>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="styleSheet">
@@ -1511,7 +1625,7 @@ background-color: rgb(234, 237, 255);</string>
             <string>TouchDown</string>
            </property>
           </widget>
-          <widget class="QPushButton" name="btn_go_td2_4">
+          <widget class="QPushButton" name="btn_go_td3">
            <property name="geometry">
             <rect>
              <x>460</x>
@@ -1522,9 +1636,11 @@ background-color: rgb(234, 237, 255);</string>
            </property>
            <property name="font">
             <font>
-             <pointsize>10</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
+             <family>Arial</family>
+             <pointsize>12</pointsize>
+             <weight>9</weight>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="styleSheet">
@@ -1535,7 +1651,7 @@ background-color: rgb(234, 237, 255);</string>
  touchdown</string>
            </property>
           </widget>
-          <widget class="QTableWidget" name="table_wfr2_4">
+          <widget class="QTableWidget" name="table_bar3">
            <property name="geometry">
             <rect>
              <x>570</x>
@@ -1695,9 +1811,10 @@ background-color: rgb(234, 237, 255);</string>
            <property name="font">
             <font>
              <family>Arial</family>
-             <pointsize>10</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
+             <pointsize>12</pointsize>
+             <weight>9</weight>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="text">
@@ -1716,16 +1833,17 @@ background-color: rgb(234, 237, 255);</string>
            <property name="font">
             <font>
              <family>Arial</family>
-             <pointsize>10</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
+             <pointsize>12</pointsize>
+             <weight>9</weight>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="text">
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Last Cell ID:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
           </widget>
-          <widget class="QLineEdit" name="lineEdit_7">
+          <widget class="QLineEdit" name="line_start3">
            <property name="geometry">
             <rect>
              <x>200</x>
@@ -1737,14 +1855,17 @@ background-color: rgb(234, 237, 255);</string>
            <property name="font">
             <font>
              <family>Arial</family>
-             <pointsize>11</pointsize>
+             <pointsize>12</pointsize>
+             <weight>9</weight>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="styleSheet">
             <string notr="true">background-color: rgb(85, 255, 127);</string>
            </property>
           </widget>
-          <widget class="QLineEdit" name="lineEdit_8">
+          <widget class="QLineEdit" name="line_end3">
            <property name="geometry">
             <rect>
              <x>200</x>
@@ -1756,7 +1877,10 @@ background-color: rgb(234, 237, 255);</string>
            <property name="font">
             <font>
              <family>Arial</family>
-             <pointsize>11</pointsize>
+             <pointsize>12</pointsize>
+             <weight>9</weight>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="styleSheet">
@@ -1769,7 +1893,7 @@ background-color: rgb(234, 237, 255);</string>
            <rect>
             <x>10</x>
             <y>640</y>
-            <width>891</width>
+            <width>781</width>
             <height>80</height>
            </rect>
           </property>
@@ -1782,27 +1906,29 @@ background-color: rgb(234, 237, 255);</string>
           <property name="lineWidth">
            <number>2</number>
           </property>
-          <widget class="QCheckBox" name="check_wafer2_5">
+          <widget class="QCheckBox" name="check_bar4">
            <property name="geometry">
             <rect>
              <x>20</x>
              <y>20</y>
-             <width>101</width>
+             <width>71</width>
              <height>31</height>
             </rect>
            </property>
            <property name="font">
             <font>
-             <pointsize>14</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
+             <family>Arial</family>
+             <pointsize>12</pointsize>
+             <weight>9</weight>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="text">
             <string>Bar4</string>
            </property>
           </widget>
-          <widget class="QPushButton" name="btn_touch2_5">
+          <widget class="QPushButton" name="btn_touch4">
            <property name="geometry">
             <rect>
              <x>350</x>
@@ -1813,9 +1939,11 @@ background-color: rgb(234, 237, 255);</string>
            </property>
            <property name="font">
             <font>
-             <pointsize>10</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
+             <family>Arial</family>
+             <pointsize>12</pointsize>
+             <weight>9</weight>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="styleSheet">
@@ -1825,7 +1953,7 @@ background-color: rgb(234, 237, 255);</string>
             <string>TouchDown</string>
            </property>
           </widget>
-          <widget class="QPushButton" name="btn_go_td2_5">
+          <widget class="QPushButton" name="btn_go_td4">
            <property name="geometry">
             <rect>
              <x>460</x>
@@ -1836,9 +1964,11 @@ background-color: rgb(234, 237, 255);</string>
            </property>
            <property name="font">
             <font>
-             <pointsize>10</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
+             <family>Arial</family>
+             <pointsize>12</pointsize>
+             <weight>9</weight>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="styleSheet">
@@ -1849,7 +1979,7 @@ background-color: rgb(234, 237, 255);</string>
  touchdown</string>
            </property>
           </widget>
-          <widget class="QTableWidget" name="table_wfr2_5">
+          <widget class="QTableWidget" name="table_bar4">
            <property name="geometry">
             <rect>
              <x>570</x>
@@ -2009,9 +2139,10 @@ background-color: rgb(234, 237, 255);</string>
            <property name="font">
             <font>
              <family>Arial</family>
-             <pointsize>10</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
+             <pointsize>12</pointsize>
+             <weight>9</weight>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="text">
@@ -2030,16 +2161,17 @@ background-color: rgb(234, 237, 255);</string>
            <property name="font">
             <font>
              <family>Arial</family>
-             <pointsize>10</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
+             <pointsize>12</pointsize>
+             <weight>9</weight>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="text">
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Last Cell ID:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
           </widget>
-          <widget class="QLineEdit" name="lineEdit_9">
+          <widget class="QLineEdit" name="line_start4">
            <property name="geometry">
             <rect>
              <x>200</x>
@@ -2051,14 +2183,17 @@ background-color: rgb(234, 237, 255);</string>
            <property name="font">
             <font>
              <family>Arial</family>
-             <pointsize>11</pointsize>
+             <pointsize>12</pointsize>
+             <weight>9</weight>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="styleSheet">
             <string notr="true">background-color: rgb(85, 255, 127);</string>
            </property>
           </widget>
-          <widget class="QLineEdit" name="lineEdit_10">
+          <widget class="QLineEdit" name="line_end4">
            <property name="geometry">
             <rect>
              <x>200</x>
@@ -2070,7 +2205,10 @@ background-color: rgb(234, 237, 255);</string>
            <property name="font">
             <font>
              <family>Arial</family>
-             <pointsize>11</pointsize>
+             <pointsize>12</pointsize>
+             <weight>9</weight>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="styleSheet">
@@ -2083,7 +2221,7 @@ background-color: rgb(234, 237, 255);</string>
            <rect>
             <x>10</x>
             <y>730</y>
-            <width>891</width>
+            <width>781</width>
             <height>80</height>
            </rect>
           </property>
@@ -2096,27 +2234,29 @@ background-color: rgb(234, 237, 255);</string>
           <property name="lineWidth">
            <number>2</number>
           </property>
-          <widget class="QCheckBox" name="check_wafer2_6">
+          <widget class="QCheckBox" name="check_bar5">
            <property name="geometry">
             <rect>
              <x>20</x>
              <y>20</y>
-             <width>101</width>
+             <width>71</width>
              <height>31</height>
             </rect>
            </property>
            <property name="font">
             <font>
-             <pointsize>14</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
+             <family>Arial</family>
+             <pointsize>12</pointsize>
+             <weight>9</weight>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="text">
             <string>Bar5</string>
            </property>
           </widget>
-          <widget class="QPushButton" name="btn_touch2_6">
+          <widget class="QPushButton" name="btn_touch5">
            <property name="geometry">
             <rect>
              <x>350</x>
@@ -2127,9 +2267,11 @@ background-color: rgb(234, 237, 255);</string>
            </property>
            <property name="font">
             <font>
-             <pointsize>10</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
+             <family>Arial</family>
+             <pointsize>12</pointsize>
+             <weight>9</weight>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="styleSheet">
@@ -2139,7 +2281,7 @@ background-color: rgb(234, 237, 255);</string>
             <string>TouchDown</string>
            </property>
           </widget>
-          <widget class="QPushButton" name="btn_go_td2_6">
+          <widget class="QPushButton" name="btn_go_td5">
            <property name="geometry">
             <rect>
              <x>460</x>
@@ -2150,9 +2292,11 @@ background-color: rgb(234, 237, 255);</string>
            </property>
            <property name="font">
             <font>
-             <pointsize>10</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
+             <family>Arial</family>
+             <pointsize>12</pointsize>
+             <weight>9</weight>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="styleSheet">
@@ -2163,7 +2307,7 @@ background-color: rgb(234, 237, 255);</string>
  touchdown</string>
            </property>
           </widget>
-          <widget class="QTableWidget" name="table_wfr2_6">
+          <widget class="QTableWidget" name="table_bar5">
            <property name="geometry">
             <rect>
              <x>570</x>
@@ -2323,9 +2467,10 @@ background-color: rgb(234, 237, 255);</string>
            <property name="font">
             <font>
              <family>Arial</family>
-             <pointsize>10</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
+             <pointsize>12</pointsize>
+             <weight>9</weight>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="text">
@@ -2344,16 +2489,17 @@ background-color: rgb(234, 237, 255);</string>
            <property name="font">
             <font>
              <family>Arial</family>
-             <pointsize>10</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
+             <pointsize>12</pointsize>
+             <weight>9</weight>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="text">
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Last Cell ID:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
           </widget>
-          <widget class="QLineEdit" name="lineEdit_11">
+          <widget class="QLineEdit" name="line_start5">
            <property name="geometry">
             <rect>
              <x>200</x>
@@ -2365,14 +2511,17 @@ background-color: rgb(234, 237, 255);</string>
            <property name="font">
             <font>
              <family>Arial</family>
-             <pointsize>11</pointsize>
+             <pointsize>12</pointsize>
+             <weight>9</weight>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="styleSheet">
             <string notr="true">background-color: rgb(85, 255, 127);</string>
            </property>
           </widget>
-          <widget class="QLineEdit" name="lineEdit_12">
+          <widget class="QLineEdit" name="line_end5">
            <property name="geometry">
             <rect>
              <x>200</x>
@@ -2384,7 +2533,10 @@ background-color: rgb(234, 237, 255);</string>
            <property name="font">
             <font>
              <family>Arial</family>
-             <pointsize>11</pointsize>
+             <pointsize>12</pointsize>
+             <weight>9</weight>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="styleSheet">
