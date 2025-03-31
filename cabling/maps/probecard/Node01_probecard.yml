@@ -1,0 +1,11 @@
+<<<<<<< HEAD
+info: 'Probecard configuration: from connection holes to probecard buses'
+mapping:
+  H1: Bus10
+  H2: Bus20
+=======
+info: Holes => Bus lines
+mapping:
+  H1: Bus1
+  H2: Bus2
+>>>>>>> 552d8b046d5c518822605037221e5e959b305069

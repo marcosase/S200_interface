@@ -1,0 +1,4 @@
+info: 'SMU configuration: from cables to SMU channels'
+mapping:
+  Cable1: Ch1
+  Cable2: Ch2

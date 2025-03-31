@@ -1,0 +1,11 @@
+<<<<<<< HEAD
+info: 'SMU configuration: from cables to SMU channels'
+mapping:
+  Cable1: Ch1
+  Cable2: Ch2
+=======
+info: Cables => SMU channels
+mapping:
+  Cable1: Ch10
+  Cable2: Ch20
+>>>>>>> 552d8b046d5c518822605037221e5e959b305069

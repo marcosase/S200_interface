@@ -1,0 +1,4 @@
+info: 'Probecard configuration: from probing pads to connecting holes'
+mapping:
+  N00: H1
+  S00: H2

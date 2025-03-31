@@ -1,0 +1,4 @@
+info: 'Probecard configuration: from connection holes to probecard buses'
+mapping:
+  H1: Bus10
+  H2: Bus20

@@ -1,0 +1,5 @@
+2018-05-24 13:25:24,802 - test - INFO - Logging started
+2018-05-24 13:25:24,803 - test.test_bt - INFO - I initialized the photodetector
+2018-05-24 13:25:24,804 - test.bt_pd_lib - INFO - Selected photodetector: Keithley, 2520 INT-Ge
+2018-05-24 13:25:24,804 - test.bt_pd_lib - INFO - Selected wavelength     1550
+2018-05-24 13:25:24,805 - test.test_bt - INFO - I released the photodetector

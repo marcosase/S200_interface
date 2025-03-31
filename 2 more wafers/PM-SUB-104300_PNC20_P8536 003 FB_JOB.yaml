@@ -1,0 +1,27 @@
+acquisition settings:
+  all_measurements_in_one_die: false
+  amf: PM-SUB-104300_PNC20_P8536 003 FB_AMF.yaml
+  ccf: PM-SUB-104300_PNC20_CCF_bars_v4.csv
+  edf: D:\PRODUCTION\edf\bt_with_2520_v2_EDF.yaml
+  mdf: PM-SUB-104300_PNC20_P8536 003 FB_MDF.yaml
+  mmf: PM-SUB-104300_PNC20_P8536 003 FB_MMF.csv
+  probecard: D:\PRODUCTION\probes\PowerDC_v3.yaml
+  sample_type: bar
+  save_shell_output: false
+batch_information:
+  batch: PNC20
+  customer: PM-SUB-104300
+  lot: PNC20
+  name: PNC20
+  product: 24D72
+  wafers: P8536 003 FB
+date_and_version:
+  author: JNP
+  date: 17-03-2025
+  email: joep.nieuwdorp@smartphotonics.nl
+  from_pc: SMP-NB145
+  jobversion: 1.0.3
+  time: 14.57.14
+post-acquisition settings:
+  compressing files: true
+  quick analysis: false

@@ -1,0 +1,7 @@
+info: 
+    THIS FILE DESCRIBES NODE 01
+
+mapping:
+    Pad1: Probe1
+    Pad2: Probe2
+                

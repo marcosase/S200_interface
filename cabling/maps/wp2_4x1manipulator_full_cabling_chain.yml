@@ -1,0 +1,12 @@
+cabling map:
+  PAD1: ['smu1','a']
+  PAD2: ['smu1','b']
+  PAD3: ['smu2','a']
+  PAD4: ['smu2','b']
+  PAD5: ['smu3','a']
+  PAD6: ['smu3','b']
+  COM: ['smu1','COM']
+info: 
+  description: full-chain cabling description of 4-point measurement with Wafer Prober 2
+  name: 4x1 single probe
+  revision: 1

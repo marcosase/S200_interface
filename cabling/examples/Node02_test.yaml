@@ -1,0 +1,7 @@
+info: 
+    THIS FILE DESCRIBES NODE 02
+
+mapping:
+    Probe1: Bus1
+    Probe2: Bus2
+                

@@ -1,0 +1,289 @@
+LIV_PULSE_FPI_PULSED_500mA_pwidth2e-05_pdelay0.002_20degC:
+  LIV_ANALYSIS:
+    li_voltage_column: V_soa, V
+    li_current_column: I_soa, A
+    li_pd_column: P_PD, W
+    fwd_current_column: I_soa, A
+    fwd_voltage_column: V_soa, V
+    rs_voltage_column: V_soa, V
+    rs_current_column: I_soa, A
+    multifile: false
+    parameters:
+      ITH: ridge-ridge-FPI-ITH_PULSED#20deg-None
+      SLOPE10: ridge-ridge-FPI-SLOPE10_PULSED#20deg-None
+      SLOPE_IN_ITH_80: ridge-ridge-FPI-SLOPE_IN_ITH_80_PULSED#20deg-None
+      IPD10: ridge-ridge-FPI-IPD10_PULSED#20deg-None
+      IPD_AT_100: ridge-ridge-FPI-IPD_AT_100_PULSED#20deg-None
+      IPDMAX: ridge-ridge-FPI-IPDMAX_PULSED#20deg-None
+      SOA_I_PDMAX: ridge-ridge-FPI-SOA_I_PDMAX_PULSED#20deg-None
+      VF1: ridge-ridge-FPI-VF1_PULSED#20deg-None
+      VF100: ridge-ridge-FPI-VF100_PULSED#20deg-None
+      VF150: ridge-ridge-FPI-VF150_PULSED#20deg-None
+      VF200: ridge-ridge-FPI-VF200_PULSED#20deg-None
+      VF250: ridge-ridge-FPI-VF250_PULSED#20deg-None
+      VF290: ridge-ridge-FPI-VF300_PULSED#20deg-None
+      VFTH: ridge-ridge-FPI-VFTH_PULSED#20deg-None
+      RSTH: ridge-ridge-FPI-RSTH_PULSED#20deg-None
+      RS10: ridge-ridge-FPI-RS10_PULSED#20deg-None
+      RS80: ridge-ridge-FPI-RS80_PULSED#20deg-None
+      RS100: ridge-ridge-FPI-RS100_PULSED#20deg-None
+      RS150: ridge-ridge-FPI-RS150_PULSED#20deg-None
+      RS200: ridge-ridge-FPI-RS200_PULSED#20deg-None
+      RS250: ridge-ridge-FPI-RS250_PULSED#20deg-None
+      ORITH_80: ridge-ridge-FPI-OR_ITH_80_PULSED#20deg-None
+      OR10_80: ridge-ridge-FPI-OR10_80_PULSED#20deg-None
+      OR150_200: ridge-ridge-FPI-OR150_200_PULSED#20deg-None
+      SOA_I_MODEHOPS: ridge-ridge-FPI-SOA_I_MODEHOPS_PULSED#20deg-None
+LIV_STAIRCASE_FPI_DC_300mA_pwidth0.005_pdelay2e-05_20degC:
+  LIV_ANALYSIS:
+    li_voltage_column: V_soa, V
+    li_current_column: I_soa, A
+    li_pd_column: P_PD, W
+    fwd_current_column: I_soa, A
+    fwd_voltage_column: V_soa, V
+    rs_voltage_column: V_soa, V
+    rs_current_column: I_soa, A
+    multifile: false
+    parameters:
+      ITH: ridge-ridge-FPI-ITH_DC#20deg-None
+      SLOPE10: ridge-ridge-FPI-SLOPE10_DC#20deg-None
+      SLOPE_IN_ITH_80: ridge-ridge-FPI-SLOPE_IN_ITH_80_DC#20deg-None
+      IPD10: ridge-ridge-FPI-IPD10_DC#20deg-None
+      IPD_AT_100: ridge-ridge-FPI-IPD_AT_100_DC#20deg-None
+      IPDMAX: ridge-ridge-FPI-IPDMAX_DC#20deg-None
+      SOA_I_PDMAX: ridge-ridge-FPI-SOA_I_PDMAX_DC#20deg-None
+      VF1: ridge-ridge-FPI-VF1_DC#20deg-None
+      VF100: ridge-ridge-FPI-VF100_DC#20deg-None
+      VF150: ridge-ridge-FPI-VF150_DC#20deg-None
+      VF200: ridge-ridge-FPI-VF200_DC#20deg-None
+      VF250: ridge-ridge-FPI-VF250_DC#20deg-None
+      VF290: ridge-ridge-FPI-VF300_DC#20deg-None
+      VFTH: ridge-ridge-FPI-VFTH_DC#20deg-None
+      RSTH: ridge-ridge-FPI-RSTH_DC#20deg-None
+      RS10: ridge-ridge-FPI-RS10_DC#20deg-None
+      RS80: ridge-ridge-FPI-RS80_DC#20deg-None
+      RS100: ridge-ridge-FPI-RS100_DC#20deg-None
+      RS150: ridge-ridge-FPI-RS150_DC#20deg-None
+      RS200: ridge-ridge-FPI-RS200_DC#20deg-None
+      RS250: ridge-ridge-FPI-RS250_DC#20deg-None
+      ORITH_80: ridge-ridge-FPI-OR_ITH_80_DC#20deg-None
+      OR10_80: ridge-ridge-FPI-OR10_80_DC#20deg-None
+      OR150_200: ridge-ridge-FPI-OR150_200_DC#20deg-None
+      SOA_I_MODEHOPS: ridge-ridge-FPI-SOA_I_MODEHOPS_DC#20deg-None
+LIV_PULSE_FPI_PULSED_500mA_pwidth2e-05_pdelay0.002_40degC:
+  LIV_ANALYSIS:
+    li_voltage_column: V_soa, V
+    li_current_column: I_soa, A
+    li_pd_column: P_PD, W
+    fwd_current_column: I_soa, A
+    fwd_voltage_column: V_soa, V
+    rs_voltage_column: V_soa, V
+    rs_current_column: I_soa, A
+    multifile: false
+    parameters:
+      ITH: ridge-ridge-FPI-ITH_PULSED#40deg-None
+      SLOPE10: ridge-ridge-FPI-SLOPE10_PULSED#40deg-None
+      SLOPE_IN_ITH_80: ridge-ridge-FPI-SLOPE_IN_ITH_80_PULSED#40deg-None
+      IPD10: ridge-ridge-FPI-IPD10_PULSED#40deg-None
+      IPD_AT_100: ridge-ridge-FPI-IPD_AT_100_PULSED#40deg-None
+      IPDMAX: ridge-ridge-FPI-IPDMAX_PULSED#40deg-None
+      SOA_I_PDMAX: ridge-ridge-FPI-SOA_I_PDMAX_PULSED#40deg-None
+      VF1: ridge-ridge-FPI-VF1_PULSED#40deg-None
+      VF100: ridge-ridge-FPI-VF100_PULSED#40deg-None
+      VF150: ridge-ridge-FPI-VF150_PULSED#40deg-None
+      VF200: ridge-ridge-FPI-VF200_PULSED#40deg-None
+      VF250: ridge-ridge-FPI-VF250_PULSED#40deg-None
+      VF290: ridge-ridge-FPI-VF300_PULSED#40deg-None
+      VFTH: ridge-ridge-FPI-VFTH_PULSED#40deg-None
+      RSTH: ridge-ridge-FPI-RSTH_PULSED#40deg-None
+      RS10: ridge-ridge-FPI-RS10_PULSED#40deg-None
+      RS80: ridge-ridge-FPI-RS80_PULSED#40deg-None
+      RS100: ridge-ridge-FPI-RS100_PULSED#40deg-None
+      RS150: ridge-ridge-FPI-RS150_PULSED#40deg-None
+      RS200: ridge-ridge-FPI-RS200_PULSED#40deg-None
+      RS250: ridge-ridge-FPI-RS250_PULSED#40deg-None
+      ORITH_80: ridge-ridge-FPI-OR_ITH_80_PULSED#40deg-None
+      OR10_80: ridge-ridge-FPI-OR10_80_PULSED#40deg-None
+      OR150_200: ridge-ridge-FPI-OR150_200_PULSED#40deg-None
+      SOA_I_MODEHOPS: ridge-ridge-FPI-SOA_I_MODEHOPS_PULSED#40deg-None
+LIV_STAIRCASE_FPI_DC_300mA_pwidth0.005_pdelay2e-05_40degC:
+  LIV_ANALYSIS:
+    li_voltage_column: V_soa, V
+    li_current_column: I_soa, A
+    li_pd_column: P_PD, W
+    fwd_current_column: I_soa, A
+    fwd_voltage_column: V_soa, V
+    rs_voltage_column: V_soa, V
+    rs_current_column: I_soa, A
+    multifile: false
+    parameters:
+      ITH: ridge-ridge-FPI-ITH_DC#40deg-None
+      SLOPE10: ridge-ridge-FPI-SLOPE10_DC#40deg-None
+      SLOPE_IN_ITH_80: ridge-ridge-FPI-SLOPE_IN_ITH_80_DC#40deg-None
+      IPD10: ridge-ridge-FPI-IPD10_DC#40deg-None
+      IPD_AT_100: ridge-ridge-FPI-IPD_AT_100_DC#40deg-None
+      IPDMAX: ridge-ridge-FPI-IPDMAX_DC#40deg-None
+      SOA_I_PDMAX: ridge-ridge-FPI-SOA_I_PDMAX_DC#40deg-None
+      VF1: ridge-ridge-FPI-VF1_DC#40deg-None
+      VF100: ridge-ridge-FPI-VF100_DC#40deg-None
+      VF150: ridge-ridge-FPI-VF150_DC#40deg-None
+      VF200: ridge-ridge-FPI-VF200_DC#40deg-None
+      VF250: ridge-ridge-FPI-VF250_DC#40deg-None
+      VF290: ridge-ridge-FPI-VF300_DC#40deg-None
+      VFTH: ridge-ridge-FPI-VFTH_DC#40deg-None
+      RSTH: ridge-ridge-FPI-RSTH_DC#40deg-None
+      RS10: ridge-ridge-FPI-RS10_DC#40deg-None
+      RS80: ridge-ridge-FPI-RS80_DC#40deg-None
+      RS100: ridge-ridge-FPI-RS100_DC#40deg-None
+      RS150: ridge-ridge-FPI-RS150_DC#40deg-None
+      RS200: ridge-ridge-FPI-RS200_DC#40deg-None
+      RS250: ridge-ridge-FPI-RS250_DC#40deg-None
+      ORITH_80: ridge-ridge-FPI-OR_ITH_80_DC#40deg-None
+      OR10_80: ridge-ridge-FPI-OR10_80_DC#40deg-None
+      OR150_200: ridge-ridge-FPI-OR150_200_DC#40deg-None
+      SOA_I_MODEHOPS: ridge-ridge-FPI-SOA_I_MODEHOPS_DC#40deg-None
+LIV_PULSE_FPI_PULSED_500mA_pwidth2e-05_pdelay0.002_55degC:
+  LIV_ANALYSIS:
+    li_voltage_column: V_soa, V
+    li_current_column: I_soa, A
+    li_pd_column: P_PD, W
+    fwd_current_column: I_soa, A
+    fwd_voltage_column: V_soa, V
+    rs_voltage_column: V_soa, V
+    rs_current_column: I_soa, A
+    multifile: false
+    parameters:
+      ITH: ridge-ridge-FPI-ITH_PULSED#55deg-None
+      SLOPE10: ridge-ridge-FPI-SLOPE10_PULSED#55deg-None
+      SLOPE_IN_ITH_80: ridge-ridge-FPI-SLOPE_IN_ITH_80_PULSED#55deg-None
+      IPD10: ridge-ridge-FPI-IPD10_PULSED#55deg-None
+      IPD_AT_100: ridge-ridge-FPI-IPD_AT_100_PULSED#55deg-None
+      IPDMAX: ridge-ridge-FPI-IPDMAX_PULSED#55deg-None
+      SOA_I_PDMAX: ridge-ridge-FPI-SOA_I_PDMAX_PULSED#55deg-None
+      VF1: ridge-ridge-FPI-VF1_PULSED#55deg-None
+      VF100: ridge-ridge-FPI-VF100_PULSED#55deg-None
+      VF150: ridge-ridge-FPI-VF150_PULSED#55deg-None
+      VF200: ridge-ridge-FPI-VF200_PULSED#55deg-None
+      VF250: ridge-ridge-FPI-VF250_PULSED#55deg-None
+      VF290: ridge-ridge-FPI-VF300_PULSED#55deg-None
+      VFTH: ridge-ridge-FPI-VFTH_PULSED#55deg-None
+      RSTH: ridge-ridge-FPI-RSTH_PULSED#55deg-None
+      RS10: ridge-ridge-FPI-RS10_PULSED#55deg-None
+      RS80: ridge-ridge-FPI-RS80_PULSED#55deg-None
+      RS100: ridge-ridge-FPI-RS100_PULSED#55deg-None
+      RS150: ridge-ridge-FPI-RS150_PULSED#55deg-None
+      RS200: ridge-ridge-FPI-RS200_PULSED#55deg-None
+      RS250: ridge-ridge-FPI-RS250_PULSED#55deg-None
+      ORITH_80: ridge-ridge-FPI-OR_ITH_80_PULSED#55deg-None
+      OR10_80: ridge-ridge-FPI-OR10_80_PULSED#55deg-None
+      OR150_200: ridge-ridge-FPI-OR150_200_PULSED#55deg-None
+      SOA_I_MODEHOPS: ridge-ridge-FPI-SOA_I_MODEHOPS_PULSED#55deg-None
+LIV_STAIRCASE_FPI_DC_300mA_pwidth0.005_pdelay2e-05_55degC:
+  LIV_ANALYSIS:
+    li_voltage_column: V_soa, V
+    li_current_column: I_soa, A
+    li_pd_column: P_PD, W
+    fwd_current_column: I_soa, A
+    fwd_voltage_column: V_soa, V
+    rs_voltage_column: V_soa, V
+    rs_current_column: I_soa, A
+    multifile: false
+    parameters:
+      ITH: ridge-ridge-FPI-ITH_DC#55deg-None
+      SLOPE10: ridge-ridge-FPI-SLOPE10_DC#55deg-None
+      SLOPE_IN_ITH_80: ridge-ridge-FPI-SLOPE_IN_ITH_80_DC#55deg-None
+      IPD10: ridge-ridge-FPI-IPD10_DC#55deg-None
+      IPD_AT_100: ridge-ridge-FPI-IPD_AT_100_DC#55deg-None
+      IPDMAX: ridge-ridge-FPI-IPDMAX_DC#55deg-None
+      SOA_I_PDMAX: ridge-ridge-FPI-SOA_I_PDMAX_DC#55deg-None
+      VF1: ridge-ridge-FPI-VF1_DC#55deg-None
+      VF100: ridge-ridge-FPI-VF100_DC#55deg-None
+      VF150: ridge-ridge-FPI-VF150_DC#55deg-None
+      VF200: ridge-ridge-FPI-VF200_DC#55deg-None
+      VF250: ridge-ridge-FPI-VF250_DC#55deg-None
+      VF290: ridge-ridge-FPI-VF300_DC#55deg-None
+      VFTH: ridge-ridge-FPI-VFTH_DC#55deg-None
+      RSTH: ridge-ridge-FPI-RSTH_DC#55deg-None
+      RS10: ridge-ridge-FPI-RS10_DC#55deg-None
+      RS80: ridge-ridge-FPI-RS80_DC#55deg-None
+      RS100: ridge-ridge-FPI-RS100_DC#55deg-None
+      RS150: ridge-ridge-FPI-RS150_DC#55deg-None
+      RS200: ridge-ridge-FPI-RS200_DC#55deg-None
+      RS250: ridge-ridge-FPI-RS250_DC#55deg-None
+      ORITH_80: ridge-ridge-FPI-OR_ITH_80_DC#55deg-None
+      OR10_80: ridge-ridge-FPI-OR10_80_DC#55deg-None
+      OR150_200: ridge-ridge-FPI-OR150_200_DC#55deg-None
+      SOA_I_MODEHOPS: ridge-ridge-FPI-SOA_I_MODEHOPS_DC#55deg-None
+LIV_PULSE_FPI_PULSED_500mA_pwidth2e-05_pdelay0.002_80degC:
+  LIV_ANALYSIS:
+    li_voltage_column: V_soa, V
+    li_current_column: I_soa, A
+    li_pd_column: P_PD, W
+    fwd_current_column: I_soa, A
+    fwd_voltage_column: V_soa, V
+    rs_voltage_column: V_soa, V
+    rs_current_column: I_soa, A
+    multifile: false
+    parameters:
+      ITH: ridge-ridge-FPI-ITH_PULSED#80deg-None
+      SLOPE10: ridge-ridge-FPI-SLOPE10_PULSED#80deg-None
+      SLOPE_IN_ITH_80: ridge-ridge-FPI-SLOPE_IN_ITH_80_PULSED#80deg-None
+      IPD10: ridge-ridge-FPI-IPD10_PULSED#80deg-None
+      IPD_AT_100: ridge-ridge-FPI-IPD_AT_100_PULSED#80deg-None
+      IPDMAX: ridge-ridge-FPI-IPDMAX_PULSED#80deg-None
+      SOA_I_PDMAX: ridge-ridge-FPI-SOA_I_PDMAX_PULSED#80deg-None
+      VF1: ridge-ridge-FPI-VF1_PULSED#80deg-None
+      VF100: ridge-ridge-FPI-VF100_PULSED#80deg-None
+      VF150: ridge-ridge-FPI-VF150_PULSED#80deg-None
+      VF200: ridge-ridge-FPI-VF200_PULSED#80deg-None
+      VF250: ridge-ridge-FPI-VF250_PULSED#80deg-None
+      VF290: ridge-ridge-FPI-VF300_PULSED#80deg-None
+      VFTH: ridge-ridge-FPI-VFTH_PULSED#80deg-None
+      RSTH: ridge-ridge-FPI-RSTH_PULSED#80deg-None
+      RS10: ridge-ridge-FPI-RS10_PULSED#80deg-None
+      RS80: ridge-ridge-FPI-RS80_PULSED#80deg-None
+      RS100: ridge-ridge-FPI-RS100_PULSED#80deg-None
+      RS150: ridge-ridge-FPI-RS150_PULSED#80deg-None
+      RS200: ridge-ridge-FPI-RS200_PULSED#80deg-None
+      RS250: ridge-ridge-FPI-RS250_PULSED#80deg-None
+      ORITH_80: ridge-ridge-FPI-OR_ITH_80_PULSED#80deg-None
+      OR10_80: ridge-ridge-FPI-OR10_80_PULSED#80deg-None
+      OR150_200: ridge-ridge-FPI-OR150_200_PULSED#80deg-None
+      SOA_I_MODEHOPS: ridge-ridge-FPI-SOA_I_MODEHOPS_PULSED#80deg-None
+LIV_STAIRCASE_FPI_DC_300mA_pwidth0.005_pdelay2e-05_80degC:
+  LIV_ANALYSIS:
+    li_voltage_column: V_soa, V
+    li_current_column: I_soa, A
+    li_pd_column: P_PD, W
+    fwd_current_column: I_soa, A
+    fwd_voltage_column: V_soa, V
+    rs_voltage_column: V_soa, V
+    rs_current_column: I_soa, A
+    multifile: false
+    parameters:
+      ITH: ridge-ridge-FPI-ITH_DC#80deg-None
+      SLOPE10: ridge-ridge-FPI-SLOPE10_DC#80deg-None
+      SLOPE_IN_ITH_80: ridge-ridge-FPI-SLOPE_IN_ITH_80_DC#80deg-None
+      IPD10: ridge-ridge-FPI-IPD10_DC#80deg-None
+      IPD_AT_100: ridge-ridge-FPI-IPD_AT_100_DC#80deg-None
+      IPDMAX: ridge-ridge-FPI-IPDMAX_DC#80deg-None
+      SOA_I_PDMAX: ridge-ridge-FPI-SOA_I_PDMAX_DC#80deg-None
+      VF1: ridge-ridge-FPI-VF1_DC#80deg-None
+      VF100: ridge-ridge-FPI-VF100_DC#80deg-None
+      VF150: ridge-ridge-FPI-VF150_DC#80deg-None
+      VF200: ridge-ridge-FPI-VF200_DC#80deg-None
+      VF250: ridge-ridge-FPI-VF250_DC#80deg-None
+      VF290: ridge-ridge-FPI-VF300_DC#80deg-None
+      VFTH: ridge-ridge-FPI-VFTH_DC#80deg-None
+      RSTH: ridge-ridge-FPI-RSTH_DC#80deg-None
+      RS10: ridge-ridge-FPI-RS10_DC#80deg-None
+      RS80: ridge-ridge-FPI-RS80_DC#80deg-None
+      RS100: ridge-ridge-FPI-RS100_DC#80deg-None
+      RS150: ridge-ridge-FPI-RS150_DC#80deg-None
+      RS200: ridge-ridge-FPI-RS200_DC#80deg-None
+      RS250: ridge-ridge-FPI-RS250_DC#80deg-None
+      ORITH_80: ridge-ridge-FPI-OR_ITH_80_DC#80deg-None
+      OR10_80: ridge-ridge-FPI-OR10_80_DC#80deg-None
+      OR150_200: ridge-ridge-FPI-OR150_200_DC#80deg-None
+      SOA_I_MODEHOPS: ridge-ridge-FPI-SOA_I_MODEHOPS_DC#80deg-None
+---

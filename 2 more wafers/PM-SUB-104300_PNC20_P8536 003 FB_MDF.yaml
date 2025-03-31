@@ -1,0 +1,179 @@
+date_and_version:
+  author: EHN
+  date: 17-03-2025
+  email: erik.den.haan@smartphotonics.nl
+  from_pc: SMP-NB127
+  mdf_version: 1.0.0
+  program_version: 0.0.1
+  time: 14.57.14
+measurement_settings:
+  LIV_PULSE_FPI_PULSED_500mA_pwidth2e-05_pdelay0.002_20degC:
+    T_set: 20
+    building_blocks:
+      Photodetector:
+        ground_pad: COM
+        measure_pad: PAD2
+        set_value: -5
+        source_pad: PAD2
+      SOA:
+        end_value: 0.5
+        ground_pad: COM
+        measure_pad: PAD1
+        nplc: null
+        pulse_delay: 0.002
+        pulse_mode: PULS
+        pulse_width: 2.0e-05
+        source_pad: PAD1
+        start_value: 0
+        step_size: 0.0001
+    description: Perform LIV measurement
+    meas_module: LIV_PULSE
+  LIV_PULSE_FPI_PULSED_500mA_pwidth2e-05_pdelay0.002_40degC:
+    T_set: 40
+    building_blocks:
+      Photodetector:
+        ground_pad: COM
+        measure_pad: PAD2
+        set_value: -5
+        source_pad: PAD2
+      SOA:
+        end_value: 0.5
+        ground_pad: COM
+        measure_pad: PAD1
+        nplc: null
+        pulse_delay: 0.002
+        pulse_mode: PULS
+        pulse_width: 2.0e-05
+        source_pad: PAD1
+        start_value: 0
+        step_size: 0.0001
+    description: Perform LIV measurement
+    meas_module: LIV_PULSE
+  LIV_PULSE_FPI_PULSED_500mA_pwidth2e-05_pdelay0.002_55degC:
+    T_set: 55
+    building_blocks:
+      Photodetector:
+        ground_pad: COM
+        measure_pad: PAD2
+        set_value: -5
+        source_pad: PAD2
+      SOA:
+        end_value: 0.5
+        ground_pad: COM
+        measure_pad: PAD1
+        nplc: null
+        pulse_delay: 0.002
+        pulse_mode: PULS
+        pulse_width: 2.0e-05
+        source_pad: PAD1
+        start_value: 0
+        step_size: 0.0001
+    description: Perform LIV measurement
+    meas_module: LIV_PULSE
+  LIV_PULSE_FPI_PULSED_500mA_pwidth2e-05_pdelay0.002_80degC:
+    T_set: 80
+    building_blocks:
+      Photodetector:
+        ground_pad: COM
+        measure_pad: PAD2
+        set_value: -5
+        source_pad: PAD2
+      SOA:
+        end_value: 0.5
+        ground_pad: COM
+        measure_pad: PAD1
+        nplc: null
+        pulse_delay: 0.002
+        pulse_mode: PULS
+        pulse_width: 2.0e-05
+        source_pad: PAD1
+        start_value: 0
+        step_size: 0.0001
+    description: Perform LIV measurement
+    meas_module: LIV_PULSE
+  LIV_STAIRCASE_FPI_DC_300mA_pwidth0.005_pdelay2e-05_20degC:
+    T_set: 20
+    building_blocks:
+      Photodetector:
+        ground_pad: COM
+        measure_pad: PAD2
+        set_value: -5
+        source_pad: PAD2
+      SOA:
+        end_value: 0.3
+        ground_pad: COM
+        measure_pad: PAD1
+        nplc: null
+        pulse_delay: 2.0e-05
+        pulse_mode: DC
+        pulse_width: 0.005
+        source_pad: PAD1
+        start_value: 0
+        step_size: 0.0001
+    description: Perform LIV measurement
+    meas_module: LIV_PULSE
+  LIV_STAIRCASE_FPI_DC_300mA_pwidth0.005_pdelay2e-05_40degC:
+    T_set: 40
+    building_blocks:
+      Photodetector:
+        ground_pad: COM
+        measure_pad: PAD2
+        set_value: -5
+        source_pad: PAD2
+      SOA:
+        end_value: 0.3
+        ground_pad: COM
+        measure_pad: PAD1
+        nplc: null
+        pulse_delay: 2.0e-05
+        pulse_mode: DC
+        pulse_width: 0.005
+        source_pad: PAD1
+        start_value: 0
+        step_size: 0.0001
+    description: Perform LIV measurement
+    meas_module: LIV_PULSE
+  LIV_STAIRCASE_FPI_DC_300mA_pwidth0.005_pdelay2e-05_55degC:
+    T_set: 55
+    building_blocks:
+      Photodetector:
+        ground_pad: COM
+        measure_pad: PAD2
+        set_value: -5
+        source_pad: PAD2
+      SOA:
+        end_value: 0.3
+        ground_pad: COM
+        measure_pad: PAD1
+        nplc: null
+        pulse_delay: 2.0e-05
+        pulse_mode: DC
+        pulse_width: 0.005
+        source_pad: PAD1
+        start_value: 0
+        step_size: 0.0001
+    description: Perform LIV measurement
+    meas_module: LIV_PULSE
+  LIV_STAIRCASE_FPI_DC_300mA_pwidth0.005_pdelay2e-05_80degC:
+    T_set: 80
+    building_blocks:
+      Photodetector:
+        ground_pad: COM
+        measure_pad: PAD2
+        set_value: -5
+        source_pad: PAD2
+      SOA:
+        end_value: 0.3
+        ground_pad: COM
+        measure_pad: PAD1
+        nplc: null
+        pulse_delay: 2.0e-05
+        pulse_mode: DC
+        pulse_width: 0.005
+        source_pad: PAD1
+        start_value: 0
+        step_size: 0.0001
+    description: Perform LIV measurement
+    meas_module: LIV_PULSE
+physical_parameters:
+  PL_wavelength: 1550

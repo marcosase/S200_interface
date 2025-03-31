@@ -1,0 +1,4 @@
+info: Bus lines => connection cables
+mapping:
+  Bus1: Cable1
+  Bus2: Cable2

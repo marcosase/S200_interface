@@ -1,0 +1,4 @@
+info: 'Cabling configuration: from Probecard buses to cables'
+mapping:
+  Bus10: Cable2
+  Bus20: Cable1
