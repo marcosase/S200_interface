@@ -34,6 +34,7 @@ from utils.identify import Identify
 from utils.misc  import generate_session_ID, get_git_commit_id, get_probes_folder, get_jobs_folder, get_data_folder,get_batch_data_folder, get_backup_folder
 from utils.utils import boolean_operation, select_bar
 
+
 #Real-time analysis tools
 from realtime_analysis.quick_analysis import QuickAnalysis
 # automated data extraction messageque support
@@ -45,6 +46,8 @@ class Ui(QtWidgets.QMainWindow):
 	def __init__(self):
 		 ###definitions from core.py
 		#self.fe = Frontend()
+		pg.setConfigOption('background', 'w') #before loading widget
+		pg.setConfigOption('foreground', 'k')
 		self.start_time = time.time()
 		self.alignment = AlignSample()
 		self.loading = LoadSample()
@@ -246,7 +249,6 @@ class Ui(QtWidgets.QMainWindow):
 		self.send_command(b'LDC\n')
 		self.send_command(b'LDPH 0\n') #Go to local and the asks the user to perform a touchdown
 		self.wait_ser()
-		print('Touch Down Done!!!!!!')
 		xy = self.send_command(b'PSXY\n')
 		x3 = float(re.findall("-?\d+", xy)[-2])
 		y3 = float(re.findall("-?\d+", xy)[-1])
@@ -265,7 +267,6 @@ class Ui(QtWidgets.QMainWindow):
 		
 		self.send_command(b'LDPH 0\n') #Go to local and the asks the user to perform a touchdown
 		self.wait_ser()
-		print('Touch Down Done!!!!!!')
 		xy = self.send_command(b'PSXY\n')
 		x4 = float(re.findall("-?\d+", xy)[-2])
 		y4 = float(re.findall("-?\d+", xy)[-1])
@@ -284,7 +285,6 @@ class Ui(QtWidgets.QMainWindow):
 		
 		self.send_command(b'LDPH 0\n') #Go to local and the asks the user to perform a touchdown
 		self.wait_ser()
-		print('Touch Down Done!!!!!!')
 		xy = self.send_command(b'PSXY\n')
 		x4 = float(re.findall("-?\d+", xy)[-2])
 		y4 = float(re.findall("-?\d+", xy)[-1])
@@ -326,8 +326,6 @@ class Ui(QtWidgets.QMainWindow):
 		
 		self.update_combo_box(self.jobs_combo_box, job_folder_selection)
 		time.sleep(0.2)
-		print('################')
-		print(filename)
 		with open(filename, 'r') as f:
 			yaml_open = yaml.safe_load(f)
 		acq_dict = yaml_open['acquisition settings']
@@ -397,7 +395,7 @@ class Ui(QtWidgets.QMainWindow):
 		bar3 = self.check_bar3.text()
 		bar4 = self.check_bar4.text()
 		bar5 = self.check_bar4.text()
-		prog_arr = ['bar1','bar2','bar3','bar4','bar5']
+		prog_arr = ['bar','bar','bar','bar','bar']
 		stat_arr = [stat_bar1, stat_bar2, stat_bar3, stat_bar4, stat_bar5]
 		
 		user_name_arr  = [self.op_id.currentText(),
@@ -440,14 +438,16 @@ class Ui(QtWidgets.QMainWindow):
 				self.start_jobs_btn.repaint()
 				time.sleep(1)
 		for job, user, x_td, y_td, check_bar, start_index, end_index, prog in  zip(job_file_arr, user_name_arr, x_td_arr, y_td_arr,stat_arr, cell_index_start, cell_index_end, prog_arr):
+			print('############################################')
+			print(job, user, x_td, y_td, check_bar, start_index, end_index, prog)
+			print('############################################')
 			#before starting, move it to the center of the wafer
 			if check_bar:
-				self.go_probe()
 				self.start_jobs_btn.setStyleSheet('background-color: rgb(255, 255, 0)')
 				self.start_jobs_btn.setText(f"{prog} in progress")
 				self.start_jobs_btn.repaint()
 				self.run(job, user, x_td, y_td, check_bar, start_index, end_index, prog)
-			self.send_command(b'LDB\n')
+			#self.send_command(b'LDB\n')
 		self.reset_start_btn()
 	def reset_start_btn(self):
 		self.start_jobs_btn.setStyleSheet('background-color: rgb(85, 255, 127)')
@@ -583,22 +583,34 @@ class Ui(QtWidgets.QMainWindow):
 		self.mp = MeasPlan.from_files(self.ccf_fullpath,self.mmf_fullpath,self.mdf_fullpath,self.probes_fullpath)
 		self.probename=self.mp.probes.get_probe_name()
 		if self.job.get_sample_type=='bar': # select a sub-samples of cells from MMF/CCF
-			self.first_cell, self.last_cell =   start_index, end_index
+			self.select_sample_v2(start_index, end_index)
 		else:
-			self.first_cell, self.last_cell =   start_index, end_index
+			self.first_cell, self.last_cell = self.mp.get_cell_names[0], self.mp.get_cell_names[-1]
 		# rescale all cell positions to the first cell one, and invert the obtained values
 		self.mp.rescale_cell_positions_to_first_cell(first_cell=self.first_cell)
 	def run(self,job, user, x_td, y_td, check_bar, start_index, end_index, prog):
 		"""Runs the core
 		"""
 		self.init_process(job, user, x_td, y_td, check_bar, start_index, end_index, prog)
-		self.start_alignment_process()
-		self.match_coordinates()
+		try:
+			self.eq.prober.move_to_probing_zone_center()
+			#self.eq.prober.go_to_xy(x_td,y_td) # move to the touchdown position 
+			print('Moving Z to optimal touchdown')
+			time.sleep(2)
+			self.eq.prober.move_chuck_gross_up()
+			
+			self.match_coordinates(x_td, y_td)
+		except Exception as error:
+			# handle the exception
+			print("An exception occurred:", error) # An exception occurred: division by zero
+			self.reset_start_btn()
+			self.end()
 		t,s=generate_session_ID()
 		self.session_start_time=s.strip(t+'_')
-		self.perform_measurement_loop()
+		self.perform_measurement_loop(prog)
 		self.daq_successful = True
-		
+		self.end()
+		self.post_acquisition_operations()
 	def init_process(self,job, user, x_td, y_td, check_bar, start_index, end_index, prog):
 		"""Initializes the process:
 				Identifies the operator
@@ -622,11 +634,12 @@ class Ui(QtWidgets.QMainWindow):
 		if self.eq.prober.get_ID() == 'Pegasus S200:LM,Lock':
 			self.loading.close_door()
 			self.loading.lock_door()
-	def select_sample_v2(self):
+	def select_sample_v2(self, start_index, end_index):
 		"""Asks the user to select the north-most and south-most cell of the
 		sample.
 		"""
-		self.first_cell, self.last_cell = select_bar()
+		#self.first_cell, self.last_cell = select_bar()
+		self.first_cell, self.last_cell = start_index, end_index
 		self.mp.slice_cells_sample(first_cell=self.first_cell, last_cell=self.last_cell)
 	def slice_cell_files(self):
 		"""Slices the Measurement Matrix File and Cell Coordinate file based
@@ -639,7 +652,6 @@ class Ui(QtWidgets.QMainWindow):
 		"""Align the sample
 		"""
 		self.alignment.start_alignment_process_(self.eq,first_cell=self.first_cell)
-		#print ('Initial xy:',self.alignment.x0,self.alignment.y0)
 	def match_coordinates(self, x_td, y_td):
 		"""Matches the wafer coordinates with the tool coordinates
 		"""
@@ -679,13 +691,9 @@ class Ui(QtWidgets.QMainWindow):
 		If they are different, it moves the prober to relative x,y.
 		"""
 		x, y = self.mp.get_cell_position(cell_name=cl)
-
 		self.current_x, self.current_y = self.eq.prober.get_chuck_xy()
-		print('\nCurrent xy:',self.current_x, self.current_y)
-
 		## Is the prober there already?
 		if (int(self.current_x), int(self.current_y)) != (int(x),int(y)):
-			print('moving from x{} y{} to x{} y{}'.format(self.current_x,self.current_y,x,y))
 			self.eq.prober.move_chuck_fine_down()
 			# check edge sensor status after "Fine down" movement
 			time.sleep(0.2)
@@ -695,12 +703,6 @@ class Ui(QtWidgets.QMainWindow):
 				print(message)
 				logger.critical(message)
 				raise ProberError("EdgeSensorFineDown")                    
-			#measure ES voltage
-			#es_voltage=self.probemonitor() # commented by Marcos microcontroller is dead
-			#self.es_checker(es_voltage) # commented by Marcos microcontroller is dead
-			# print("{} ES_CDW={}".format(cell_id, es_voltage))
-			
-			#self.logfile(f"{self.probename},{cl},ES_CDW,{es_voltage}\n") # commented by Marcos microcontroller is dead
 			self.eq.prober.go_to_xy(x,y)
 	def perform_measurement_loop(self, progress_bar): # ABI: this function is aimed at replacing init_measurement_loop()
 		"""This method is responsible for executing the measurement loop.
@@ -712,12 +714,11 @@ class Ui(QtWidgets.QMainWindow):
 		cnt = 0
 		progress_bar = r'{}'.format(progress_bar)
 		logger.info('Starting the measurement loop...')
-
 		if self.meas_procedure == 'die_wise': # all measurements on one die in one go
 			start_time = time.time()
 			work_size = len(self.mp.get_cell_names)
+			print(f'********************{work_size}********************')
 			for cell in self.mp.get_cell_names:
-				
 				self.go_to_cell_v2(cl=cell)
 				for ms in self.mp.get_meas_plan_for_cell(cell_name=cell):
 					if ms == 'PICTURE':
@@ -726,18 +727,18 @@ class Ui(QtWidgets.QMainWindow):
 						self.perform_touch_down(cell=cell)                         
 						self.perform_measurement(ms=ms, cl=cell)
 				cnt = cnt+1
-				progress = round( 100*(1-(work_size-cnt)/work_size), 1)
+				progress = int(round( 100*(1-(work_size-cnt)/work_size), 1))
+				exec("self." + progress_bar + ".setValue(progress)")
 		if self.meas_procedure == 'meas_wise': # each measurement on all dies, before passing to next measurement
+			start_time = time.time()
 			for ms in self.mp.planned_meas:
 				work_size = len(self.mp.planned_meas)
-				progress = round( 100*(1-(work_size-cnt)/work_size), 1)
-				#for ms in tqdm(self.mp.planned_meas, bar_format='{l_bar}%s{bar:75}%s{r_bar}' % (Fore.YELLOW, Fore.RESET),desc='Measurement Progress'):
-
-				#for cell in self.mp.get_cells_for_meas_plan(meas_name=ms):
+				print(f'********************{work_size}*************planned_meas')
+				progress = int(round( 100*(1-(work_size-cnt)/work_size), 1))
+				exec("self." + progress_bar + ".setValue(progress)")
 				for cell in self.mp.get_cells_for_meas_plan(meas_name=ms):
 					self.go_to_cell_v2(cl=cell)
 					if ms == 'PICTURE':
-					
 						self.take_picture(picture_name='_'.join([self.wafer, self.batch, cell, ms])) 
 					else:
 						self.perform_touch_down(cell=cell)
@@ -763,6 +764,7 @@ class Ui(QtWidgets.QMainWindow):
 		time.sleep(1)
 		'''
 	def perform_touch_down(self, cell): # ABI: new function, dedicated to perform the probecard touch down once the cell is in position
+		self.eq.prober.go_to_z(9100)
 		edge_sensor_open = self.eq.prober.get_edge_sensor_status()
 		if(not edge_sensor_open and not self.eq.prober.is_chuck_in_fineup()): # this line prevents to perform a "fine up" if chuck is already in fine up position
 			self.eq.prober.move_chuck_fine_up()
@@ -773,17 +775,7 @@ class Ui(QtWidgets.QMainWindow):
 			logger.info('Cell {} successfully probed: {}'.format(cell, edge_sensor_open))
 			td_date, td_time = [datetime.datetime.now().strftime('%Y.%m.%d'), datetime.datetime.now().strftime('%H.%M.%S')]
 			self.touch_down_recorder.append([cell, z, td_date, td_time, edge_sensor_open])
-			
-			#probe monitor 
-			#es_voltage=self.probemonitor() #Commented by marcos  microcontroler is dead
-			# print("{} ES_CUP={}".format(cell_id,es_voltage))
-			# self.logfile("{},ES_CUP,{}\n".format(cell,es_voltage))
-			#self.logfile(f"{self.probename},{cell},ES_CUP,{es_voltage}\n")
-			
 			zup=self.eq.prober.get_chuck_z()
-			# print("{},Z_at_CUP,{}\n".format(cell_id,zup))
-			
-			# self.logfile("{},Z_at_CUP,{}\n".format(cell,zup))
 			self.logfile(f"{self.probename},{cell},Z_at_CUP,{zup}\n")
 	def perform_measurement(self, ms, cl):
 		"""Sets the measurement plan.
@@ -806,8 +798,6 @@ class Ui(QtWidgets.QMainWindow):
 		self.m.set_plan(meas_plan = ms) # Replaced with self.m.get_plans_from_mdf()
 		self.m.plan = ms
 		self.m.plan_settings = self.mp.get_settings_for_measurement(meas_name=ms) # broadcast the plan setting dict to measurement_handler
-		
-		
 		print('pre-set T_set')
 		T_set = self.m.get_plan_setting(setting='T_set')
 		print(' perform_measurement method sets temperature = to:', T_set)
@@ -819,10 +809,16 @@ class Ui(QtWidgets.QMainWindow):
 		while not self.eq.tec.is_stable():
 			time.sleep(1)
 			print('tec status: Not stable, T={}'.format(self.eq.tec.get_temperature()))
-			
-
+		print('######################')
+		print('Performing Measurement')
+		time.sleep(.1)
+		print('######################')
 		# Measure
-		self.m.start_measurement()
+		val_x,val_y = self.m.start_measurement()
+		print(val_x, val_y)
+		p1 = self.plotter.plotItem
+		p1.plot(val_x, val_y, symbol='o', pen=(np.random.randint(0,255),np.random.randint(0,255),np.random.randint(0,255)), symbolPen='b', symbolBrush=(np.random.randint(0,255),np.random.randint(0,255),np.random.randint(0,255)), symbolSize=8, name='Test')
+
 	def identify(self, user):
 		'''Identify the operator
 		'''
@@ -933,7 +929,7 @@ class Ui(QtWidgets.QMainWindow):
 		
 		#send telegram message it is done
 
-		msg = "{}: Batch {} Wafer {} bar {} to {} finished".format(self.tool_id,self.batch,self.wafer,self.first_cell,self.last_cell)
+		msg = "Measurement finised: "
 		
 		operator_telegram={
 			'EHN':'728365163',

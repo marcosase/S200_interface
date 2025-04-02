@@ -11,6 +11,7 @@ v0.0.2 - Sep 27th, 2018 - Added method unload_sample
 v0.0.3 - Apr  5th, 2019 - Modified method unload_sample
 """
 
+
 class LoadSample:
 
 	def __init__(self):
@@ -23,6 +24,8 @@ class LoadSample:
 		"""
 		"""
 		print('passed prober instance')
+		
+		
 		self.eq=eq
 		self.p=self.eq.prober
 
@@ -62,4 +65,3 @@ class LoadSample:
 		print ('\nUnloading sample\n')
 		self.p.set_light(on=False)
 		self.p.move_to_manual_load_position()
-		#self.p.set_chuck_vacuum(on=False)	#AB: restore this line if you want to switch off vacuum
