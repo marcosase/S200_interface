@@ -86,11 +86,12 @@ class Ui(QtWidgets.QMainWindow):
 		self.btn_go_td4.clicked.connect(self.go_td4)
 		##
 		self.jobs_combo_box.currentTextChanged.connect(self.update_info)
-		
+	
 		self.show() # Show the GUI
 		self.bar.setValue(0)
 		self.write_values()
 		self.showMaximized()
+					
 	def gross_up(self):
 		'''Method to do the gross up'''
 		self.send_command(b'GUP\n')
@@ -783,6 +784,7 @@ class Ui(QtWidgets.QMainWindow):
 		   Checks the temperature.
 		   Starts the measurement.
 		"""
+		
 		self.m.tool_id            = self.tool_id
 		self.m.session_id         = self.session_id
 		self.m.operator           = self.operator
@@ -813,12 +815,80 @@ class Ui(QtWidgets.QMainWindow):
 		print('Performing Measurement')
 		time.sleep(.1)
 		print('######################')
-		# Measure
-		val_x,val_y = self.m.start_measurement()
-		print(val_x, val_y)
-		p1 = self.plotter.plotItem
-		p1.plot(val_x, val_y, symbol='o', pen=(np.random.randint(0,255),np.random.randint(0,255),np.random.randint(0,255)), symbolPen='b', symbolBrush=(np.random.randint(0,255),np.random.randint(0,255),np.random.randint(0,255)), symbolSize=8, name='Test')
+		#Measure
+		val_x, val_y = self.m.start_measurement(False)
+		volt = val_y[:, 0]
+		pcurr = val_y[:, 1]
+		power = val_y[:, 2]
+		self.plotter.clear()
+		print('Plotting data...')
+		t1 = (np.random.randint(0,255),np.random.randint(0,255),np.random.randint(0,255))
+		t2 = (np.random.randint(0,255),np.random.randint(0,255),np.random.randint(0,255))
+		tfill = (np.random.randint(0,255),np.random.randint(0,255),np.random.randint(0,255))
 
+		color1 = '#%02x%02x%02x' % t1
+		color2 = '#%02x%02x%02x' % t2
+
+		x_label = 'Current(A)'
+		y_label = 'voltage(V)'
+		y2_label = 'Power(W)'	
+		title = 'LIV'
+		self.set_graph(title, x_label, y_label)
+
+		p1 = self.plotter.plotItem
+		p1.setLabels(left = y_label)
+		
+		#Create a new ViewBox
+		p2 = pg.ViewBox()
+		p1.showAxis('right')
+		p1.scene().addItem(p2)
+		p1.getAxis('right').linkToView(p2)
+		p2.setXLink(p1)
+		p1.getAxis('left').setLabel(y_label, color=color1)
+		p1.getAxis('right').setLabel(y2_label, color=color2)
+		p1.getAxis('bottom').setLabel(x_label)        
+		self.updateViews()
+		p2.setGeometry(p1.vb.sceneBoundingRect())
+		p2.linkedViewChanged(p1.vb, p2.XAxis)
+		p1.vb.sigResized.connect(self.updateViews)
+
+		p1.plot(val_x, volt, symbol='o', pen=t1, symbolPen='b', symbolBrush = tfill, symbolSize=8, name='_'.join(file_open[0].split('_')[1:3]))
+
+		plot2 = pg.ScatterPlotItem(val_x, power, symbol='o', pen = t2, symbolPen = 'b',symbolBrush = tfill, symbolSize = 8)
+
+		p2.addItem(plot2)
+		
+		#self.plotter.plot(val_x, power, symbol='o', pen=(np.random.randint(0,255),np.random.randint(0,255),np.random.randint(0,255)), symbolPen='b', symbolBrush=(np.random.randint(0,255),np.random.randint(0,255),np.random.randint(0,255)), symbolSize=8, name='Test')
+		pg.QtGui.QGuiApplication.processEvents()
+		
+		
+	def set_graph(self, titulo, eixo_x, eixo_y):
+		p1 = self.plotter
+		# THESE PARAMETERS ARE FOR RESIZING AND MOVING THE POSITION OF THE LEGEND BOX
+		# I INCREASED X-SIZE AND Y-OFFSET
+		p1.addLegend(size=(110, 0) ,offset=(10, 10))
+		p1.setTitle('<font size="2">Active Power</font>') #,**titleStyle)
+		a = p1.getAxis('top')
+		a.showValues='false'
+		a = p1.getAxis('bottom')
+		p1.showAxis('left')
+		a = p1.getAxis('left')
+		p1.showAxis('right')
+		a = p1.getAxis('right')
+		p1.showLabel('left', show=True)
+		p1.showLabel('right', show=True)
+		p1.showGrid(x=True, y=True, alpha=0.1)
+		titleStyle = {'color': '#000', 'size': '18pt'}
+		p1.setTitle(titulo, **titleStyle)
+		# SET AND CHANGE THE FONT SIZE AND COLOR OF THE PLOT AXIS LABEL
+		labelStyle = {'color': '#000', 'font-size': '16px'}
+		p1.setLabel('bottom', eixo_x, **labelStyle)
+		p1.setLabel('left', eixo_y, **labelStyle)
+		p1.setLabel('top',)
+		
+		
+		
+						
 	def identify(self, user):
 		'''Identify the operator
 		'''
