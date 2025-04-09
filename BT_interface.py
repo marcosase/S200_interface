@@ -71,9 +71,9 @@ class Ui(QtWidgets.QMainWindow):
 		self.btn_touch2.clicked.connect(self.touch_bar2)
 		self.btn_touch3.clicked.connect(self.touch_bar3)
 		self.btn_touch4.clicked.connect(self.touch_bar4)
+		self.btn_touch5.clicked.connect(self.touch_bar5)
 		#Method to select job files for the wafers and show it in the dialog
 		self.btn_job.clicked.connect(self.select_job)
-		
 		self.start_jobs_btn.clicked.connect(self.start_jobs)
 		self.unload_btn.clicked.connect(self.move_unload)
 		self.probe_btn.clicked.connect(self.go_probe)
@@ -84,6 +84,7 @@ class Ui(QtWidgets.QMainWindow):
 		self.btn_go_td2.clicked.connect(self.go_td2)
 		self.btn_go_td3.clicked.connect(self.go_td3)
 		self.btn_go_td4.clicked.connect(self.go_td4)
+		self.btn_go_td5.clicked.connect(self.go_td5)
 		##
 		self.jobs_combo_box.currentTextChanged.connect(self.update_info)
 	
@@ -287,10 +288,10 @@ class Ui(QtWidgets.QMainWindow):
 		self.send_command(b'LDPH 0\n') #Go to local and the asks the user to perform a touchdown
 		self.wait_ser()
 		xy = self.send_command(b'PSXY\n')
-		x4 = float(re.findall("-?\d+", xy)[-2])
-		y4 = float(re.findall("-?\d+", xy)[-1])
-		self.table_bar5.setItem(0, 0, QTableWidgetItem(str(x4)))
-		self.table_bar5.setItem(0, 1, QTableWidgetItem(str(y4)))
+		x5= float(re.findall("-?\d+", xy)[-2])
+		y5= float(re.findall("-?\d+", xy)[-1])
+		self.table_bar5.setItem(0, 0, QTableWidgetItem(str(x5)))
+		self.table_bar5.setItem(0, 1, QTableWidgetItem(str(y5)))
 		#save values
 		self.file_save(self.collect())
 		self.reset_start_btn()
@@ -439,6 +440,7 @@ class Ui(QtWidgets.QMainWindow):
 				self.start_jobs_btn.repaint()
 				time.sleep(1)
 		for job, user, x_td, y_td, check_bar, start_index, end_index, prog in  zip(job_file_arr, user_name_arr, x_td_arr, y_td_arr,stat_arr, cell_index_start, cell_index_end, prog_arr):
+			
 			print('############################################')
 			print(job, user, x_td, y_td, check_bar, start_index, end_index, prog)
 			print('############################################')
@@ -448,8 +450,8 @@ class Ui(QtWidgets.QMainWindow):
 				self.start_jobs_btn.setText(f"{prog} in progress")
 				self.start_jobs_btn.repaint()
 				self.run(job, user, x_td, y_td, check_bar, start_index, end_index, prog)
-			#self.send_command(b'LDB\n')
-		self.reset_start_btn()
+				self.reset_start_btn()
+
 	def reset_start_btn(self):
 		self.start_jobs_btn.setStyleSheet('background-color: rgb(85, 255, 127)')
 		self.start_jobs_btn.setText("START")
@@ -596,10 +598,7 @@ class Ui(QtWidgets.QMainWindow):
 		try:
 			self.eq.prober.move_to_probing_zone_center()
 			#self.eq.prober.go_to_xy(x_td,y_td) # move to the touchdown position 
-			print('Moving Z to optimal touchdown')
-			time.sleep(2)
 			self.eq.prober.move_chuck_gross_up()
-			
 			self.match_coordinates(x_td, y_td)
 		except Exception as error:
 			# handle the exception
@@ -612,6 +611,7 @@ class Ui(QtWidgets.QMainWindow):
 		self.daq_successful = True
 		self.end()
 		self.post_acquisition_operations()
+		self.reset_start_btn()
 	def init_process(self,job, user, x_td, y_td, check_bar, start_index, end_index, prog):
 		"""Initializes the process:
 				Identifies the operator
@@ -765,7 +765,7 @@ class Ui(QtWidgets.QMainWindow):
 		time.sleep(1)
 		'''
 	def perform_touch_down(self, cell): # ABI: new function, dedicated to perform the probecard touch down once the cell is in position
-		self.eq.prober.go_to_z(9100)
+		self.eq.prober.go_to_z(9500)
 		edge_sensor_open = self.eq.prober.get_edge_sensor_status()
 		if(not edge_sensor_open and not self.eq.prober.is_chuck_in_fineup()): # this line prevents to perform a "fine up" if chuck is already in fine up position
 			self.eq.prober.move_chuck_fine_up()
@@ -779,6 +779,7 @@ class Ui(QtWidgets.QMainWindow):
 			zup=self.eq.prober.get_chuck_z()
 			self.logfile(f"{self.probename},{cell},Z_at_CUP,{zup}\n")
 	def perform_measurement(self, ms, cl):
+		global p1, p2
 		"""Sets the measurement plan.
 		   Passes identifiers for the measurement file to the MeasurementHandler.
 		   Checks the temperature.
@@ -795,11 +796,15 @@ class Ui(QtWidgets.QMainWindow):
 		self.m.current_customer   = self.customer
 		self.m.current_product    = self.product
 		self.m.current_cell       = cl
+		
 		self.m.pl_value           = self.mp.get_physical_parameter('PL_wavelength') #PL was not broadcasted
 		# Set the measurement plan
 		self.m.set_plan(meas_plan = ms) # Replaced with self.m.get_plans_from_mdf()
 		self.m.plan = ms
 		self.m.plan_settings = self.mp.get_settings_for_measurement(meas_name=ms) # broadcast the plan setting dict to measurement_handler
+		print('$$$$$$$$$$$$$$$$$$')
+		self.meas_mod = self.m.plan_settings['meas_module']
+		print(self.meas_mod)
 		print('pre-set T_set')
 		T_set = self.m.get_plan_setting(setting='T_set')
 		print(' perform_measurement method sets temperature = to:', T_set)
@@ -816,12 +821,9 @@ class Ui(QtWidgets.QMainWindow):
 		time.sleep(.1)
 		print('######################')
 		#Measure
-		val_x, val_y = self.m.start_measurement(False)
-		volt = val_y[:, 0]
-		pcurr = val_y[:, 1]
-		power = val_y[:, 2]
-		self.plotter.clear()
+					
 		print('Plotting data...')
+		
 		t1 = (np.random.randint(0,255),np.random.randint(0,255),np.random.randint(0,255))
 		t2 = (np.random.randint(0,255),np.random.randint(0,255),np.random.randint(0,255))
 		tfill = (np.random.randint(0,255),np.random.randint(0,255),np.random.randint(0,255))
@@ -851,14 +853,23 @@ class Ui(QtWidgets.QMainWindow):
 		p2.setGeometry(p1.vb.sceneBoundingRect())
 		p2.linkedViewChanged(p1.vb, p2.XAxis)
 		p1.vb.sigResized.connect(self.updateViews)
-
-		p1.plot(val_x, volt, symbol='o', pen=t1, symbolPen='b', symbolBrush = tfill, symbolSize=8, name='_'.join(file_open[0].split('_')[1:3]))
-
-		plot2 = pg.ScatterPlotItem(val_x, power, symbol='o', pen = t2, symbolPen = 'b',symbolBrush = tfill, symbolSize = 8)
-
-		p2.addItem(plot2)
 		
-		#self.plotter.plot(val_x, power, symbol='o', pen=(np.random.randint(0,255),np.random.randint(0,255),np.random.randint(0,255)), symbolPen='b', symbolBrush=(np.random.randint(0,255),np.random.randint(0,255),np.random.randint(0,255)), symbolSize=8, name='Test')
+		if self.meas_mod == 'Spectrum':
+			self.clear_plot()
+			val_x, val_y = self.m.start_measurement(False)
+			p1.getAxis('bottom').setLabel('Wavelength(nm)')    
+			p1.getAxis('left').setLabel('Power(W)', color=color1)
+			p1.plot(val_x, val_y, symbol='o', pen=t1, symbolPen='b', symbolBrush = tfill, symbolSize=4, name=self.m.current_cell)
+		else:
+			self.clear_plot()
+			val_x, val_y = self.m.start_measurement(False)
+			volt = val_y[:, 0]
+			pcurr = val_y[:, 1]
+			power = val_y[:, 2]
+			self.plotter.clear()
+			p1.plot(val_x, volt, symbol='o', pen=t1, symbolPen='b', symbolBrush = tfill, symbolSize=4, name=self.m.current_cell)
+			plot2 = pg.ScatterPlotItem(val_x, power, symbol='o', pen = t2, symbolPen = 'b',symbolBrush = tfill, symbolSize = 4)
+			p2.addItem(plot2)
 		pg.QtGui.QGuiApplication.processEvents()
 		
 		
@@ -886,9 +897,17 @@ class Ui(QtWidgets.QMainWindow):
 		p1.setLabel('left', eixo_y, **labelStyle)
 		p1.setLabel('top',)
 		
-		
-		
-						
+	def clear_plot(self):
+		global p1, p2
+		self.plotter.clear()
+		p2.clear()
+		p1.clear()
+
+	def updateViews(self):
+		global p1, p2
+		p2.setGeometry(p1.vb.sceneBoundingRect())
+		p2.linkedViewChanged(p1.vb, p2.XAxis)
+
 	def identify(self, user):
 		'''Identify the operator
 		'''
@@ -914,8 +933,6 @@ class Ui(QtWidgets.QMainWindow):
 		""" Returns the edf fullpath"""
 		return self.ccf_fullpath
 	def performance_monitor(self, cell, start, end):
-
-		
 		with open('performance_monitor.txt','a') as f:
 			f.write('\n Cell: {}, Start: {}, Iter duration: {}'.format(cell, start,end-start))
 			f.close()
@@ -931,7 +948,7 @@ class Ui(QtWidgets.QMainWindow):
 				zip_file_name = zip_file_name.replace(':','-') #removing illegal ":" character                
 				with ZipFile(os.path.join(folder,zip_file_name), 'w') as zipObj:
 					# Saving config files inside the zip file
-					config_files = [self.edf_fullpath, self.mdf_fullpath, self.job_fullpath, self.ccf_fullpath, self.mmf_fullpath, self.amf_fullpath, self.probes_fullpath, self.git_commit_file_name]
+					config_files = [self.edf_fullpath, self.mdf_fullpath, self.job_fullpath, self.ccf_fullpath, self.mmf_fullpath, self.amf_fullpath, self.probes_fullpath]
 					for c_file in config_files:
 						fname = os.path.join('config_files',os.path.split(c_file)[1]) # name of zipped file inside the zip folder stripped of the path location
 						zipObj.write(c_file,arcname=fname)
@@ -996,6 +1013,7 @@ class Ui(QtWidgets.QMainWindow):
 		self.eq.tec._set(T_set = 20, T_win=0.5)
 		self.loading.unload_sample()
 		self.release_equipment()
+		self.reset_start_btn()
 		
 		#send telegram message it is done
 

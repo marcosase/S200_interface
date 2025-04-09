@@ -90,7 +90,7 @@ class Ui(QtWidgets.QMainWindow):
         global p1
         
         p1 = self.plotter.plotItem
-               
+        
         print(cust, lot_line, cell_line, column_name, file_open[0], hdr_line)
         x_axis = self.x_cmb_box.currentText()
         y_axis = self.y_cmb_box.currentText()
@@ -117,25 +117,18 @@ class Ui(QtWidgets.QMainWindow):
         t1 = (np.random.randint(0,255),np.random.randint(0,255),np.random.randint(0,255))
         t2 = (np.random.randint(0,255),np.random.randint(0,255),np.random.randint(0,255))
         tfill = (np.random.randint(0,255),np.random.randint(0,255),np.random.randint(0,255))
-
         color1 = '#%02x%02x%02x' % t1
         color2 = '#%02x%02x%02x' % t2
-                
         x_axis = self.x_cmb_box.currentText()
         y_axis = self.y_cmb_box.currentText()
         y2_axis = self.y2_cmb_box.currentText()
-
         x_label = str(x_axis)
         y_label = str(y_axis)
         title = 'LIV'
         self.set_graph( title, x_label, y_label)
-
-
         df = pd.read_csv(file_open[0], skiprows = hdr_line+2, names=column_name)
-        
         p1 = self.plotter.plotItem
         p1.setLabels(left = y_axis)
-
         #Create a new ViewBox
         p2 = pg.ViewBox()
         p1.showAxis('right')
@@ -148,20 +141,15 @@ class Ui(QtWidgets.QMainWindow):
         self.updateViews()
         p2.setGeometry(p1.vb.sceneBoundingRect())
         p2.linkedViewChanged(p1.vb, p2.XAxis)
-
         p1.vb.sigResized.connect(self.updateViews)
-
         p1.plot(df[x_axis], df[y_axis], symbol='o', pen=t1, symbolPen='b', symbolBrush = tfill, symbolSize=8, name='_'.join(file_open[0].split('_')[1:3]))
-
         plot2 = pg.ScatterPlotItem(x = df[x_axis].values, y = df[y2_axis].values, symbol='o', pen = t2, symbolPen = 'b',symbolBrush = tfill, symbolSize = 8)
-        
         p2.addItem(plot2)
                 
     def updateViews(self):
         global p1, p2
         p2.setGeometry(p1.vb.sceneBoundingRect())
         p2.linkedViewChanged(p1.vb, p2.XAxis)
-
 
     def clear_plot(self):
         global p1, p2
