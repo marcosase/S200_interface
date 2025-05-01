@@ -173,7 +173,7 @@ UP</string>
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>90</y>
+      <y>110</y>
       <width>1451</width>
       <height>941</height>
      </rect>
@@ -828,7 +828,7 @@ background-color: rgb(255, 255, 0);
           <widget class="QPushButton" name="btn_touch1">
            <property name="geometry">
             <rect>
-             <x>350</x>
+             <x>390</x>
              <y>10</y>
              <width>91</width>
              <height>31</height>
@@ -853,7 +853,7 @@ background-color: rgb(255, 255, 0);
           <widget class="QPushButton" name="btn_go_td1">
            <property name="geometry">
             <rect>
-             <x>460</x>
+             <x>490</x>
              <y>10</y>
              <width>91</width>
              <height>41</height>
@@ -879,9 +879,9 @@ background-color: rgb(255, 255, 0);
           <widget class="QTableWidget" name="table_bar1">
            <property name="geometry">
             <rect>
-             <x>570</x>
+             <x>600</x>
              <y>10</y>
-             <width>191</width>
+             <width>170</width>
              <height>51</height>
             </rect>
            </property>
@@ -951,7 +951,7 @@ background-color: rgb(255, 255, 0);
            <row/>
            <column>
             <property name="text">
-             <string>X Touch (μm)</string>
+             <string>X(μm)</string>
             </property>
             <property name="font">
              <font>
@@ -973,7 +973,7 @@ background-color: rgb(255, 255, 0);
            </column>
            <column>
             <property name="text">
-             <string>Y Touch (μm)</string>
+             <string>Y(μm)</string>
             </property>
             <property name="font">
              <font>
@@ -1027,7 +1027,7 @@ background-color: rgb(255, 255, 0);
           <widget class="QLabel" name="label_13">
            <property name="geometry">
             <rect>
-             <x>110</x>
+             <x>80</x>
              <y>10</y>
              <width>91</width>
              <height>21</height>
@@ -1049,7 +1049,7 @@ background-color: rgb(255, 255, 0);
           <widget class="QLabel" name="label_14">
            <property name="geometry">
             <rect>
-             <x>110</x>
+             <x>80</x>
              <y>50</y>
              <width>81</width>
              <height>21</height>
@@ -1071,9 +1071,9 @@ background-color: rgb(255, 255, 0);
           <widget class="QLineEdit" name="line_start1">
            <property name="geometry">
             <rect>
-             <x>200</x>
+             <x>170</x>
              <y>10</y>
-             <width>121</width>
+             <width>211</width>
              <height>21</height>
             </rect>
            </property>
@@ -1093,9 +1093,9 @@ background-color: rgb(255, 255, 0);
           <widget class="QLineEdit" name="line_end1">
            <property name="geometry">
             <rect>
-             <x>200</x>
+             <x>170</x>
              <y>50</y>
-             <width>121</width>
+             <width>211</width>
              <height>21</height>
             </rect>
            </property>
@@ -1228,7 +1228,7 @@ background-color: rgb(255, 255, 0);
           <widget class="QPushButton" name="btn_touch2">
            <property name="geometry">
             <rect>
-             <x>350</x>
+             <x>390</x>
              <y>10</y>
              <width>91</width>
              <height>31</height>
@@ -1253,7 +1253,7 @@ background-color: rgb(255, 255, 0);
           <widget class="QPushButton" name="btn_go_td2">
            <property name="geometry">
             <rect>
-             <x>460</x>
+             <x>490</x>
              <y>10</y>
              <width>91</width>
              <height>41</height>
@@ -1279,9 +1279,9 @@ background-color: rgb(255, 255, 0);
           <widget class="QTableWidget" name="table_bar2">
            <property name="geometry">
             <rect>
-             <x>570</x>
+             <x>600</x>
              <y>10</y>
-             <width>191</width>
+             <width>170</width>
              <height>51</height>
             </rect>
            </property>
@@ -1351,7 +1351,7 @@ background-color: rgb(255, 255, 0);
            <row/>
            <column>
             <property name="text">
-             <string>X Touch (μm)</string>
+             <string>X(μm)</string>
             </property>
             <property name="font">
              <font>
@@ -1373,7 +1373,7 @@ background-color: rgb(255, 255, 0);
            </column>
            <column>
             <property name="text">
-             <string>Y Touch (μm)</string>
+             <string>Y(μm)</string>
             </property>
             <property name="font">
              <font>
@@ -1427,7 +1427,7 @@ background-color: rgb(255, 255, 0);
           <widget class="QLabel" name="label_17">
            <property name="geometry">
             <rect>
-             <x>110</x>
+             <x>80</x>
              <y>10</y>
              <width>91</width>
              <height>21</height>
@@ -1449,7 +1449,7 @@ background-color: rgb(255, 255, 0);
           <widget class="QLabel" name="label_18">
            <property name="geometry">
             <rect>
-             <x>110</x>
+             <x>80</x>
              <y>50</y>
              <width>81</width>
              <height>21</height>
@@ -1471,9 +1471,9 @@ background-color: rgb(255, 255, 0);
           <widget class="QLineEdit" name="line_start2">
            <property name="geometry">
             <rect>
-             <x>200</x>
+             <x>170</x>
              <y>10</y>
-             <width>121</width>
+             <width>211</width>
              <height>21</height>
             </rect>
            </property>
@@ -1493,9 +1493,9 @@ background-color: rgb(255, 255, 0);
           <widget class="QLineEdit" name="line_end2">
            <property name="geometry">
             <rect>
-             <x>200</x>
+             <x>170</x>
              <y>50</y>
-             <width>121</width>
+             <width>211</width>
              <height>21</height>
             </rect>
            </property>
@@ -1556,7 +1556,7 @@ background-color: rgb(255, 255, 0);
           <widget class="QPushButton" name="btn_touch3">
            <property name="geometry">
             <rect>
-             <x>350</x>
+             <x>390</x>
              <y>10</y>
              <width>91</width>
              <height>31</height>
@@ -1581,7 +1581,7 @@ background-color: rgb(255, 255, 0);
           <widget class="QPushButton" name="btn_go_td3">
            <property name="geometry">
             <rect>
-             <x>460</x>
+             <x>490</x>
              <y>10</y>
              <width>91</width>
              <height>41</height>
@@ -1607,9 +1607,9 @@ background-color: rgb(255, 255, 0);
           <widget class="QTableWidget" name="table_bar3">
            <property name="geometry">
             <rect>
-             <x>570</x>
+             <x>600</x>
              <y>10</y>
-             <width>191</width>
+             <width>170</width>
              <height>51</height>
             </rect>
            </property>
@@ -1679,7 +1679,7 @@ background-color: rgb(255, 255, 0);
            <row/>
            <column>
             <property name="text">
-             <string>X Touch (μm)</string>
+             <string>X(μm)</string>
             </property>
             <property name="font">
              <font>
@@ -1701,7 +1701,7 @@ background-color: rgb(255, 255, 0);
            </column>
            <column>
             <property name="text">
-             <string>Y Touch (μm)</string>
+             <string>Y(μm)</string>
             </property>
             <property name="font">
              <font>
@@ -1755,7 +1755,7 @@ background-color: rgb(255, 255, 0);
           <widget class="QLabel" name="label_19">
            <property name="geometry">
             <rect>
-             <x>110</x>
+             <x>80</x>
              <y>10</y>
              <width>91</width>
              <height>21</height>
@@ -1777,7 +1777,7 @@ background-color: rgb(255, 255, 0);
           <widget class="QLabel" name="label_20">
            <property name="geometry">
             <rect>
-             <x>110</x>
+             <x>80</x>
              <y>50</y>
              <width>81</width>
              <height>21</height>
@@ -1799,9 +1799,9 @@ background-color: rgb(255, 255, 0);
           <widget class="QLineEdit" name="line_start3">
            <property name="geometry">
             <rect>
-             <x>200</x>
+             <x>170</x>
              <y>10</y>
-             <width>121</width>
+             <width>211</width>
              <height>21</height>
             </rect>
            </property>
@@ -1821,9 +1821,9 @@ background-color: rgb(255, 255, 0);
           <widget class="QLineEdit" name="line_end3">
            <property name="geometry">
             <rect>
-             <x>200</x>
+             <x>170</x>
              <y>50</y>
-             <width>121</width>
+             <width>211</width>
              <height>21</height>
             </rect>
            </property>
@@ -1884,7 +1884,7 @@ background-color: rgb(255, 255, 0);
           <widget class="QPushButton" name="btn_touch4">
            <property name="geometry">
             <rect>
-             <x>350</x>
+             <x>390</x>
              <y>10</y>
              <width>91</width>
              <height>31</height>
@@ -1909,7 +1909,7 @@ background-color: rgb(255, 255, 0);
           <widget class="QPushButton" name="btn_go_td4">
            <property name="geometry">
             <rect>
-             <x>460</x>
+             <x>490</x>
              <y>10</y>
              <width>91</width>
              <height>41</height>
@@ -1935,9 +1935,9 @@ background-color: rgb(255, 255, 0);
           <widget class="QTableWidget" name="table_bar4">
            <property name="geometry">
             <rect>
-             <x>570</x>
+             <x>600</x>
              <y>10</y>
-             <width>191</width>
+             <width>170</width>
              <height>51</height>
             </rect>
            </property>
@@ -2007,7 +2007,7 @@ background-color: rgb(255, 255, 0);
            <row/>
            <column>
             <property name="text">
-             <string>X Touch (μm)</string>
+             <string>X(μm)</string>
             </property>
             <property name="font">
              <font>
@@ -2029,7 +2029,7 @@ background-color: rgb(255, 255, 0);
            </column>
            <column>
             <property name="text">
-             <string>Y Touch (μm)</string>
+             <string>Y(μm)</string>
             </property>
             <property name="font">
              <font>
@@ -2083,7 +2083,7 @@ background-color: rgb(255, 255, 0);
           <widget class="QLabel" name="label_21">
            <property name="geometry">
             <rect>
-             <x>110</x>
+             <x>80</x>
              <y>10</y>
              <width>91</width>
              <height>21</height>
@@ -2105,7 +2105,7 @@ background-color: rgb(255, 255, 0);
           <widget class="QLabel" name="label_22">
            <property name="geometry">
             <rect>
-             <x>110</x>
+             <x>80</x>
              <y>50</y>
              <width>81</width>
              <height>21</height>
@@ -2127,9 +2127,9 @@ background-color: rgb(255, 255, 0);
           <widget class="QLineEdit" name="line_start4">
            <property name="geometry">
             <rect>
-             <x>200</x>
+             <x>170</x>
              <y>10</y>
-             <width>121</width>
+             <width>211</width>
              <height>21</height>
             </rect>
            </property>
@@ -2149,9 +2149,9 @@ background-color: rgb(255, 255, 0);
           <widget class="QLineEdit" name="line_end4">
            <property name="geometry">
             <rect>
-             <x>200</x>
+             <x>170</x>
              <y>50</y>
-             <width>121</width>
+             <width>211</width>
              <height>21</height>
             </rect>
            </property>
@@ -2212,7 +2212,7 @@ background-color: rgb(255, 255, 0);
           <widget class="QPushButton" name="btn_touch5">
            <property name="geometry">
             <rect>
-             <x>350</x>
+             <x>390</x>
              <y>10</y>
              <width>91</width>
              <height>31</height>
@@ -2237,7 +2237,7 @@ background-color: rgb(255, 255, 0);
           <widget class="QPushButton" name="btn_go_td5">
            <property name="geometry">
             <rect>
-             <x>460</x>
+             <x>490</x>
              <y>10</y>
              <width>91</width>
              <height>41</height>
@@ -2263,9 +2263,9 @@ background-color: rgb(255, 255, 0);
           <widget class="QTableWidget" name="table_bar5">
            <property name="geometry">
             <rect>
-             <x>570</x>
+             <x>600</x>
              <y>10</y>
-             <width>191</width>
+             <width>170</width>
              <height>51</height>
             </rect>
            </property>
@@ -2335,7 +2335,7 @@ background-color: rgb(255, 255, 0);
            <row/>
            <column>
             <property name="text">
-             <string>X Touch (μm)</string>
+             <string>X(μm)</string>
             </property>
             <property name="font">
              <font>
@@ -2357,7 +2357,7 @@ background-color: rgb(255, 255, 0);
            </column>
            <column>
             <property name="text">
-             <string>Y Touch (μm)</string>
+             <string>Y(μm)</string>
             </property>
             <property name="font">
              <font>
@@ -2411,7 +2411,7 @@ background-color: rgb(255, 255, 0);
           <widget class="QLabel" name="label_23">
            <property name="geometry">
             <rect>
-             <x>110</x>
+             <x>80</x>
              <y>10</y>
              <width>91</width>
              <height>21</height>
@@ -2433,7 +2433,7 @@ background-color: rgb(255, 255, 0);
           <widget class="QLabel" name="label_24">
            <property name="geometry">
             <rect>
-             <x>110</x>
+             <x>80</x>
              <y>50</y>
              <width>81</width>
              <height>21</height>
@@ -2455,9 +2455,9 @@ background-color: rgb(255, 255, 0);
           <widget class="QLineEdit" name="line_start5">
            <property name="geometry">
             <rect>
-             <x>200</x>
+             <x>170</x>
              <y>10</y>
-             <width>121</width>
+             <width>211</width>
              <height>21</height>
             </rect>
            </property>
@@ -2477,9 +2477,9 @@ background-color: rgb(255, 255, 0);
           <widget class="QLineEdit" name="line_end5">
            <property name="geometry">
             <rect>
-             <x>200</x>
+             <x>170</x>
              <y>50</y>
-             <width>121</width>
+             <width>211</width>
              <height>21</height>
             </rect>
            </property>
@@ -2507,7 +2507,7 @@ background-color: rgb(255, 255, 0);
         <x>820</x>
         <y>0</y>
         <width>611</width>
-        <height>451</height>
+        <height>471</height>
        </rect>
       </property>
       <property name="styleSheet">
@@ -2525,19 +2525,6 @@ background-color: rgb(255, 255, 0);
       <string>SPC</string>
      </attribute>
     </widget>
-   </widget>
-   <widget class="QPushButton" name="plt_btn">
-    <property name="geometry">
-     <rect>
-      <x>980</x>
-      <y>40</y>
-      <width>75</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>plot sth</string>
-    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">

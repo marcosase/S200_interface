@@ -6,10 +6,10 @@ import datetime
 import sys, os
 import numpy as np
 from PyQt5 import QtGui	
-from PyQt5 import QtWidgets, uic
+from PyQt5 import QtWidgets, uic, QtCore
 from PyQt5.QtWidgets import *
 from zipfile import ZipFile
-from PyQt5.QtCore import QProcess, QTimer
+from PyQt5.QtCore import QProcess, QTimer, QObject, pyqtSignal
 import pyqtgraph as pg
 import serial
 import config
@@ -42,10 +42,16 @@ from realtime_analysis.quick_analysis import QuickAnalysis
 logger=logging.getLogger('test.AmsCore')
 start_time = time.time()
 
+class SignalRelay(QObject):
+		sigint_received = pyqtSignal()
+
 class Ui(QtWidgets.QMainWindow):
 	def __init__(self):
-		 ###definitions from core.py
-		#self.fe = Frontend()
+		pg.setConfigOption('background', 'w') #before loading widget
+		pg.setConfigOption('foreground', 'k')
+		super(Ui, self).__init__() # Call the inherited classes __init__ method
+		uic.loadUi('BT_interface.ui', self) # Load the .ui file
+		###definitions from core.py
 		pg.setConfigOption('background', 'w') #before loading widget
 		pg.setConfigOption('foreground', 'k')
 		self.start_time = time.time()
@@ -61,8 +67,7 @@ class Ui(QtWidgets.QMainWindow):
 		#################
 		pg.setConfigOption('background', 'w') #before loading widget
 		pg.setConfigOption('foreground', 'k')
-		super(Ui, self).__init__() # Call the inherited classes __init__ method
-		uic.loadUi('BT_interface.ui', self) # Load the .ui file
+		
 		###Variable
 		self.job_folder_path1 = ''
 		self.job_folder_path2 = ''
@@ -92,7 +97,7 @@ class Ui(QtWidgets.QMainWindow):
 		self.bar.setValue(0)
 		self.write_values()
 		self.showMaximized()
-					
+
 	def gross_up(self):
 		'''Method to do the gross up'''
 		self.send_command(b'GUP\n')
@@ -155,7 +160,7 @@ class Ui(QtWidgets.QMainWindow):
 			if value != '':
 				break		
 			else:
-				time.sleep(0.5)
+				time.sleep(1)
 				print('waiting...')
 		time.sleep(1)
 	def send_command(self, command):
@@ -177,11 +182,11 @@ class Ui(QtWidgets.QMainWindow):
 		'start_index3':[val[13]],'end_index3':[val[18]],
 		'start_index4':[val[14]],'end_index4':[val[19]],
 		'start_index5':[val[15]],'end_index5':[val[20]],
+		'Z':[val[21]]
 		}
 		df = pd.DataFrame(dic)
 		df.to_csv('backup_values.csv')
 	def collect(self):
-		
 		x_td_arr      = [self.table_bar1.item(0, 0).text(),
 					self.table_bar2.item(0, 0).text(),
 					self.table_bar3.item(0, 0).text(),
@@ -205,8 +210,12 @@ class Ui(QtWidgets.QMainWindow):
 					self.line_end3.text(),
 					self.line_end4.text(),
 					self.line_end5.text()]
-					
-		val_array = [*x_td_arr, *y_td_arr, job_file_arr[0], *start_index_arr, *end_index_arr]
+		try:
+			z = self.z_touchdown
+		except:
+			z = z_touch = pd.read_csv('backup_values.csv').Z[0]
+
+		val_array = [*x_td_arr, *y_td_arr, job_file_arr[0], *start_index_arr, *end_index_arr, z]
 		return val_array
 	def touch_bar1(self):
 		self.start_jobs_btn.setStyleSheet('background-color: rgb(255, 255, 0)')
@@ -215,8 +224,16 @@ class Ui(QtWidgets.QMainWindow):
 		self.start_jobs_btn.repaint()
 		self.send_command(b'GUP\n') # Do a Gross up
 		self.send_command(b'LDC\n')
+		
 		self.send_command(b'LDPH 0\n') #Go to local and the asks the user to perform a touchdown
 		self.wait_ser()
+		z = self.send_command(b'PSGM\n')
+		z_fine_lift = self.send_command(b'RKFM\n')
+		xy = self.send_command(b'PSXY\n')
+		z = int(z.split('PSGM')[1])
+		z_fine_lift = int(z_fine_lift.split('RKFM')[1])
+		self.z_touchdown = z+z_fine_lift
+
 		xy = self.send_command(b'PSXY\n')
 		x1 = float(re.findall("-?\d+", xy)[-2])
 		y1 = float(re.findall("-?\d+", xy)[-1])
@@ -232,8 +249,16 @@ class Ui(QtWidgets.QMainWindow):
 		self.start_jobs_btn.repaint()
 		self.send_command(b'GUP\n') # Do a Gross up
 		self.send_command(b'LDC\n')
+		
 		self.send_command(b'LDPH 0\n') #Go to local and the asks the user to perform a touchdown
 		self.wait_ser()
+		z = self.send_command(b'PSGM\n')
+		z_fine_lift = self.send_command(b'RKFM\n')
+		xy = self.send_command(b'PSXY\n')
+		z = int(z.split('PSGM')[1])
+		
+		z_fine_lift = int(z_fine_lift.split('RKFM')[1])
+		self.z_touchdown = z+z_fine_lift
 		xy = self.send_command(b'PSXY\n')
 		x2 = float(re.findall("-?\d+", xy)[-2])
 		y2 = float(re.findall("-?\d+", xy)[-1])
@@ -249,8 +274,15 @@ class Ui(QtWidgets.QMainWindow):
 		self.start_jobs_btn.repaint()
 		self.send_command(b'GUP\n') # Do a Gross up
 		self.send_command(b'LDC\n')
+		
 		self.send_command(b'LDPH 0\n') #Go to local and the asks the user to perform a touchdown
 		self.wait_ser()
+		z = self.send_command(b'PSGM\n')
+		z_fine_lift = self.send_command(b'RKFM\n')
+		xy = self.send_command(b'PSXY\n')
+		z = int(z.split('PSGM')[1])
+		z_fine_lift = int(z_fine_lift.split('RKFM')[1])
+		self.z_touchdown = z+z_fine_lift
 		xy = self.send_command(b'PSXY\n')
 		x3 = float(re.findall("-?\d+", xy)[-2])
 		y3 = float(re.findall("-?\d+", xy)[-1])
@@ -269,6 +301,12 @@ class Ui(QtWidgets.QMainWindow):
 		
 		self.send_command(b'LDPH 0\n') #Go to local and the asks the user to perform a touchdown
 		self.wait_ser()
+		z = self.send_command(b'PSGM\n')
+		z_fine_lift = self.send_command(b'RKFM\n')
+		xy = self.send_command(b'PSXY\n')
+		z = int(z.split('PSGM')[1])
+		z_fine_lift = int(z_fine_lift.split('RKFM')[1])
+		self.z_touchdown = z+z_fine_lift
 		xy = self.send_command(b'PSXY\n')
 		x4 = float(re.findall("-?\d+", xy)[-2])
 		y4 = float(re.findall("-?\d+", xy)[-1])
@@ -287,6 +325,13 @@ class Ui(QtWidgets.QMainWindow):
 		
 		self.send_command(b'LDPH 0\n') #Go to local and the asks the user to perform a touchdown
 		self.wait_ser()
+		z = self.send_command(b'PSGM\n')
+		z_fine_lift = self.send_command(b'RKFM\n')
+		xy = self.send_command(b'PSXY\n')
+		z = int(z.split('PSGM')[1])
+		z_fine_lift = int(z_fine_lift.split('RKFM')[1])
+		self.z_touchdown = z+z_fine_lift
+		xy = self.send_command(b'PSXY\n')
 		xy = self.send_command(b'PSXY\n')
 		x5= float(re.findall("-?\d+", xy)[-2])
 		y5= float(re.findall("-?\d+", xy)[-1])
@@ -352,33 +397,40 @@ class Ui(QtWidgets.QMainWindow):
 		total_files = sum(df.sum(axis=1))
 		self.file_save(self.collect())
 	def go_td1(self):
+		self.file_save(self.collect())
+		self.go_probe()
 		self.send_command(b'LI1\n')
 		xtd = self.table_bar1.item(0, 0).text()
 		ytd = self.table_bar1.item(0, 1).text()
-		
 		command = f'GTXY {xtd},{ytd}\n'.encode()
-		x = self.send_command(command)	
+		x = self.send_command(command)
 	def go_td2(self):
+		self.file_save(self.collect())
+		self.go_probe()
 		self.send_command(b'LI1\n')
 		xtd = self.table_bar2.item(0, 0).text()
 		ytd = self.table_bar2.item(0, 1).text()
-		
 		command = f'GTXY {xtd},{ytd}\n'.encode()
 		self.send_command(command)
 	def go_td3(self):
+		self.file_save(self.collect())
+		self.go_probe()
 		self.send_command(b'LI1\n')
 		xtd = self.table_bar3.item(0, 0).text()
 		ytd = self.table_bar3.item(0, 1).text()
-		
 		command = f'GTXY {xtd},{ytd}\n'.encode()
 		self.send_command(command)
 	def go_td4(self):
+		self.file_save(self.collect())
+		self.go_probe()
 		self.send_command(b'LI1\n')
 		xtd = self.table_bar4.item(0, 0).text()
 		ytd = self.table_bar4.item(0, 1).text()
 		command = f'GTXY {xtd},{ytd}\n'.encode()
 		self.send_command(command)	
 	def go_td5(self):
+		self.file_save(self.collect())
+		self.go_probe()
 		self.send_command(b'LI1\n')
 		xtd = self.table_bar5.item(0, 0).text()
 		ytd = self.table_bar5.item(0, 1).text()
@@ -391,12 +443,12 @@ class Ui(QtWidgets.QMainWindow):
 		stat_bar2 = self.check_bar2.isChecked()
 		stat_bar3 = self.check_bar3.isChecked()
 		stat_bar4 = self.check_bar4.isChecked()
-		stat_bar5 = self.check_bar4.isChecked()
+		stat_bar5 = self.check_bar5.isChecked()
 		bar1 = self.check_bar1.text()
 		bar2 = self.check_bar2.text()
 		bar3 = self.check_bar3.text()
 		bar4 = self.check_bar4.text()
-		bar5 = self.check_bar4.text()
+		bar5 = self.check_bar5.text()
 		prog_arr = ['bar','bar','bar','bar','bar']
 		stat_arr = [stat_bar1, stat_bar2, stat_bar3, stat_bar4, stat_bar5]
 		
@@ -600,6 +652,7 @@ class Ui(QtWidgets.QMainWindow):
 			#self.eq.prober.go_to_xy(x_td,y_td) # move to the touchdown position 
 			self.eq.prober.move_chuck_gross_up()
 			self.match_coordinates(x_td, y_td)
+			self.eq.prober.set_light(on=False)
 		except Exception as error:
 			# handle the exception
 			print("An exception occurred:", error) # An exception occurred: division by zero
@@ -715,6 +768,7 @@ class Ui(QtWidgets.QMainWindow):
 		cnt = 0
 		progress_bar = r'{}'.format(progress_bar)
 		logger.info('Starting the measurement loop...')
+		self.eq.prober.set_light(on=False)
 		if self.meas_procedure == 'die_wise': # all measurements on one die in one go
 			start_time = time.time()
 			work_size = len(self.mp.get_cell_names)
@@ -765,7 +819,13 @@ class Ui(QtWidgets.QMainWindow):
 		time.sleep(1)
 		'''
 	def perform_touch_down(self, cell): # ABI: new function, dedicated to perform the probecard touch down once the cell is in position
-		self.eq.prober.go_to_z(9500)
+		try:
+			z_touch = self.z_touchdown + 20
+		except:
+			print('z touch down not found, it  will get from file!')
+			z_touch = pd.read_csv('backup_values.csv').Z[0] + 100
+		ic(z_touch)
+		self.eq.prober.go_to_z(z_touch)
 		edge_sensor_open = self.eq.prober.get_edge_sensor_status()
 		if(not edge_sensor_open and not self.eq.prober.is_chuck_in_fineup()): # this line prevents to perform a "fine up" if chuck is already in fine up position
 			self.eq.prober.move_chuck_fine_up()
@@ -779,12 +839,12 @@ class Ui(QtWidgets.QMainWindow):
 			zup=self.eq.prober.get_chuck_z()
 			self.logfile(f"{self.probename},{cell},Z_at_CUP,{zup}\n")
 	def perform_measurement(self, ms, cl):
-		global p1, p2
 		"""Sets the measurement plan.
 		   Passes identifiers for the measurement file to the MeasurementHandler.
 		   Checks the temperature.
 		   Starts the measurement.
 		"""
+		
 		
 		self.m.tool_id            = self.tool_id
 		self.m.session_id         = self.session_id
@@ -824,10 +884,13 @@ class Ui(QtWidgets.QMainWindow):
 					
 		print('Plotting data...')
 		
-		t1 = (np.random.randint(0,255),np.random.randint(0,255),np.random.randint(0,255))
-		t2 = (np.random.randint(0,255),np.random.randint(0,255),np.random.randint(0,255))
-		tfill = (np.random.randint(0,255),np.random.randint(0,255),np.random.randint(0,255))
-
+		t1 = (0,0,255)
+		t2 = (255,0,0)
+		tfill = (0,0,0)
+		
+		pen_t1 = pg.mkPen(color=(0, 0, 255), width=3, style=QtCore.Qt.SolidLine)
+		pen_t2 = pg.mkPen(color=(255, 0, 0), width=3, style=QtCore.Qt.SolidLine)
+		
 		color1 = '#%02x%02x%02x' % t1
 		color2 = '#%02x%02x%02x' % t2
 
@@ -835,78 +898,109 @@ class Ui(QtWidgets.QMainWindow):
 		y_label = 'voltage(V)'
 		y2_label = 'Power(W)'	
 		title = 'LIV'
-		self.set_graph(title, x_label, y_label)
-
-		p1 = self.plotter.plotItem
-		p1.setLabels(left = y_label)
+		
+		self.p1 = self.plotter.plotItem
+		self.p1.setLabels(left = y_label)
 		
 		#Create a new ViewBox
-		p2 = pg.ViewBox()
-		p1.showAxis('right')
-		p1.scene().addItem(p2)
-		p1.getAxis('right').linkToView(p2)
-		p2.setXLink(p1)
-		p1.getAxis('left').setLabel(y_label, color=color1)
-		p1.getAxis('right').setLabel(y2_label, color=color2)
-		p1.getAxis('bottom').setLabel(x_label)        
+		self.p2 = pg.ViewBox()
+		self.p1.showAxis('right')
+		self.p1.scene().addItem(self.p2)
+		self.p1.getAxis('right').linkToView(self.p2)
+		self.p2.setXLink(self.p1)
+		self.p1.getAxis('left').setLabel(y_label, color=color1)
+		self.p1.getAxis('right').setLabel(y2_label, color=color2)
+		self.p1.getAxis('bottom').setLabel(x_label)        
+		self.p1.vb.sigResized.connect(self.updateViews)
 		self.updateViews()
-		p2.setGeometry(p1.vb.sceneBoundingRect())
-		p2.linkedViewChanged(p1.vb, p2.XAxis)
-		p1.vb.sigResized.connect(self.updateViews)
-		
+		self.set_graph(title, x_label, y_label)
+		self.clear_plot()
 		if self.meas_mod == 'Spectrum':
-			self.clear_plot()
 			val_x, val_y = self.m.start_measurement(False)
-			p1.getAxis('bottom').setLabel('Wavelength(nm)')    
-			p1.getAxis('left').setLabel('Power(W)', color=color1)
-			p1.plot(val_x, val_y, symbol='o', pen=t1, symbolPen='b', symbolBrush = tfill, symbolSize=4, name=self.m.current_cell)
+			ic(val_x, val_y)
+			x_min = np.min(val_x)
+			x_max = np.max(val_x)
+			self.p1.vb.setXRange(x_min, x_max)
+			self.p1.vb.disableAutoRange(axis=pg.ViewBox.YAxis)
+			y_min = np.min(val_y)
+			y_max = np.max(val_y)
+			self.p1.vb.setYRange(y_min, y_max)
+			self.p1.vb.disableAutoRange(axis=pg.ViewBox.YAxis)
+						
+			self.p1.getAxis('bottom').setLabel('Wavelength(nm)')    
+			self.p1.getAxis('left').setLabel('Power(W)', color=color1)
+			self.p1.vb.disableAutoRange(axis=pg.ViewBox.YAxis)
+			self.p1.plot(val_x, val_y, pen=pen_t1, name=self.m.current_cell)
 		else:
-			self.clear_plot()
 			val_x, val_y = self.m.start_measurement(False)
 			volt = val_y[:, 0]
 			pcurr = val_y[:, 1]
 			power = val_y[:, 2]
 			self.plotter.clear()
-			p1.plot(val_x, volt, symbol='o', pen=t1, symbolPen='b', symbolBrush = tfill, symbolSize=4, name=self.m.current_cell)
-			plot2 = pg.ScatterPlotItem(val_x, power, symbol='o', pen = t2, symbolPen = 'b',symbolBrush = tfill, symbolSize = 4)
-			p2.addItem(plot2)
+			try:
+				mask = volt <= 5
+				volt = volt[mask]
+				power = power[mask]
+				pcurr = pcurr[mask]
+				val_x = val_x[mask]
+				y_min = np.min(volt)
+				y_max = np.max(volt)
+				self.p1.vb.setYRange(y_min, y_max)
+				self.p1.vb.disableAutoRange(axis=pg.ViewBox.YAxis)
+
+				y2_min = np.min(power)
+				y2_max = np.max(power)
+				self.p2.setYRange(y2_min, y2_max)
+				self.p2.disableAutoRange(axis=pg.ViewBox.YAxis)
+
+				x_min = np.min(val_x)
+				x_max = np.max(val_x)
+				self.p1.vb.setXRange(x_min, x_max)
+				
+				self.p1.vb.disableAutoRange(axis=pg.ViewBox.YAxis)
+				self.p1.plot(val_x, volt, pen=pen_t1, name=self.m.current_cell)
+				self.plot2 = pg.PlotCurveItem(val_x, power, pen = pen_t2, name=self.m.current_cell)
+				self.p2.addItem(self.plot2)
+			except:
+				pass
 		pg.QtGui.QGuiApplication.processEvents()
-		
-		
+
 	def set_graph(self, titulo, eixo_x, eixo_y):
-		p1 = self.plotter
 		# THESE PARAMETERS ARE FOR RESIZING AND MOVING THE POSITION OF THE LEGEND BOX
 		# I INCREASED X-SIZE AND Y-OFFSET
-		p1.addLegend(size=(110, 0) ,offset=(10, 10))
-		p1.setTitle('<font size="2">Active Power</font>') #,**titleStyle)
-		a = p1.getAxis('top')
-		a.showValues='false'
-		a = p1.getAxis('bottom')
-		p1.showAxis('left')
-		a = p1.getAxis('left')
-		p1.showAxis('right')
-		a = p1.getAxis('right')
-		p1.showLabel('left', show=True)
-		p1.showLabel('right', show=True)
-		p1.showGrid(x=True, y=True, alpha=0.1)
+		self.p1.addLegend(size=(110, 0) ,offset=(10, 10))
+		self.p1.setTitle('<font size="2">Active Power</font>') #,**titleStyle)
+		self.a = self.p1.getAxis('bottom')
+		self.a.showValues='false'
+		self.a = self.p1.getAxis('bottom')
+		self.p1.showAxis('left')
+		self.a = self.p1.getAxis('left')
+		self.p1.showAxis('right')
+		self.a = self.p1.getAxis('right')
+		self.p1.showLabel('left', show=True)
+		self.p1.showLabel('right', show=True)
+		self.p1.showGrid(x=True, y=True, alpha=0.2)
+		self.p1.getAxis('bottom').setTickSpacing(major=1,minor=1)
+		self.p1.getAxis('left').setTickSpacing(major=0.01,minor=0.005)
+		
 		titleStyle = {'color': '#000', 'size': '18pt'}
-		p1.setTitle(titulo, **titleStyle)
+		self.p1.setTitle(titulo, **titleStyle)
 		# SET AND CHANGE THE FONT SIZE AND COLOR OF THE PLOT AXIS LABEL
 		labelStyle = {'color': '#000', 'font-size': '16px'}
-		p1.setLabel('bottom', eixo_x, **labelStyle)
-		p1.setLabel('left', eixo_y, **labelStyle)
-		p1.setLabel('top',)
+		self.p1.setLabel('bottom', eixo_x, **labelStyle)
+		self.p1.setLabel('left', eixo_y, **labelStyle)
+		self.p1.setLabel('top',)
 		
 	def clear_plot(self):
-		global p1, p2
 		self.plotter.clear()
-		p2.clear()
-		p1.clear()
+		self.p1.clear()
+		if hasattr(self, 'plot2') and self.plot2 is not None:
+			self.p2.removeItem(self.plot2)
+			self.plot2 = None
 
 	def updateViews(self):
-		global p1, p2
-		p2.setGeometry(p1.vb.sceneBoundingRect())
-		p2.linkedViewChanged(p1.vb, p2.XAxis)
+		self.p2.setGeometry(self.p1.vb.sceneBoundingRect())
+		self.p2.linkedViewChanged(self.p1.vb, self.p2.XAxis)
 
 	def identify(self, user):
 		'''Identify the operator
@@ -1010,11 +1104,10 @@ class Ui(QtWidgets.QMainWindow):
 	def end(self):
 		"""Ends the core.
 		"""
-		self.eq.tec._set(T_set = 20, T_win=0.5)
 		self.loading.unload_sample()
 		self.release_equipment()
 		self.reset_start_btn()
-		
+	
 		#send telegram message it is done
 
 		msg = "Measurement finised: "
@@ -1027,9 +1120,7 @@ class Ui(QtWidgets.QMainWindow):
 			'AJI':'5170533169',
 			'EAN':'5608377269',
 			'MSE':'6946485264' 
-			
 			}
-		
 		try:
 			telegram_id = operator_telegram.get(self.operator.upper())
 			telegram.bot_sendtext(msg,telegram_id)
@@ -1049,6 +1140,7 @@ class Ui(QtWidgets.QMainWindow):
 		print("Number of attempted 'touch-down': {}".format(len(self.touch_down_recorder)))
 		print("Number of successful 'touch-down': {}".format(sum([1 for cell, _, _, _, td_boolean in self.touch_down_recorder if td_boolean == True])))
 		print("Number of unsuccessful 'touch-down': {}\n".format(sum([1 for cell, _, _, _, td_boolean in self.touch_down_recorder if td_boolean == False])))
+				
 	def post_acquisition_operations(self):
 		""" Executes post-acquisition operations on output files
 		"""
@@ -1062,8 +1154,24 @@ class Ui(QtWidgets.QMainWindow):
 		# make a backup copy of the compressed zip file
 		self.backup_output_files()
 
+	def cleanup(self):
+		print(print("Doing cleanup in end()"))
+		QtWidgets.QApplication.quit()
+
+	def closeEvent(self, event):
+		print("Window closed")
+		try:
+			self.end()
+		except:
+			pass
+		event.accept()
+
+def main():
+    app = QtWidgets.QApplication(sys.argv)
+    window = Ui()
+    window.show()
+    sys.exit(app.exec_())
+
 if __name__ == '__main__': # only executes the below code if it python has run it as the main
-	app = QtWidgets.QApplication(sys.argv)
-	print('Exiting job execution')
-	window = Ui()
-	app.exec_()
+	main()
+
