@@ -5,11 +5,12 @@ import time
 import datetime
 import sys, os
 import numpy as np
-from PyQt5 import QtGui	
-from PyQt5 import QtWidgets, uic, QtCore
+import pyvisa as visa
+from PyQt5 import QtGui, QtWidgets, uic, QtCore
 from PyQt5.QtWidgets import *
+from PyQt5.QtGui import QFont 
+from PyQt5.QtCore import QThread, QProcess, QTimer, QObject, pyqtSignal
 from zipfile import ZipFile
-from PyQt5.QtCore import QProcess, QTimer, QObject, pyqtSignal
 import pyqtgraph as pg
 import serial
 import config
@@ -23,6 +24,9 @@ from icecream import ic
 from load_sample_V2  import *
 from align_sample_V2 import AlignSample
 sys.path.insert(1, 'C:/AMS')
+from smu.keithley2520 import Keithley2520
+import pyOSA
+from tec import tec
 import logging
 from collections.abc import MutableMapping
 import telegram
@@ -33,17 +37,29 @@ from equipment import Equipment
 from utils.identify import Identify
 from utils.misc  import generate_session_ID, get_git_commit_id, get_probes_folder, get_jobs_folder, get_data_folder,get_batch_data_folder, get_backup_folder
 from utils.utils import boolean_operation, select_bar
-
-
 #Real-time analysis tools
 from realtime_analysis.quick_analysis import QuickAnalysis
+import openepda
+openEPDA_version = openepda.__version__
+from collections import OrderedDict
 # automated data extraction messageque support
 #from utils.smg import initiate_data_extraction #Commented because it was issuing importing error  MSE
 logger=logging.getLogger('test.AmsCore')
 start_time = time.time()
+ktl= Keithley2520()
 
-class SignalRelay(QObject):
-		sigint_received = pyqtSignal()
+class Worker(QObject):
+	finished = pyqtSignal(str)
+	def __init__(self, job_method):
+		super().__init__()
+		self.job_method = job_method
+
+	def run(self):
+		self.job_method()
+		self.finished.emit("Jobs finished")
+
+	def stop(self):
+		self.stop_requested=True
 
 class Ui(QtWidgets.QMainWindow):
 	def __init__(self):
@@ -54,6 +70,7 @@ class Ui(QtWidgets.QMainWindow):
 		###definitions from core.py
 		pg.setConfigOption('background', 'w') #before loading widget
 		pg.setConfigOption('foreground', 'k')
+		self.q_timer = QtCore.QTimer() #qtimer def
 		self.start_time = time.time()
 		self.alignment = AlignSample()
 		self.loading = LoadSample()
@@ -79,7 +96,10 @@ class Ui(QtWidgets.QMainWindow):
 		self.btn_touch5.clicked.connect(self.touch_bar5)
 		#Method to select job files for the wafers and show it in the dialog
 		self.btn_job.clicked.connect(self.select_job)
-		self.start_jobs_btn.clicked.connect(self.start_jobs)
+		
+		self.start_jobs_btn.clicked.connect(self.start_jobs) ###Start the jobs
+		#self.start_jobs_btn.clicked.connect(self.start_jobs_in_thread)
+		
 		self.unload_btn.clicked.connect(self.move_unload)
 		self.probe_btn.clicked.connect(self.go_probe)
 		self.gup_btn.clicked.connect(self.gross_up)
@@ -92,12 +112,170 @@ class Ui(QtWidgets.QMainWindow):
 		self.btn_go_td5.clicked.connect(self.go_td5)
 		##
 		self.jobs_combo_box.currentTextChanged.connect(self.update_info)
-	
+		###LIV/SPC Gui
+		self.tec_btn.clicked.connect(self.get_temp)
+		self.osa_acq_btn.clicked.connect(self.acq_osa)
+		self.liv_gen_btn.clicked.connect(self.gen_liv_config)
+
 		self.show() # Show the GUI
 		self.bar.setValue(0)
 		self.write_values()
 		self.showMaximized()
+		################Keithley controls
+		self.ktl_meas_btn.clicked.connect(self.ktl_meas)
+		self.ktl_on_btn.clicked.connect(self.ktl_on)
+		self.ktl_off_btn.clicked.connect(self.ktl_off)
+	def plot_win(self, x, y1, y2 = None, cell = None):
+		t1 = (0, 0, 255)
+		t2 = (255, 0, 0)
+		tfill = (0, 0, 0)
+		pen_t1 = pg.mkPen(color=(0, 0, 255), width = 3, style = QtCore.Qt.SolidLine)
+		pen_t2 = pg.mkPen(color=(255, 0, 0), width = 3, style = QtCore.Qt.SolidLine)
+		color1 = '#%02x%02x%02x' % t1
+		color2 = '#%02x%02x%02x' % t2
+	
+		if y2 != None:
+			#ic(x, y1, y2)
+			x_label = 'Current(A)'
+			y_label = 'voltage(V)'
+			y2_label = 'Power(W)'
+			title = 'LIV'
+			self.p1 = self.plotter.plotItem
+			self.p1.setLabels(left = y_label)
+			#Create a new ViewBox
+			self.p2 = pg.ViewBox()
+			self.p1.showAxis('right')
+			self.p1.scene().addItem(self.p2)
+			self.p1.getAxis('right').linkToView(self.p2)
+			self.p2.setXLink(self.p1)
+			self.p1.getAxis('left').setLabel(y_label, color = color1)
+			self.p1.getAxis('right').setLabel(y2_label, color = color2)
+			self.p1.getAxis('bottom').setLabel(x_label)        
+			self.p1.vb.sigResized.connect(self.updateViews)
+			self.updateViews()
+			self.set_graph(title, x_label, y_label)
+			self.clear_plot()
+			volt = y1
+			pcurr = x
+			power = y2
+			self.plotter.clear()
 
+			try:
+				mask = volt <= 5
+				volt = volt[mask]
+				power = power[mask]
+				pcurr = pcurr[mask]
+				val_x = val_x[mask]
+				y_min = np.min(volt)
+				y_max = np.max(volt)
+				self.p1.vb.disableAutoRange(axis = pg.ViewBox.YAxis)
+				self.p1.vb.setYRange(y_min, y_max)
+				
+				y2_min = np.min(power)
+				y2_max = np.max(power)
+				self.p2.setYRange(y2_min, y2_max)
+				self.p2.disableAutoRange(axis = pg.ViewBox.YAxis)
+
+				x_min = np.min(val_x)
+				x_max = np.max(val_x)
+				self.p1.vb.setXRange(x_min, x_max)
+				
+				self.p1.vb.disableAutoRange(axis = pg.ViewBox.YAxis)
+				self.p1.plot(pcurr, volt, pen = pen_t1, name = self.m.current_cell)
+				self.plot2 = pg.PlotCurveItem(pcurr, power, pen = pen_t2, name = cell)
+				self.p2.addItem(self.plot2)
+				pg.QtGui.QGuiApplication.processEvents()
+			except:
+				pass
+		else:
+			x_label = 'Wavelength(nm)'
+			y_label = 'Power (W)'
+			title = 'Spectrum'
+			self.p1 = self.plotter.plotItem
+			self.p1.setLabels(left = y_label)
+			self.p1 = self.plotter.plotItem
+			self.p1.setLabels(left = y_label)
+			val_x, val_y = x, y1
+			x_min = np.min(val_x)
+			x_max = np.max(val_x)
+			self.p1.vb.setXRange(x_min, x_max)
+			self.p1.vb.disableAutoRange(axis = pg.ViewBox.YAxis)
+			y_min = np.min(val_y)
+			y_max = np.max(val_y)
+			self.p1.vb.setYRange(y_min, y_max)
+			self.p1.vb.disableAutoRange(axis = pg.ViewBox.YAxis)
+			self.p1.getAxis('bottom').setLabel('Wavelength(nm)')
+			self.p1.getAxis('left').setLabel('Power(W)', color = color1)
+			self.p1.vb.disableAutoRange(axis = pg.ViewBox.YAxis)
+			self.p1.plot(val_x, val_y, pen = pen_t1, name = cell)
+			pg.QtGui.QGuiApplication.processEvents()
+	def ktl_meas(self):
+		address="GPIB0::25::INSTR"
+		rm=visa.ResourceManager()
+		ktl = rm.open_resource(address)
+		current = float(self.ktl_curr.value())/1000
+		ktl.write('*RST')
+		
+		ktl.write("SOUR1:VOLT:PROT 5")
+		ktl.write(":SOUR1:FUNC DC")
+		ktl.write(f":SOUR1:CURR {current}")
+		
+		ktl.write(':OUTP ON')
+		value = ktl.query(":READ?")
+		ktl.write(':OUTP OFF')
+		volt = float(value.split(',')[0])
+		self.volt_meas.setText(str(volt))
+	def ktl_on(self):
+		address="GPIB0::25::INSTR"
+		rm=visa.ResourceManager()
+		ktl = rm.open_resource(address)
+		current = float(self.ktl_curr.value())/1000
+
+		ktl.write('*RST')
+		ktl.write("SOUR1:VOLT:PROT 5")
+		ktl.write(":SOUR1:FUNC DC")
+		ktl.write(f":SOUR1:CURR {current}")
+		ktl.write(':OUTP ON')
+	def ktl_off(self):
+		address="GPIB0::25::INSTR"
+		rm=visa.ResourceManager()
+		ktl = rm.open_resource(address)
+		ktl.write(':OUTP OFF')
+#####################################END OF KEITHLEY BLOCK
+############OSA methods
+	def acq_osa(self):
+		Spectrum_settings = { # Settings for running Spectral measurements
+			"resolution": 'high',  # 0 = low, 1 = high
+			"sensitivity": 'high',  # 0 = low, 1 = medium low, 2 = medium high, 3 = high
+			"spectrum_window": 100 # nm, width of wavelength range for spectral measurements
+			} 
+		print('Initializing OSA')
+		try:
+			o = pyOSA.initialize()
+			resolution = Spectrum_settings["resolution"]
+			sensitivity = Spectrum_settings["sensitivity"]
+			o.setup(resolution=resolution, sensitivity=sensitivity, autogain=True) 
+			print('Starting acquisition')
+			time_before = time.time()
+		except:
+			print("Initialization failed")
+		acquisitions = o.acquire(number_of_acquisitions=1)
+		print('Measurement ready')
+		print(time.time()-time_before)
+		acquisition = acquisitions[-1]
+		spectrum = acquisition["spectrum"]
+		wavelength = spectrum.get_x()
+		power = spectrum.get_y()
+		peak = spectrum.y_max
+		peak_index = power.index(peak)
+		o.close()
+		self.plot_win(wavelength, power)
+	def rel_mov(self, x_inc, y_inc):
+		xy = self.send_command(b'PSXY\n')
+		x = float(re.findall("-?\d+", xy)[-2]) + x_inc
+		y = float(re.findall("-?\d+", xy)[-1]) + y_inc
+		command = f'GTXY {x},{y}\n'.encode() # go to the next  laser
+		self.send_command(command)
 	def gross_up(self):
 		'''Method to do the gross up'''
 		self.send_command(b'GUP\n')
@@ -129,16 +307,16 @@ class Ui(QtWidgets.QMainWindow):
 			self.table_bar4.setItem(0, 1, QTableWidgetItem(str( int(df.Y4[0]) )))
 			self.table_bar5.setItem(0, 0, QTableWidgetItem(str( int(df.X5[0]) )))
 			self.table_bar5.setItem(0, 1, QTableWidgetItem(str( int(df.Y5[0]) )))
-			self.line_start1.setText(df.start_index1[0])
-			self.line_start2.setText(df.start_index2[0])
-			self.line_start3.setText(df.start_index3[0])
-			self.line_start4.setText(df.start_index4[0])
-			self.line_start5.setText(df.start_index5[0])
-			self.line_end1.setText(df.end_index1[0])
-			self.line_end2.setText(df.end_index2[0])
-			self.line_end3.setText(df.end_index3[0])
-			self.line_end4.setText(df.end_index4[0])
-			self.line_end5.setText(df.end_index5[0])
+			self.line_start1.setText(str(df.start_index1[0]))
+			self.line_start2.setText( str(df.start_index2[0]))
+			self.line_start3.setText( str(df.start_index3[0]))
+			self.line_start4.setText( str(df.start_index4[0]))
+			self.line_start5.setText( str(df.start_index5[0]))
+			self.line_end1.setText( str(df.end_index1[0]))
+			self.line_end2.setText( str(df.end_index2[0]))
+			self.line_end3.setText( str(df.end_index3[0]))
+			self.line_end4.setText( str(df.end_index4[0]))
+			self.line_end5.setText( str(df.end_index5[0]))
 			
 			#Set job files
 			self.update_info(str(df.job[0]))
@@ -146,6 +324,12 @@ class Ui(QtWidgets.QMainWindow):
 			print(error)
 			print('Write to csv  backup failed!!!')
 			pass
+	def is_connected(self):
+		value = self.send_command(b'GID\n')
+		if value =='':
+			return False
+		else:
+			return True
 	def ser_connect(self):
 		try:
 			self.ser = serial.Serial(port = 'COM1', baudrate = 38400, parity = serial.PARITY_EVEN, bytesize = serial.SEVENBITS, stopbits = serial.STOPBITS_TWO, timeout = 0.2)
@@ -435,10 +619,17 @@ class Ui(QtWidgets.QMainWindow):
 		xtd = self.table_bar5.item(0, 0).text()
 		ytd = self.table_bar5.item(0, 1).text()
 		command = f'GTXY {xtd},{ytd}\n'.encode()
-		self.send_command(command)	
-	def start_jobs(self):
-		#Read from interface all wafer theta and wafers touchdown(in milidegrees and um)
-		#Before starting it has to check if the check boxes are checked!
+		self.send_command(command)
+	def temp_job_finder(self):
+		root_folder = '/'.join(self.job_id.text().split('/')[0:-1])
+		wafer = self.wafer_id.text()
+		job_temp = glob.glob(root_folder + f'/*{wafer}*'+'_JOB.yaml')
+		if 5-len(job_temp)>0:
+			for i in range(5-len(job_temp)):
+				job_temp.append([])
+		return job_temp
+
+	def bar_start(self):
 		stat_bar1 = self.check_bar1.isChecked()
 		stat_bar2 = self.check_bar2.isChecked()
 		stat_bar3 = self.check_bar3.isChecked()
@@ -457,24 +648,28 @@ class Ui(QtWidgets.QMainWindow):
 						self.op_id.currentText(),
 						self.op_id.currentText(),
 						self.op_id.currentText()]
-		job_file_arr   = [self.job_id.text(), 
-						self.job_id.text(), 
-						self.job_id.text(), 
+
+		if self.check_temp_meas.isChecked():
+			job_file_arr = self.temp_job_finder()
+		else:
+			job_file_arr = [self.job_id.text(),
+						self.job_id.text(),
+						self.job_id.text(),
 						self.job_id.text(),
 						self.job_id.text()]
-		
-		x_td_arr      = [int( self.table_bar1.item(0, 0).text().split('.')[0] ),
+
+		x_td_arr = [int( self.table_bar1.item(0, 0).text().split('.')[0] ),
 						int( self.table_bar2.item(0, 0).text().split('.')[0] ),
 						int( self.table_bar3.item(0, 0).text().split('.')[0] ),
 						int( self.table_bar4.item(0, 0).text().split('.')[0] ),
 						int( self.table_bar5.item(0, 0).text().split('.')[0])]
-						
-		y_td_arr      = [int(self.table_bar1.item(0, 1).text().split('.')[0]),
+
+		y_td_arr = [int(self.table_bar1.item(0, 1).text().split('.')[0]),
 						int(self.table_bar2.item(0, 1).text().split('.')[0]),
 						int(self.table_bar3.item(0, 1).text().split('.')[0]),
 						int(self.table_bar4.item(0, 1).text().split('.')[0]),
 						int(self.table_bar5.item(0, 1).text().split('.')[0])]
-						
+
 		cell_index_start =[self.line_start1.text(),
 						self.line_start2.text(),
 						self.line_start3.text(),
@@ -485,17 +680,18 @@ class Ui(QtWidgets.QMainWindow):
 						self.line_end2.text(),
 						self.line_end3.text(),
 						self.line_end4.text(),
-						self.line_end5.text(),]
+						self.line_end5.text()]
 		if stat_arr==[False,False,False,False,False]:
 				self.start_jobs_btn.setStyleSheet('background-color: rgb(255, 255, 0)')
 				self.start_jobs_btn.setText("Check a wafer to measure")
 				self.start_jobs_btn.repaint()
 				time.sleep(1)
+		print(self.check_temp_meas.isChecked())
+		print('############################################')
+		print(job_file_arr)
+		print('############################################')
 		for job, user, x_td, y_td, check_bar, start_index, end_index, prog in  zip(job_file_arr, user_name_arr, x_td_arr, y_td_arr,stat_arr, cell_index_start, cell_index_end, prog_arr):
 			
-			print('############################################')
-			print(job, user, x_td, y_td, check_bar, start_index, end_index, prog)
-			print('############################################')
 			#before starting, move it to the center of the wafer
 			if check_bar:
 				self.start_jobs_btn.setStyleSheet('background-color: rgb(255, 255, 0)')
@@ -503,15 +699,466 @@ class Ui(QtWidgets.QMainWindow):
 				self.start_jobs_btn.repaint()
 				self.run(job, user, x_td, y_td, check_bar, start_index, end_index, prog)
 				self.reset_start_btn()
+	def die_start(self):
+		pass
 
+	####misc. table
+	def gen_liv_config(self):
+		# read values from gui
+		val_20c = 20*self.liv_temp_20c.isChecked()
+		val_40c = 40*self.liv_temp_40c.isChecked()
+		val_55c = 55*self.liv_temp_55c.isChecked()
+		val_80c = 80*self.liv_temp_80c.isChecked()
+		temp_arr = [val_20c,val_40c, val_55c, val_80c]
+		temp_arr_clean = []
+		for i in temp_arr:
+			if i >0:
+				temp_arr_clean.append(i)
+		if len(temp_arr_clean)==0:
+			temp_arr_clean = [20]
+		#######Writing values in a .yaml
+		dict_to_write = dict(
+		customer = self.liv_cust_line.text(),
+		lot = self.liv_batch_line.text(),
+		product = self.liv_prod_line.text(),
+		wafer = self.liv_wfr_line.text(),
+		PL = int(self.liv_wvgl_box.currentText()),
+		T_set = temp_arr_clean,
+		LIV = eval(self.liv_meas_box.currentText()),
+		Spectrum = eval(self.spec_meas_box.currentText()),
+		cell_type = self.liv_cell_box.currentText(),
+		combi_mode = eval(self.combi_meas_box.currentText())
+		)
+		yaml_filename = self.liv_wfr_line.text() + '_ManualLIV_JOB'
+		root_path = 'C:/Users/HP/Smart Photonics/Engineering - Test & Measurement/Internal Projects/Job generation'
+		folder_location = root_path+f"/{self.liv_cust_line.text()}/{self.liv_prod_line.text()}/{self.liv_batch_line.text()}/TM0002"
+		##Creating directory if it is not there
+		if not os.path.exists(folder_location):
+			os.makedirs(folder_location)
+		with open(folder_location + '/'+yaml_filename+'.yaml' , 'w') as outfile:
+			yaml.dump(dict_to_write, outfile, default_flow_style=False)
+		
+		
+		####Methods for MLIV meas
+	def get_temp(self):
+		tec_t = tec.Tec()          # TEC
+		tec_t.connect(port="COM4")
+		temp = tec_t.get_temperature()
+		self.temp_tec.setText(str(temp) +  '°C')
+		tec_t.release()
+	def chunker(self, seq, size):
+		return(seq[pos:pos+size] for pos in range(0, len(seq),size))
+	def spc_start(self):
+		#### Pre-defined settings ####
+		current_dict = {
+			"DBRB12":0.120,
+			"ID_DBR9":0.120,
+			"ID_DBR11":0.120,
+			"ID_DBR8":0.120,
+			"ID_DBR10":0.120,
+			"ID_DBR7":0.120,
+			"DBRB6":0.120,
+			"ID_DBR3":0.120,
+			"ID_DBRB5":0.120,
+			"ID_DBR2":0.120,
+			"ID_DBRB4":0.120,
+			"ID_DBR1":0.120
+			}
+
+		LIV_settings = { # Settings for running LIV measurements
+			"pulse_delay": 1.E-3,  # s
+			"pulse_width": 1.E-5,  # s
+			"pulse_mode": 'DC',  # i.e. "Staircase" mode
+			"step_size": 5.E-4,  # A
+			"resp_at_1310": -166.25,  # PD responsivity for wavelength 1310 nm = -166.25
+			"resp_at_1550": -133.51,  # PD responsivity for wavelength 1550 nm = -133.51
+			}
+		Spectrum_settings = { # Settings for running Spectral measurements
+			"resolution": 'high',  # 0 = low, 1 = high
+			"sensitivity": 'high',  # 0 = low, 1 = medium low, 2 = medium high, 3 = high
+			"spectrum_window": 100 # nm, width of wavelength range for spectral measurements
+			} 
+		next_wg = 325 # um, distance on y-axis between consecutive DBR lasers 
+		operator_id = self.op_id_spc.currentText()
+		
+		##### Collect measurement and sample information #####
+		### Ask user for JOB file ###
+		job_file_root = "C:/Users/HP/Smart Photonics/Engineering - Test & Measurement/Internal Projects/Job generation/SPC/TM0002/T3/"
+		job_file = "PM-DEV-206600_1NS23035PFE021_ManualLIV_JOB.yaml"
+		cells_file = "cells_wafer_021.csv"
+		job_file_path = job_file_root + job_file
+		cells_file_path = job_file_root + cells_file
+		### Open the JOB file, if provided, and feed it into the job_dict ###
+
+		if job_file_path:
+			with open(job_file_path, 'r') as f:
+				job_dict = yaml.safe_load(f)
+				f.close()
+		else: 
+			job_dict = {}
+
+		### Get information out of the JOB file, ask the Operator for the missing ones ###
+		customer_id = job_dict.get("customer", None)
+		lot_id = job_dict.get("lot", None)
+		product_id = job_dict.get("product", None)
+		wafer_id = job_dict.get("wafer", None)
+		pl = job_dict.get("PL", None)
+		temp_set= job_dict.get("T_set", None)
+		liv = job_dict.get("LIV", False)
+		spectrum = job_dict.get("Spectrum", False)
+		i_soa = job_dict.get("Spectrum I_SOA", None)
+		cell_type = job_dict.get("cell_type", "T3")
+
+		if not customer_id:
+			customer_id = input("Customer ID: ")
+		if not product_id:
+			product_id = input("Product ID: ")
+		if not lot_id:
+			lot_id = input("Lot ID: ")
+		if not wafer_id:
+			wafer_id = input("Wafer ID: ")
+		if not pl:
+			pl = int(input("PL wavelength [1310 or 1550]: "))
+		if not temp_set:
+			temp_set = int(input("Chuck set temperature: "))                   
+		while not (liv or spectrum):
+			print("No measurement type has been entered")
+			answer=("Perform LIV measurements? [Y/N]")
+			if answer.upper() != "Y" or answer.upper() != "YES":
+				liv=True
+			answer=("Perform Spectral measurments? [Y/N]")
+			if answer.upper() != "Y" or answer.upper() != "YES":
+				spectrum=True
+		print('Configs loaded...')
+		# Set the SOA current at which to perform the spectral measurement(s)
+		if spectrum:
+			if not i_soa:
+				#i_soa = input("SOA current (relative to max allowed SOA current) for spectral measurements (if multiple value, use a comma to separate them) [0-1]: ")
+				i_soa = '1'
+			# convert i_soa in an array of numbers
+			i_soa = i_soa.replace(" ","") # remove empty characters, if any
+			i_soa = i_soa.split(",")
+			try: # convert strings into numerical float values
+				i_soa = [float(i) for i in i_soa]
+				if any(i>1 or i<0 for i in i_soa): # check if the numerical values of I_SOA are meaningful
+					print(f"ERROR! The values of current must be between 0 and 1, while the following values {', '.join(i_soa)} were entered")
+					raise ValueError
+			except:
+				print(f"ERROR! Impossible to convert the entered values {', '.join(i_soa)} to a numerical value")
+				raise ValueError
+		# Check provided PL wavelength
+		while (pl != 1550) and (pl != 1310):
+			print("ERROR! PL wavelength must be either 1550 or 1310")
+			raise SystemExit("Not configured PL value entered, exiting program")
+
+		df = pd.read_csv(cells_file_path)
+		cell_id_list = df.CellID.values.tolist()
+		n_cells = len(cell_id_list)
+		# make a folder for storing raw data
+		path = f'D:\PRODUCTION\data\{customer_id}\manual_BT_liv\{product_id}_{lot_id}'
+		if not os.path.isdir(path):
+			os.makedirs(path)
+		##### End of sample information collection and subsequent actions #####
+		#### Connect the instruments ####
+		tec_t = tec.Tec()          # TEC
+		tec_t.connect(port="COM4")
+		ktl = Keithley2520()    # SMU
+		ktl.connect()
+		print('Is connected!!!!!!!!!!!!')
+		while True:
+			if not(self.is_connected()):
+				self.stat_probe.setText("NOT CONNECTED!!!")
+				new_font = QFont("Arial", 30)
+				new_font.setBold(True)
+				self.stat_probe.setFont(new_font)
+				self.stat_probe.setStyleSheet("color:red;background-color: yellow;")
+				time.sleep(0.1)
+				QApplication.processEvents()
+			else:
+				self.stat_probe.setText("CONNECTED!!!")
+				new_font = QFont("Arial", 30)
+				new_font.setBold(True)
+				self.stat_probe.setFont(new_font)
+				self.stat_probe.setStyleSheet("color:green;background-color: yellow;")
+				QApplication.processEvents()
+				break
+
+		#set light on
+		self.send_command(b'LI1\n')
+		self.send_command(b'TSTHD 2\n') #---sphere
+		# Connect the OSA, if needed
+		if spectrum:
+			o = pyOSA.initialize()
+			resolution = Spectrum_settings["resolution"]
+			sensitivity = Spectrum_settings["sensitivity"]
+			o.setup(resolution=resolution, sensitivity=sensitivity, autogain=True)
+			print(f"OSA initialized with resolution {resolution} sensitivity {sensitivity} and autogain True.")
+			
+		### Set the chuck temperature ###
+		print("Connecting Tec and setting temperature to {}".format(temp_set))
+		tec_t.set_temperature(temp_set)
+		tec_t._set_enable()
+		print("Waiting for temperature to stabilise...")
+		tec_t._set(T_set = temp_set, T_win = 0.5)
+
+		self.go_probe()
+		self.gross_up()
+		cells_list = []     
+		session_start = str(datetime.datetime.now()).replace(' ', '_')
+		measurement_counter = 0
+		kill = 0
+		list_rawdata_files = []
+		n_cell_to_measured = 3
+		self.go_probe()
+		for loaded_cells in self.chunker(cell_id_list, n_cell_to_measured):
+			for idx in loaded_cells: # For loop on individual cells
+				cell_id = idx
+				
+				for device_idx, (device_id, max_current) in enumerate(current_dict.items()): # for loop on individual FP lasers in each cell
+					if kill == 1: # acquisition is stopped if "Kill" command has been sent
+						break
+					if device_idx == 0: # adjust probe height for first laser of every cell
+				
+						if idx == 0:
+							print('Align probes in X-direction manually using the screw-micrometer')
+							print('')
+				
+						self.send_command(b'LDPH 0\n') #Go to local and the asks the user to perform a touchdown
+						self.wait_ser()
+				
+					else:
+						self.send_command(b'CDW\n')#fine down
+						if device_id=='ID_DBRB7':
+							next_wg=350
+						else:
+							next_wg=325
+						self.rel_mov(0, next_wg)
+
+					temperature = tec_t.get_temperature()
+					print('t={}'.format(temperature))
+					self.send_command(b'CUP\n')#fine up
+					if liv: # Execute LIV measurements
+						while True:
+							self.send_command(b'TSTHD 2\n') ##move test head to Sphere
+							c, v, pds = ktl.LIVpulsedsweep(sweepstart=0,
+														  sweepstop=max_current,
+														  step_size=LIV_settings["step_size"],
+														  smua_ilimit=0.5,  # not used, limit is internally calculated for best performance
+														  smua_vlimit=5,
+														  pulse_delay=LIV_settings["pulse_delay"],
+														  pulse_width=LIV_settings["pulse_width"],
+														  pulse_mode=LIV_settings["pulse_mode"],
+														  )
+							if pl == 1310:
+								resp = LIV_settings["resp_at_1310"]
+							if pl == 1550:
+								resp = LIV_settings["resp_at_1550"]
+							power = [-c * resp for c in pds.magnitude]
+							###Add a method to plot pyqt......
+							x, y1, y2, cell = c[1:], v[1:], power[1:], device_id
+							print("Data to plot!")
+							#ic(x, y1, y2, cell)
+							self.plot_win(x, y1, y2, cell)
+							
+							measurement_plan = 'LIV_{}'.format(device_id)
+							now = str(datetime.datetime.now()).replace(' ', '_')
+							now = now.replace(':', '.')
+							fname = '{}_{}_{}_{}.txt'.format(
+								wafer_id, cell_id, measurement_plan, now)
+							data = {
+								'_openEPDA_version': openEPDA_version,
+								'CustomerID': customer_id,
+								'LotID': lot_id,
+								'ProductID': product_id,
+								'Cell': cell_id,
+								'Filename': fname,
+								'ToolID': 'TM0002',
+								'Measurement plan': measurement_plan,
+								'Mode': LIV_settings["pulse_mode"],
+								'ObservationID': measurement_counter,
+								'OperatorID': operator_id,
+								'PL_wavelength': pl,
+								'MeasurementSession': 'TM0002_{}'.format(session_start),
+								'Session_start_time': session_start,
+								'SetTemperature': temp_set,
+								'Wafer': wafer_id,
+								'Current LD, [A]': c.magnitude,
+								'Voltage LD, [V]': v.magnitude,
+								'Photocurrent PD, [A]': pds.magnitude,
+								'Power PD, [W]': power
+							}
+							w = openepda.OpenEpdaDataDumper()
+							with open(os.path.join(path, fname), 'w', newline="\n") as f:
+								w.write(f, **data)
+							list_rawdata_files.append(os.path.join(path, fname))    
+							measurement_counter += 1
+							break
+					if device_idx == 11 and not(spectrum):
+						self.send_command(b'CDW\n')#fine down
+						self.rel_mov(0, 400)
+						
+				if spectrum:
+					rev_curr_dict = OrderedDict(reversed(list(current_dict.items())))
+					for device_idx, (device_id, max_current) in enumerate(rev_curr_dict.items()): # for loop on individual FP lasers in each cell
+						self.send_command(b'CDW\n')#fine down
+						if device_id=='DBRB6':
+							next_wg=-350
+						elif device_id=='ID_DBR1':
+							next_wg = 0
+						else:
+							next_wg=-325
+						self.rel_mov(0, next_wg)
+						self.send_command(b'CUP\n')#fine up
+						
+						if spectrum: # Execute Spectral measurements
+							self.send_command(b'TSTHD 1\n') #---Fiber
+							for soa_current in i_soa:
+								while True:
+									spec_current = max_current * soa_current  # sets used current as a factor of max LIV currents
+									ktl.reset()
+									ktl.set_current(1, spec_current)
+									ktl.set_channel_state(1, 'on')
+									
+									acquisitions = o.acquire(number_of_acquisitions=1)
+									
+									acquisition = acquisitions[-1]
+									spectrum = acquisition["spectrum"]
+									wavelength = spectrum.get_x()
+									power = spectrum.get_y()
+									peak = spectrum.y_max
+									peak_index = power.index(peak)
+									
+									ktl.set_channel_state(1, 'off')
+									x = wavelength[peak_index - 500:peak_index + 500]
+									y1 = power[peak_index - 500:peak_index + 500]
+									cell = device_id
+									self.plot_win(x, y1, cell)
+									o.close()
+									break
+						if device_idx == 11 and spectrum:
+							self.send_command(b'CDW\n')#fine down
+							self.rel_mov(0, 4025)
+							
+		######## Ending the measurement #######
+		### Return BT to load position and disconnect tools ###
+		print('returning chuck to loading position and releasing equipment')
+		self.send_command(b'LI0\n')
+		self.send_command(b'CDW\n')#fine down
+		self.gross_down()
+		self.move_unload()
+		o.close()
+		tec_t.release()
+		ktl.release()
+
+		#####Data Extraction
+		file_root = "C:/Users/HP/Smart Photonics/Engineering - Test & Measurement/Internal Projects/Job generation/SPC/TM0002/T3/" 
+		de_file = "Data_extractor_no_entry.py"
+		de_file_path = file_root + de_file
+		data_path = path
+		call(['python',de_file_path, data_path])
+		###Change DE column names
+		
+		try:
+			A_corr = []
+			de_folder = data_path + '\\analyses_results'
+			de_results = glob.glob(de_folder+'\\*metadata.csv')
+			df = pd.read_csv(de_results[0])
+			for i in de_results:
+				df_clean = df.loc[:, ~df.columns.str.startswith('_meta')]
+				A = df_clean.columns
+				for x in enumerate(A):
+					if x[0]<8:
+						A_corr.append(x[1])
+					else:
+						A_corr.append('DLT_SSP_EET_' + x[1])
+				df_clean.columns = A_corr
+				time_sufix = time.time()
+				df_clean.to_csv( f'O:/06 Customers/rawdata backup/TM0002/PM-DEV-206600/SPC/DataExtraction/{customer_id}_{product_id}_{lot_id}_{wafer_id}_{time_sufix}.csv')
+		except:
+			pass
+		### Zip rawdata files, if any ####
+		zip_file_name=""
+		
+		if list_rawdata_files:
+			folder = [os.path.split(f)[0] for f in list_rawdata_files][0]
+			# ABI: I think I have to change the way the zip file name is given -> get it from "folder"
+			zip_file_name = ("_").join([customer_id, product_id , lot_id, wafer_id,"SessionStart",session_start+".zip"])
+			zip_file_name = zip_file_name.replace(':','-') #removing illegal ":" character  
+			zip_file_name = os.path.join(folder,zip_file_name) # add the folder location to the zip file name  
+			with ZipFile(zip_file_name, 'w') as zipObj:
+				# Iterate over all the output files in directory
+				for filename in list_rawdata_files:
+					zip_fname = os.path.join('rawdata',os.path.split(filename)[1]) # name of zipped file inside the zip folder
+					# Add file to zip
+					zipObj.write(filename,arcname=zip_fname)
+					# deleting the zipped file
+					os.remove(filename)
+			
+			print("All output files zipped and removed!")
+
+		### Save Zip file in backup location ###
+		if zip_file_name:
+			zip_file_name_stripped = os.path.split(zip_file_name)[1] # name of zip file stripped of path location
+			backup_folder = f"O:\\06 Customers\\rawdata backup\\TM0002\\{customer_id}\\{lot_id}"
+			destination_filename = os.path.join(backup_folder, zip_file_name_stripped)
+			# check if the destination folder on backup location exists, if not creates it
+			if not os.path.exists(backup_folder):
+				os.makedirs(backup_folder)
+			
+			# copy file to the back up location
+			cmd_failure = os.system((" ").join(['copy', '"'+zip_file_name+'"', '"'+destination_filename+'"']))
+
+			if cmd_failure==0:
+				print(f"Zip file {zip_file_name_stripped} has been copied at backup location!")
+			else:
+				print(f"Warning! Zip file {zip_file_name_stripped} has NOT been copied at backup location!")
+		try:
+			df.to_csv(cells_file_path, index=False)
+		except:
+			pass
+	def start_jobs_in_thread(self):
+		current_tab_index = self.meas_tab.currentIndex()
+		if current_tab_index == 0:
+			job_method = self.bar_start
+		elif current_tab_index == 1:
+			job_method = self.die_start
+		elif current_tab_index == 2:
+			job_method = self.spc_start
+
+		self.worker_thread = QThread()
+		self.worker = Worker(job_method)
+		self.worker.moveToThread(self.worker_thread)
+		self.worker_thread.started.connect(self.worker.run)
+		self.worker.finished.connect(self.on_jobs_finished)
+		self.worker_thread.start()
+
+	def on_jobs_finished(self, msg):
+		print(msg)
+		self.worker_thread.quit()
+		self.worker_thread.wait()
+
+	def start_jobs(self):
+		###########
+		#Indexes of the tables
+		#0: Bar measurements
+		#1: Dies measurements
+		#2: SPC
+		print('########################')
+		current_tab_index = self.meas_tab.currentIndex()
+		print('########################')
+		if current_tab_index == 0:
+			self.bar_start()
+		elif current_tab_index == 1:
+			self.die_start()
+		elif current_tab_index == 2:
+			self.spc_start()
 	def reset_start_btn(self):
 		self.start_jobs_btn.setStyleSheet('background-color: rgb(85, 255, 127)')
 		self.start_jobs_btn.setText("START")
 		self.start_jobs_btn.repaint()
 	def stop_all(self):
 		pass
-	#####core.py  starts here
-
+	#####core.py  starts here#######
 	def set_job_folder_fullpath(self, fp):
 		"""Sets the job folder fullpath.
 		Useful callback when core is run through the GUI.
@@ -567,7 +1214,6 @@ class Ui(QtWidgets.QMainWindow):
 			self.fe.get_specified_configuration_files(probes=True)
 			self.probes_fullpath = self.fe.probes
 	
-
 		print ('\n\n\n\n\n\n===== Configuration files =====')
 		print ('job file',self.job_fullpath)
 		print ('mdf file',self.mdf_fullpath)
@@ -635,8 +1281,11 @@ class Ui(QtWidgets.QMainWindow):
 		logger.debug('Info from job file loaded')
 	def generate_meas_plan(self,start_index, end_index ): 
 		"""Reads config files (CCF, MMF, MDF, and probes) and generates the measurements plan"""
+		print('gen meas plan start')
 		self.mp = MeasPlan.from_files(self.ccf_fullpath,self.mmf_fullpath,self.mdf_fullpath,self.probes_fullpath)
+		print('meas plan files read')
 		self.probename=self.mp.probes.get_probe_name()
+		print('probe name')
 		if self.job.get_sample_type=='bar': # select a sub-samples of cells from MMF/CCF
 			self.select_sample_v2(start_index, end_index)
 		else:
@@ -675,8 +1324,11 @@ class Ui(QtWidgets.QMainWindow):
 		self.identify(user)
 		self.read_job_v2(job)
 		self.find_configuration_files(job)
+		print('Job file read!')
 		self.generate_meas_plan(start_index, end_index)# ABI: new function
+		print('Meas Plan gen!')
 		self.init_equipment()
+		print('Eq init complete')
 		self.loading.init_loading_process_(self.eq)
 		self.start_loading_process()
 		self.init_meas_handler()
@@ -756,7 +1408,7 @@ class Ui(QtWidgets.QMainWindow):
 				message = "WARNING! CRITICAL ERROR!\nEdge sensor open when chuck is in 'Fine down' position\nThe script execution has been terminated"
 				print(message)
 				logger.critical(message)
-				raise ProberError("EdgeSensorFineDown")                    
+				print("Critical Error Edge sensor open when chuck is in 'Fine Down' position")                    
 			self.eq.prober.go_to_xy(x,y)
 	def perform_measurement_loop(self, progress_bar): # ABI: this function is aimed at replacing init_measurement_loop()
 		"""This method is responsible for executing the measurement loop.
@@ -765,6 +1417,7 @@ class Ui(QtWidgets.QMainWindow):
 		die, then the next die is measured) or "meas_wise" (i.e. one measurment is performed on 
 		all dies, then the next measurement is performed)
 		"""
+		self.q_timer.start(500)
 		cnt = 0
 		progress_bar = r'{}'.format(progress_bar)
 		logger.info('Starting the measurement loop...')
@@ -824,7 +1477,7 @@ class Ui(QtWidgets.QMainWindow):
 		except:
 			print('z touch down not found, it  will get from file!')
 			z_touch = pd.read_csv('backup_values.csv').Z[0] + 100
-		ic(z_touch)
+		#ic(z_touch)
 		self.eq.prober.go_to_z(z_touch)
 		edge_sensor_open = self.eq.prober.get_edge_sensor_status()
 		if(not edge_sensor_open and not self.eq.prober.is_chuck_in_fineup()): # this line prevents to perform a "fine up" if chuck is already in fine up position
@@ -896,7 +1549,7 @@ class Ui(QtWidgets.QMainWindow):
 
 		x_label = 'Current(A)'
 		y_label = 'voltage(V)'
-		y2_label = 'Power(W)'	
+		y2_label = 'Power(W)'
 		title = 'LIV'
 		
 		self.p1 = self.plotter.plotItem
@@ -915,9 +1568,10 @@ class Ui(QtWidgets.QMainWindow):
 		self.updateViews()
 		self.set_graph(title, x_label, y_label)
 		self.clear_plot()
+
 		if self.meas_mod == 'Spectrum':
 			val_x, val_y = self.m.start_measurement(False)
-			ic(val_x, val_y)
+			#ic(val_x, val_y)
 			x_min = np.min(val_x)
 			x_max = np.max(val_x)
 			self.p1.vb.setXRange(x_min, x_max)
@@ -964,7 +1618,6 @@ class Ui(QtWidgets.QMainWindow):
 			except:
 				pass
 		pg.QtGui.QGuiApplication.processEvents()
-
 	def set_graph(self, titulo, eixo_x, eixo_y):
 		# THESE PARAMETERS ARE FOR RESIZING AND MOVING THE POSITION OF THE LEGEND BOX
 		# I INCREASED X-SIZE AND Y-OFFSET
@@ -980,8 +1633,8 @@ class Ui(QtWidgets.QMainWindow):
 		self.p1.showLabel('left', show=True)
 		self.p1.showLabel('right', show=True)
 		self.p1.showGrid(x=True, y=True, alpha=0.2)
-		self.p1.getAxis('bottom').setTickSpacing(major=1,minor=1)
-		self.p1.getAxis('left').setTickSpacing(major=0.01,minor=0.005)
+		self.p1.getAxis('bottom').setTickSpacing(major=50,minor=25)
+		self.p1.getAxis('left').setTickSpacing(major=0.2,minor=0.1)
 		
 		titleStyle = {'color': '#000', 'size': '18pt'}
 		self.p1.setTitle(titulo, **titleStyle)
@@ -990,18 +1643,15 @@ class Ui(QtWidgets.QMainWindow):
 		self.p1.setLabel('bottom', eixo_x, **labelStyle)
 		self.p1.setLabel('left', eixo_y, **labelStyle)
 		self.p1.setLabel('top',)
-		
 	def clear_plot(self):
 		self.plotter.clear()
 		self.p1.clear()
 		if hasattr(self, 'plot2') and self.plot2 is not None:
 			self.p2.removeItem(self.plot2)
 			self.plot2 = None
-
 	def updateViews(self):
 		self.p2.setGeometry(self.p1.vb.sceneBoundingRect())
 		self.p2.linkedViewChanged(self.p1.vb, self.p2.XAxis)
-
 	def identify(self, user):
 		'''Identify the operator
 		'''
@@ -1107,11 +1757,8 @@ class Ui(QtWidgets.QMainWindow):
 		self.loading.unload_sample()
 		self.release_equipment()
 		self.reset_start_btn()
-	
 		#send telegram message it is done
-
 		msg = "Measurement finised: "
-		
 		operator_telegram={
 			'EHN':'728365163',
 			'ABI':'989990208',
@@ -1124,11 +1771,9 @@ class Ui(QtWidgets.QMainWindow):
 		try:
 			telegram_id = operator_telegram.get(self.operator.upper())
 			telegram.bot_sendtext(msg,telegram_id)
-			
 		except:
 			print('No message sent, operator ID unknown')
 			pass
-		
 		logging.shutdown() # release the log file
 
 		if(self.save_output_on_file):
@@ -1140,7 +1785,6 @@ class Ui(QtWidgets.QMainWindow):
 		print("Number of attempted 'touch-down': {}".format(len(self.touch_down_recorder)))
 		print("Number of successful 'touch-down': {}".format(sum([1 for cell, _, _, _, td_boolean in self.touch_down_recorder if td_boolean == True])))
 		print("Number of unsuccessful 'touch-down': {}\n".format(sum([1 for cell, _, _, _, td_boolean in self.touch_down_recorder if td_boolean == False])))
-				
 	def post_acquisition_operations(self):
 		""" Executes post-acquisition operations on output files
 		"""
@@ -1153,11 +1797,9 @@ class Ui(QtWidgets.QMainWindow):
 		self.compress_output_files() # set to True for zipping output files, do not enter any value for relying on Job file
 		# make a backup copy of the compressed zip file
 		self.backup_output_files()
-
 	def cleanup(self):
 		print(print("Doing cleanup in end()"))
 		QtWidgets.QApplication.quit()
-
 	def closeEvent(self, event):
 		print("Window closed")
 		try:
