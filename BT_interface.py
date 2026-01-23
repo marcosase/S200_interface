@@ -1,5 +1,7 @@
 #!/usr/bin/python3.8
 #coding:utf-8 -*-
+# Author: Marcos Eleoterio
+# Email: marcos.dasilva.eleoterio@smartphotonics.nl
 import pandas as pd
 import time
 import datetime
@@ -7,12 +9,13 @@ import sys, os
 import numpy as np
 import pyvisa as visa
 from PyQt5 import QtGui, QtWidgets, uic, QtCore
-from PyQt5.QtWidgets import *
+from PyQt5.QtWidgets import QTableWidgetItem, QFileDialog, QApplication
 from PyQt5.QtGui import QFont 
 from PyQt5.QtCore import QThread, QProcess, QTimer, QObject, pyqtSignal
 from zipfile import ZipFile
 import pyqtgraph as pg
 import serial
+from functools import partial
 import config
 import re
 import yaml
@@ -51,18 +54,22 @@ ktl= Keithley2520()
 class Worker(QObject):
 	finished = pyqtSignal(str)
 	def __init__(self, job_method):
+		"""Initializes the Worker with a job method to run in a thread."""
 		super().__init__()
 		self.job_method = job_method
 
 	def run(self):
+		"""Executes the job method and emits the finished signal when done."""
 		self.job_method()
 		self.finished.emit("Jobs finished")
 
 	def stop(self):
+		"""Sets the stop_requested flag to True to request stopping the job."""
 		self.stop_requested=True
 
 class Ui(QtWidgets.QMainWindow):
 	def __init__(self):
+		"""Initializes the main UI window and sets up all widgets, connections, and variables."""
 		pg.setConfigOption('background', 'w') #before loading widget
 		pg.setConfigOption('foreground', 'k')
 		super(Ui, self).__init__() # Call the inherited classes __init__ method
@@ -89,11 +96,23 @@ class Ui(QtWidgets.QMainWindow):
 		self.job_folder_path1 = ''
 		self.job_folder_path2 = ''
 		#Methods to perform the first touchdown and save it 
-		self.btn_touch1.clicked.connect(self.touch_bar1)
-		self.btn_touch2.clicked.connect(self.touch_bar2)
-		self.btn_touch3.clicked.connect(self.touch_bar3)
-		self.btn_touch4.clicked.connect(self.touch_bar4)
-		self.btn_touch5.clicked.connect(self.touch_bar5)
+		#self.btn_touch1.clicked.connect(self.touch_bar1)
+		#self.btn_touch2.clicked.connect(self.touch_bar2)
+		#self.btn_touch3.clicked.connect(self.touch_bar3)
+		#self.btn_touch4.clicked.connect(self.touch_bar4)
+		#self.btn_touch5.clicked.connect(self.touch_bar5)
+		#self.btn_touch6.clicked.connect(self.touch_bar6)
+		#self.btn_touch7.clicked.connect(self.touch_bar7)
+
+		#Test for new touchdown method
+		self.btn_touch1.clicked.connect(partial(self.touch_bar, 1))
+		self.btn_touch2.clicked.connect(partial(self.touch_bar, 2))
+		self.btn_touch3.clicked.connect(partial(self.touch_bar, 3))
+		self.btn_touch4.clicked.connect(partial(self.touch_bar, 4))
+		self.btn_touch5.clicked.connect(partial(self.touch_bar, 5))
+		self.btn_touch6.clicked.connect(partial(self.touch_bar, 6))
+		self.btn_touch7.clicked.connect(partial(self.touch_bar, 7))
+		
 		#Method to select job files for the wafers and show it in the dialog
 		self.btn_job.clicked.connect(self.select_job)
 		
@@ -110,6 +129,8 @@ class Ui(QtWidgets.QMainWindow):
 		self.btn_go_td3.clicked.connect(self.go_td3)
 		self.btn_go_td4.clicked.connect(self.go_td4)
 		self.btn_go_td5.clicked.connect(self.go_td5)
+		self.btn_go_td6.clicked.connect(self.go_td6)
+		self.btn_go_td7.clicked.connect(self.go_td7)
 		##
 		self.jobs_combo_box.currentTextChanged.connect(self.update_info)
 		###LIV/SPC Gui
@@ -121,18 +142,52 @@ class Ui(QtWidgets.QMainWindow):
 		self.bar.setValue(0)
 		self.write_values()
 		self.showMaximized()
+		#######Die measurement stuff
+		self.die_btn_job.clicked.connect(self.select_die_config)
+		self.die_jobs_combo_box.currentTextChanged.connect(self.die_update_info)
+
 		################Keithley controls
 		self.ktl_meas_btn.clicked.connect(self.ktl_meas)
 		self.ktl_on_btn.clicked.connect(self.ktl_on)
 		self.ktl_off_btn.clicked.connect(self.ktl_off)
 	def plot_win(self, x, y1, y2 = None, cell = None):
-		t1 = (0, 0, 255)
-		t2 = (255, 0, 0)
-		tfill = (0, 0, 0)
-		pen_t1 = pg.mkPen(color=(0, 0, 255), width = 3, style = QtCore.Qt.SolidLine)
-		pen_t2 = pg.mkPen(color=(255, 0, 0), width = 3, style = QtCore.Qt.SolidLine)
+		"""Plots measurement data on the plot window. Handles both LIV and spectrum plots."""
+		print('Plotting data')
+		print('#############')
+		#print(x,y1,y2,cell)
+		#print('###############')
+		
+		t1 = (0,0,255)
+		t2 = (255,0,0)
+		tfill = (0,0,0)
+		
+		pen_t1 = pg.mkPen(color=(0, 0, 255), width=3, style=QtCore.Qt.SolidLine)
+		pen_t2 = pg.mkPen(color=(255, 0, 0), width=3, style=QtCore.Qt.SolidLine)
+		
 		color1 = '#%02x%02x%02x' % t1
 		color2 = '#%02x%02x%02x' % t2
+
+		x_label = 'Current(A)'
+		y_label = 'voltage(V)'
+		y2_label = 'Power(W)'
+		title = 'LIV'
+		
+		self.p1 = self.plotter.plotItem
+		self.p1.setLabels(left = y_label)
+		
+		#Create a new ViewBox
+		self.p2 = pg.ViewBox()
+		self.p1.showAxis('right')
+		self.p1.scene().addItem(self.p2)
+		self.p1.getAxis('right').linkToView(self.p2)
+		self.p2.setXLink(self.p1)
+		self.p1.getAxis('left').setLabel(y_label, color=color1)
+		self.p1.getAxis('right').setLabel(y2_label, color=color2)
+		self.p1.getAxis('bottom').setLabel(x_label)        
+		self.p1.vb.sigResized.connect(self.updateViews)
+		self.updateViews()
+		self.set_graph(title, x_label, y_label)
+		self.clear_plot()
 	
 		if y2 != None:
 			#ic(x, y1, y2)
@@ -155,17 +210,18 @@ class Ui(QtWidgets.QMainWindow):
 			self.updateViews()
 			self.set_graph(title, x_label, y_label)
 			self.clear_plot()
-			volt = y1
-			pcurr = x
-			power = y2
+			
+			volt = np.array(y1)
+			pcurr = np.array(x)
+			power = np.array(y2)
 			self.plotter.clear()
-
 			try:
+				
 				mask = volt <= 5
 				volt = volt[mask]
-				power = power[mask]
-				pcurr = pcurr[mask]
-				val_x = val_x[mask]
+				#power = power[mask]
+				#pcurr = pcurr[mask]
+				
 				y_min = np.min(volt)
 				y_max = np.max(volt)
 				self.p1.vb.disableAutoRange(axis = pg.ViewBox.YAxis)
@@ -176,16 +232,18 @@ class Ui(QtWidgets.QMainWindow):
 				self.p2.setYRange(y2_min, y2_max)
 				self.p2.disableAutoRange(axis = pg.ViewBox.YAxis)
 
-				x_min = np.min(val_x)
-				x_max = np.max(val_x)
+				x_min = np.min(p_curr)
+				x_max = np.max(p_curr)
 				self.p1.vb.setXRange(x_min, x_max)
 				
 				self.p1.vb.disableAutoRange(axis = pg.ViewBox.YAxis)
+				print()
 				self.p1.plot(pcurr, volt, pen = pen_t1, name = self.m.current_cell)
 				self.plot2 = pg.PlotCurveItem(pcurr, power, pen = pen_t2, name = cell)
 				self.p2.addItem(self.plot2)
 				pg.QtGui.QGuiApplication.processEvents()
-			except:
+			except Exception as err:
+				print(err)
 				pass
 		else:
 			x_label = 'Wavelength(nm)'
@@ -210,6 +268,7 @@ class Ui(QtWidgets.QMainWindow):
 			self.p1.plot(val_x, val_y, pen = pen_t1, name = cell)
 			pg.QtGui.QGuiApplication.processEvents()
 	def ktl_meas(self):
+		"""Performs a Keithley measurement and updates the voltage display in the UI."""
 		address="GPIB0::25::INSTR"
 		rm=visa.ResourceManager()
 		ktl = rm.open_resource(address)
@@ -226,6 +285,7 @@ class Ui(QtWidgets.QMainWindow):
 		volt = float(value.split(',')[0])
 		self.volt_meas.setText(str(volt))
 	def ktl_on(self):
+		"""Turns on the Keithley source with the specified current."""
 		address="GPIB0::25::INSTR"
 		rm=visa.ResourceManager()
 		ktl = rm.open_resource(address)
@@ -237,6 +297,7 @@ class Ui(QtWidgets.QMainWindow):
 		ktl.write(f":SOUR1:CURR {current}")
 		ktl.write(':OUTP ON')
 	def ktl_off(self):
+		"""Turns off the Keithley source output."""
 		address="GPIB0::25::INSTR"
 		rm=visa.ResourceManager()
 		ktl = rm.open_resource(address)
@@ -244,6 +305,7 @@ class Ui(QtWidgets.QMainWindow):
 #####################################END OF KEITHLEY BLOCK
 ############OSA methods
 	def acq_osa(self):
+		"""Acquires a spectrum from the OSA and plots the result."""
 		Spectrum_settings = { # Settings for running Spectral measurements
 			"resolution": 'high',  # 0 = low, 1 = high
 			"sensitivity": 'high',  # 0 = low, 1 = medium low, 2 = medium high, 3 = high
@@ -257,20 +319,28 @@ class Ui(QtWidgets.QMainWindow):
 			o.setup(resolution=resolution, sensitivity=sensitivity, autogain=True) 
 			print('Starting acquisition')
 			time_before = time.time()
-		except:
-			print("Initialization failed")
-		acquisitions = o.acquire(number_of_acquisitions=1)
-		print('Measurement ready')
-		print(time.time()-time_before)
-		acquisition = acquisitions[-1]
-		spectrum = acquisition["spectrum"]
-		wavelength = spectrum.get_x()
-		power = spectrum.get_y()
-		peak = spectrum.y_max
-		peak_index = power.index(peak)
-		o.close()
-		self.plot_win(wavelength, power)
+			acquisitions = o.acquire(number_of_acquisitions=1)
+			print('Measurement ready')
+			print(time.time()-time_before)
+			acquisition = acquisitions[-1]
+			spectrum = acquisition["spectrum"]
+			wavelength = spectrum.get_x()
+			power = spectrum.get_y()
+			peak = spectrum.y_max
+			peak_index = power.index(peak)
+			self.plot_win(wavelength, power)
+			try:
+				o.close()
+			except Exception as err:
+				print(err)
+				pass
+			return wavelength,power, peak_index
+		except Exception as error:
+			print("Initialization failed ", error)
+			return [],[],[]
+		
 	def rel_mov(self, x_inc, y_inc):
+		"""Moves the prober stage by the specified x and y increments."""
 		xy = self.send_command(b'PSXY\n')
 		x = float(re.findall("-?\d+", xy)[-2]) + x_inc
 		y = float(re.findall("-?\d+", xy)[-1]) + y_inc
@@ -283,14 +353,17 @@ class Ui(QtWidgets.QMainWindow):
 		'''Method to do the gross down'''
 		self.send_command(b'GDW\n')
 	def move_unload(self):
+		"""Moves the prober to the unload position."""
 		self.send_command(b'LDL\n')
 		print('Moving to load position!')
 		return
 	def go_probe(self):
+		"""Moves the prober to the probe position."""
 		self.send_command(b'LDC 0\n')
 		print('Moving to probe position!')
 		return
 	def save_value(self):
+		"""Saves all current values from the interface."""
 		#method to save all values in interface
 		print('saved!')
 	def write_values(self):
@@ -307,16 +380,30 @@ class Ui(QtWidgets.QMainWindow):
 			self.table_bar4.setItem(0, 1, QTableWidgetItem(str( int(df.Y4[0]) )))
 			self.table_bar5.setItem(0, 0, QTableWidgetItem(str( int(df.X5[0]) )))
 			self.table_bar5.setItem(0, 1, QTableWidgetItem(str( int(df.Y5[0]) )))
+			self.table_bar6.setItem(0, 1, QTableWidgetItem(str( int(df.X6[0]) )))
+			self.table_bar6.setItem(0, 1, QTableWidgetItem(str( int(df.Y6[0]) )))
+			self.table_bar7.setItem(0, 1, QTableWidgetItem(str( int(df.X7[0]) )))
+			self.table_bar7.setItem(0, 1, QTableWidgetItem(str( int(df.Y7[0]) )))
+			
+			
+			
 			self.line_start1.setText(str(df.start_index1[0]))
-			self.line_start2.setText( str(df.start_index2[0]))
-			self.line_start3.setText( str(df.start_index3[0]))
-			self.line_start4.setText( str(df.start_index4[0]))
-			self.line_start5.setText( str(df.start_index5[0]))
+			self.line_start2.setText(str(df.start_index2[0]))
+			self.line_start3.setText(str(df.start_index3[0]))
+			self.line_start4.setText(str(df.start_index4[0]))
+			self.line_start5.setText(str(df.start_index5[0]))
+			self.line_start6.setText(str(df.start_index6[0]))
+			self.line_start7.setText(str(df.start_index7[0]))
+			
+			
+			
 			self.line_end1.setText( str(df.end_index1[0]))
 			self.line_end2.setText( str(df.end_index2[0]))
 			self.line_end3.setText( str(df.end_index3[0]))
 			self.line_end4.setText( str(df.end_index4[0]))
 			self.line_end5.setText( str(df.end_index5[0]))
+			self.line_end6.setText( str(df.end_index6[0]))
+			self.line_end7.setText( str(df.end_index7[0]))
 			
 			#Set job files
 			self.update_info(str(df.job[0]))
@@ -325,12 +412,14 @@ class Ui(QtWidgets.QMainWindow):
 			print('Write to csv  backup failed!!!')
 			pass
 	def is_connected(self):
+		"""Checks if the prober is connected by sending a GID command."""
 		value = self.send_command(b'GID\n')
 		if value =='':
 			return False
 		else:
 			return True
 	def ser_connect(self):
+		"""Establishes and returns a serial connection to the prober."""
 		try:
 			self.ser = serial.Serial(port = 'COM1', baudrate = 38400, parity = serial.PARITY_EVEN, bytesize = serial.SEVENBITS, stopbits = serial.STOPBITS_TWO, timeout = 0.2)
 			return self.ser
@@ -339,6 +428,7 @@ class Ui(QtWidgets.QMainWindow):
 			print(ValueError)
 		return self.ser
 	def wait_ser(self):
+		"""Waits until the prober responds to a GID command, indicating readiness."""
 		while True:
 			value =  self.send_command(b'GID\n')
 			if value != '':
@@ -348,6 +438,7 @@ class Ui(QtWidgets.QMainWindow):
 				print('waiting...')
 		time.sleep(1)
 	def send_command(self, command):
+		"""Sends a command to the prober via serial and returns the response."""
 		ser = self.ser_connect()
 		ser.flush()
 		ser.write(command)
@@ -355,32 +446,46 @@ class Ui(QtWidgets.QMainWindow):
 		ser.close()
 		return resp
 	def file_save(self, val):
-		dic = {	'X1':[val[0]],'Y1':[val[5]],
-		'X2':[val[1]],'Y2':[val[6]],
-		'X3':[val[2]],'Y3':[val[7]],
-		'X4':[val[3]],'Y4':[val[8]],
-		'X5':[val[4]],'Y5':[val[9]],
-		'job':[val[10]],
-		'start_index1':[val[11]],'end_index1':[val[16]],
-		'start_index2':[val[12]],'end_index2':[val[17]],
-		'start_index3':[val[13]],'end_index3':[val[18]],
-		'start_index4':[val[14]],'end_index4':[val[19]],
-		'start_index5':[val[15]],'end_index5':[val[20]],
-		'Z':[val[21]]
+		"""Saves the provided values to a CSV backup file."""
+		dic = {	'X1':[val[0]],'Y1':[val[7]],
+		'X2':[val[1]],'Y2':[val[8]],
+		'X3':[val[2]],'Y3':[val[9]],
+		'X4':[val[3]],'Y4':[val[10]],
+		'X5':[val[4]],'Y5':[val[11]],
+		'X6':[val[5]],'Y6':[val[12]],
+		'X7':[val[6]],'Y7':[val[13]],
+		
+		
+		'job':[val[14]],
+		'start_index1':[val[15]],'end_index1':[val[22]],
+		'start_index2':[val[16]],'end_index2':[val[23]],
+		'start_index3':[val[17]],'end_index3':[val[24]],
+		'start_index4':[val[18]],'end_index4':[val[25]],
+		'start_index5':[val[19]],'end_index5':[val[26]],
+		'start_index6':[val[20]],'end_index6':[val[27]],
+		'start_index7':[val[21]],'end_index7':[val[28]],
+		'Z':[val[29]]
 		}
 		df = pd.DataFrame(dic)
 		df.to_csv('backup_values.csv')
 	def collect(self):
+		"""Collects X/Y touchdown, job file, start/end indices, and Z values from the interface."""
 		x_td_arr      = [self.table_bar1.item(0, 0).text(),
 					self.table_bar2.item(0, 0).text(),
 					self.table_bar3.item(0, 0).text(),
 					self.table_bar4.item(0, 0).text(),
-					self.table_bar5.item(0, 0).text()]
+					self.table_bar5.item(0, 0).text(),
+					self.table_bar6.item(0, 0).text(),
+					self.table_bar7.item(0, 0).text(),]
+					
 		y_td_arr      = [self.table_bar1.item(0, 1).text(),
 					self.table_bar2.item(0, 1).text(),
 					self.table_bar3.item(0, 1).text(),
 					self.table_bar4.item(0, 1).text(),
-					self.table_bar5.item(0, 1).text()]
+					self.table_bar5.item(0, 1).text(),
+					self.table_bar6.item(0, 1).text(),
+					self.table_bar7.item(0, 1).text(),]
+					
 		#Job file names
 		job_file_arr   = [self.job_id.text()]
 		
@@ -388,12 +493,16 @@ class Ui(QtWidgets.QMainWindow):
 					self.line_start2.text(),
 					self.line_start3.text(),
 					self.line_start4.text(),
-					self.line_start5.text()]
+					self.line_start5.text(),
+					self.line_start6.text(),
+					self.line_start7.text(),]
 		end_index_arr = [self.line_end1.text(),
 					self.line_end2.text(),
 					self.line_end3.text(),
 					self.line_end4.text(),
-					self.line_end5.text()]
+					self.line_end5.text(),
+					self.line_end6.text(),
+					self.line_end7.text(),]
 		try:
 			z = self.z_touchdown
 		except:
@@ -401,7 +510,101 @@ class Ui(QtWidgets.QMainWindow):
 
 		val_array = [*x_td_arr, *y_td_arr, job_file_arr[0], *start_index_arr, *end_index_arr, z]
 		return val_array
+#############Die LIV measurement methods
+	def select_die_config(self):
+			"""Selects the die measurement configuration file and updates the interface."""
+			job_root='C:/Users/HP/Smart Photonics/Engineering - Test & Measurement/Internal Projects/Job generation/'
+			self.die_job_folder_path = QFileDialog.getExistingDirectory(self,("Open Batch Folder"), job_root)
+			self.die_jobs_combo_box.clear()
+			#Fill the first combo box with Jobs available
+			job_folder_selection = glob.glob(self.job_folder_path+'/*ManualLIV_JOB.yaml')
+			job_folder_corr = [r'{}'.format(i) for i in job_folder_selection]
+			job_folder_corr = [i.replace('\\','/') for i in job_folder_corr]
+			job_folder_corr = job_folder_corr[0]
+			self.update_combo_box(self.jobs_combo_box, job_folder_selection)
+
+	def die_update_info(self, job_file_path):
+			"""Updates the die measurement information when any changes occurs with the dropdow based on the selected configuration file."""
+			#Get info from the selected .yaml job file
+			#Open the file and opens as a dictionary
+			if job_file_path:
+				with open(job_file_path, 'r') as f:
+					job_dict = yaml.safe_load(f)
+					f.close()
+			else: 
+				job_dict = {}
+			#Get parameters from the job dictionary
+			customer_id = job_dict.get("customer", None)
+			lot_id = job_dict.get("lot", None)
+			product_id = job_dict.get("product", None)
+			wafer_id = job_dict.get("wafer", None)
+			temp_set= job_dict.get("T_set", None)
+			liv = job_dict.get("LIV", False)
+			spectrum = job_dict.get("Spectrum", False)
+			cell_type = job_dict.get("cell_type", None)
+			cell_ids = job_dict.get("cell_ids", None)
+			
+			#Update the interface with the job parameters
+			self.die_cust_id.setText(str(customer_id))
+			self.die_batch_id.setText(str(lot_id))
+			self.die_product_id.setText(str(product_id))
+			self.die_job_id.setText(self.die_jobs_combo_box.currentText())
+			self.die_all_cells.clear()
+			self.die_all_cells.addItems(cell_ids)
+
+	def die_start(self):
+		"""Starts die measurements. (Currently not implemented)"""
+		# collect cell ID`s and the other relevant parameters from the GUI
+		first_cell = self.die_all_cells.currentText()
+		number_of_cells = int(self.die_load_cell.currentText())
+		#collecting all cells to measure
+		all_cells_to_measure = [self.die_all_cells.itemText(i) for i in range(self.die_all_cells.count())]
+		start_index = all_cells_to_measure.index(first_cell)
+		cells_to_measure = all_cells_to_measure[start_index:start_index + number_of_cells]
+		#Start the measurement
+		#Call external function to perform the die measurements
+		# Send the following parameter to BarTester_LIV.py 
+		# 1) Customer ID
+		# 2) lot ID
+		# 3) Product ID
+		# 4) Wafer ID
+		# 5) wavelength
+		# 6) Temperatures
+		# 7) LIV boolean
+		# 8) Spectrum boolean
+		# 9) Cell type
+		# 10) Combi mode
+
+
+#############End of Die LIV measurement methods
+
+############# TOUCHDOWN METHODS
+	def touch_bar(self, bar_index):
+		"""Performs touchdown for the specified bar and updates the interface with X/Y values."""
+		self.start_jobs_btn.setStyleSheet('background-color: rgb(255, 255, 0)')
+		self.start_jobs_btn.setStyleSheet('border: 2px solid red')
+		self.start_jobs_btn.setText(f"Wafer{bar_index} touchdown")
+		self.start_jobs_btn.repaint()
+		self.send_command(b'GUP\n')
+		self.send_command(b'LDC\n')
+		self.send_command(b'LDPH 0\n')
+		self.wait_ser()
+		z = self.send_command(b'PSGM\n')
+		z_fine_lift = self.send_command(b'RKFM\n')
+		xy = self.send_command(b'PSXY\n')
+		z = int(z.split('PSGM')[1])
+		z_fine_lift = int(z_fine_lift.split('RKFM')[1])
+		self.z_touchdown = z + z_fine_lift
+		xy = self.send_command(b'PSXY\n')
+		x = float(re.findall("-?\d+", xy)[-2])
+		y = float(re.findall("-?\d+", xy)[-1])
+		getattr(self, f'table_bar{bar_index}').setItem(0, 0, QTableWidgetItem(str(x)))
+		getattr(self, f'table_bar{bar_index}').setItem(0, 1, QTableWidgetItem(str(y)))
+		self.file_save(self.collect())
+		self.reset_start_btn()
+############# TOUCHDOWN METHODS
 	def touch_bar1(self):
+		"""Performs touchdown for bar 1 and updates the interface with X/Y values."""
 		self.start_jobs_btn.setStyleSheet('background-color: rgb(255, 255, 0)')
 		self.start_jobs_btn.setStyleSheet('border: 2px solid red')
 		self.start_jobs_btn.setText("Wafer1 touchdown")
@@ -427,6 +630,7 @@ class Ui(QtWidgets.QMainWindow):
 		self.file_save(self.collect())
 		self.reset_start_btn()
 	def touch_bar2(self):
+		"""Performs touchdown for bar 2 and updates the interface with X/Y values."""
 		self.start_jobs_btn.setStyleSheet('background-color: rgb(255, 255, 0)')
 		self.start_jobs_btn.setStyleSheet('border: 2px solid red')
 		self.start_jobs_btn.setText("Wafer2 touchdown")
@@ -452,6 +656,7 @@ class Ui(QtWidgets.QMainWindow):
 		self.file_save(self.collect())
 		self.reset_start_btn()
 	def touch_bar3(self):
+		"""Performs touchdown for bar 3 and updates the interface with X/Y values."""
 		self.start_jobs_btn.setStyleSheet('background-color: rgb(255, 255, 0)')
 		self.start_jobs_btn.setStyleSheet('border: 2px solid red')
 		self.start_jobs_btn.setText("Wafer3 touchdown")
@@ -476,6 +681,7 @@ class Ui(QtWidgets.QMainWindow):
 		self.file_save(self.collect())
 		self.reset_start_btn()
 	def touch_bar4(self):
+		"""Performs touchdown for bar 4 and updates the interface with X/Y values."""
 		self.start_jobs_btn.setStyleSheet('background-color: rgb(255, 255, 0)')
 		self.start_jobs_btn.setStyleSheet('border: 2px solid red')
 		self.start_jobs_btn.setText("Wafer4 touchdown")
@@ -500,6 +706,7 @@ class Ui(QtWidgets.QMainWindow):
 		self.file_save(self.collect())
 		self.reset_start_btn()
 	def touch_bar5(self):
+		"""Performs touchdown for bar 5 and updates the interface with X/Y values."""
 		self.start_jobs_btn.setStyleSheet('background-color: rgb(255, 255, 0)')
 		self.start_jobs_btn.setStyleSheet('border: 2px solid red')
 		self.start_jobs_btn.setText("Wafer4 touchdown")
@@ -524,9 +731,63 @@ class Ui(QtWidgets.QMainWindow):
 		#save values
 		self.file_save(self.collect())
 		self.reset_start_btn()
+	def touch_bar6(self):
+		"""Performs touchdown for bar 6 and updates the interface with X/Y values."""
+		self.start_jobs_btn.setStyleSheet('background-color: rgb(255, 255, 0)')
+		self.start_jobs_btn.setStyleSheet('border: 2px solid red')
+		self.start_jobs_btn.setText("Wafer4 touchdown")
+		self.start_jobs_btn.repaint()
+		self.send_command(b'GUP\n') # Do a Gross up
+		self.send_command(b'LDC\n')
+		
+		self.send_command(b'LDPH 0\n') #Go to local and the asks the user to perform a touchdown
+		self.wait_ser()
+		z = self.send_command(b'PSGM\n')
+		z_fine_lift = self.send_command(b'RKFM\n')
+		xy = self.send_command(b'PSXY\n')
+		z = int(z.split('PSGM')[1])
+		z_fine_lift = int(z_fine_lift.split('RKFM')[1])
+		self.z_touchdown = z+z_fine_lift
+		xy = self.send_command(b'PSXY\n')
+		xy = self.send_command(b'PSXY\n')
+		x6= float(re.findall("-?\d+", xy)[-2])
+		y6= float(re.findall("-?\d+", xy)[-1])
+		self.table_bar6.setItem(0, 0, QTableWidgetItem(str(x6)))
+		self.table_bar6.setItem(0, 1, QTableWidgetItem(str(y6)))
+		#save values
+		self.file_save(self.collect())
+		self.reset_start_btn()
+	def touch_bar7(self):
+		"""Performs touchdown for bar 7 and updates the interface with X/Y values."""
+		self.start_jobs_btn.setStyleSheet('background-color: rgb(255, 255, 0)')
+		self.start_jobs_btn.setStyleSheet('border: 2px solid red')
+		self.start_jobs_btn.setText("Wafer4 touchdown")
+		self.start_jobs_btn.repaint()
+		self.send_command(b'GUP\n') # Do a Gross up
+		self.send_command(b'LDC\n')
+		
+		self.send_command(b'LDPH 0\n') #Go to local and the asks the user to perform a touchdown
+		self.wait_ser()
+		z = self.send_command(b'PSGM\n')
+		z_fine_lift = self.send_command(b'RKFM\n')
+		xy = self.send_command(b'PSXY\n')
+		z = int(z.split('PSGM')[1])
+		z_fine_lift = int(z_fine_lift.split('RKFM')[1])
+		self.z_touchdown = z+z_fine_lift
+		xy = self.send_command(b'PSXY\n')
+		xy = self.send_command(b'PSXY\n')
+		x7= float(re.findall("-?\d+", xy)[-2])
+		y7= float(re.findall("-?\d+", xy)[-1])
+		self.table_bar7.setItem(0, 0, QTableWidgetItem(str(x7)))
+		self.table_bar7.setItem(0, 1, QTableWidgetItem(str(y7)))
+		#save values
+		self.file_save(self.collect())
+		self.reset_start_btn()
 	def update_combo_box(self,combo_object, array):
+		"""Adds items from the array to the specified combo box."""
 		combo_object.addItems(array)
 	def select_job(self):
+		"""Opens a folder dialog and populates the job combo box with available jobs."""
 		job_root='C:/Users/HP/Smart Photonics/Engineering - Test & Measurement/Internal Projects/Job generation/'
 		self.job_folder_path1 = QFileDialog.getExistingDirectory(self,("Open Batch Folder"), job_root)
 		self.jobs_combo_box.clear()
@@ -537,6 +798,7 @@ class Ui(QtWidgets.QMainWindow):
 		job_folder_corr = job_folder_corr[0]
 		self.update_combo_box(self.jobs_combo_box, job_folder_selection)
 	def update_info(self, path1=''):
+		"""Updates job info and labels based on the selected job file."""
 		#Open selected jobfile
 		if path1 != '':
 			path1 = r'{}'.format(path1)
@@ -581,6 +843,7 @@ class Ui(QtWidgets.QMainWindow):
 		total_files = sum(df.sum(axis=1))
 		self.file_save(self.collect())
 	def go_td1(self):
+		"""Moves the prober to the touchdown position for bar 1."""
 		self.file_save(self.collect())
 		self.go_probe()
 		self.send_command(b'LI1\n')
@@ -589,6 +852,7 @@ class Ui(QtWidgets.QMainWindow):
 		command = f'GTXY {xtd},{ytd}\n'.encode()
 		x = self.send_command(command)
 	def go_td2(self):
+		"""Moves the prober to the touchdown position for bar 2."""
 		self.file_save(self.collect())
 		self.go_probe()
 		self.send_command(b'LI1\n')
@@ -597,6 +861,7 @@ class Ui(QtWidgets.QMainWindow):
 		command = f'GTXY {xtd},{ytd}\n'.encode()
 		self.send_command(command)
 	def go_td3(self):
+		"""Moves the prober to the touchdown position for bar 3."""
 		self.file_save(self.collect())
 		self.go_probe()
 		self.send_command(b'LI1\n')
@@ -605,22 +870,43 @@ class Ui(QtWidgets.QMainWindow):
 		command = f'GTXY {xtd},{ytd}\n'.encode()
 		self.send_command(command)
 	def go_td4(self):
+		"""Moves the prober to the touchdown position for bar 4."""
 		self.file_save(self.collect())
 		self.go_probe()
 		self.send_command(b'LI1\n')
 		xtd = self.table_bar4.item(0, 0).text()
 		ytd = self.table_bar4.item(0, 1).text()
 		command = f'GTXY {xtd},{ytd}\n'.encode()
-		self.send_command(command)	
+		self.send_command(command)
 	def go_td5(self):
+		"""Moves the prober to the touchdown position for bar 5."""
 		self.file_save(self.collect())
 		self.go_probe()
 		self.send_command(b'LI1\n')
 		xtd = self.table_bar5.item(0, 0).text()
 		ytd = self.table_bar5.item(0, 1).text()
 		command = f'GTXY {xtd},{ytd}\n'.encode()
+		self.send_command(command)	
+	def go_td6(self):
+		"""Moves the prober to the touchdown position for bar 6."""
+		self.file_save(self.collect())
+		self.go_probe()
+		self.send_command(b'LI1\n')
+		xtd = self.table_bar6.item(0, 0).text()
+		ytd = self.table_bar6.item(0, 1).text()
+		command = f'GTXY {xtd},{ytd}\n'.encode()
+		self.send_command(command)
+	def go_td7(self):
+		"""Moves the prober to the touchdown position for bar 7."""
+		self.file_save(self.collect())
+		self.go_probe()
+		self.send_command(b'LI1\n')
+		xtd = self.table_bar7.item(0, 0).text()
+		ytd = self.table_bar7.item(0, 1).text()
+		command = f'GTXY {xtd},{ytd}\n'.encode()
 		self.send_command(command)
 	def temp_job_finder(self):
+		"""Finds temporary job files for the current wafer."""
 		root_folder = '/'.join(self.job_id.text().split('/')[0:-1])
 		wafer = self.wafer_id.text()
 		job_temp = glob.glob(root_folder + f'/*{wafer}*'+'_JOB.yaml')
@@ -628,31 +914,38 @@ class Ui(QtWidgets.QMainWindow):
 			for i in range(5-len(job_temp)):
 				job_temp.append([])
 		return job_temp
-
 	def bar_start(self):
+		"""Starts bar measurements for all checked bars."""
 		stat_bar1 = self.check_bar1.isChecked()
 		stat_bar2 = self.check_bar2.isChecked()
 		stat_bar3 = self.check_bar3.isChecked()
 		stat_bar4 = self.check_bar4.isChecked()
 		stat_bar5 = self.check_bar5.isChecked()
+		stat_bar6 = self.check_bar6.isChecked()
+		stat_bar7 = self.check_bar7.isChecked()
+		
 		bar1 = self.check_bar1.text()
 		bar2 = self.check_bar2.text()
 		bar3 = self.check_bar3.text()
 		bar4 = self.check_bar4.text()
 		bar5 = self.check_bar5.text()
-		prog_arr = ['bar','bar','bar','bar','bar']
-		stat_arr = [stat_bar1, stat_bar2, stat_bar3, stat_bar4, stat_bar5]
-		
+		bar6 = self.check_bar6.text()
+		bar7 = self.check_bar7.text()
+		prog_arr = ['bar','bar','bar','bar','bar','bar','bar']
+		stat_arr = [stat_bar1, stat_bar2, stat_bar3, stat_bar4, stat_bar5, stat_bar6,stat_bar7]
 		user_name_arr  = [self.op_id.currentText(),
 						self.op_id.currentText(),
 						self.op_id.currentText(),
 						self.op_id.currentText(),
+						self.op_id.currentText(),
+						self.op_id.currentText(),
 						self.op_id.currentText()]
-
 		if self.check_temp_meas.isChecked():
 			job_file_arr = self.temp_job_finder()
 		else:
 			job_file_arr = [self.job_id.text(),
+						self.job_id.text(),
+						self.job_id.text(),
 						self.job_id.text(),
 						self.job_id.text(),
 						self.job_id.text(),
@@ -662,26 +955,34 @@ class Ui(QtWidgets.QMainWindow):
 						int( self.table_bar2.item(0, 0).text().split('.')[0] ),
 						int( self.table_bar3.item(0, 0).text().split('.')[0] ),
 						int( self.table_bar4.item(0, 0).text().split('.')[0] ),
-						int( self.table_bar5.item(0, 0).text().split('.')[0])]
+						int( self.table_bar5.item(0, 0).text().split('.')[0] ),
+						int( self.table_bar6.item(0, 0).text().split('.')[0] ),
+						int( self.table_bar7.item(0, 0).text().split('.')[0] )]
 
 		y_td_arr = [int(self.table_bar1.item(0, 1).text().split('.')[0]),
 						int(self.table_bar2.item(0, 1).text().split('.')[0]),
 						int(self.table_bar3.item(0, 1).text().split('.')[0]),
 						int(self.table_bar4.item(0, 1).text().split('.')[0]),
-						int(self.table_bar5.item(0, 1).text().split('.')[0])]
+						int(self.table_bar5.item(0, 1).text().split('.')[0]),
+						int(self.table_bar6.item(0, 1).text().split('.')[0]),
+						int(self.table_bar7.item(0, 1).text().split('.')[0])]
 
 		cell_index_start =[self.line_start1.text(),
 						self.line_start2.text(),
 						self.line_start3.text(),
 						self.line_start4.text(),
-						self.line_start5.text()]
+						self.line_start5.text(),
+						self.line_start6.text(),
+						self.line_start7.text()]
 				
 		cell_index_end = [self.line_end1.text(),
 						self.line_end2.text(),
 						self.line_end3.text(),
 						self.line_end4.text(),
-						self.line_end5.text()]
-		if stat_arr==[False,False,False,False,False]:
+						self.line_end5.text(),
+						self.line_end6.text(),
+						self.line_end7.text()]
+		if stat_arr==[False,False,False,False,False,False,False]:
 				self.start_jobs_btn.setStyleSheet('background-color: rgb(255, 255, 0)')
 				self.start_jobs_btn.setText("Check a wafer to measure")
 				self.start_jobs_btn.repaint()
@@ -690,18 +991,21 @@ class Ui(QtWidgets.QMainWindow):
 		print('############################################')
 		print(job_file_arr)
 		print('############################################')
-		for job, user, x_td, y_td, check_bar, start_index, end_index, prog in  zip(job_file_arr, user_name_arr, x_td_arr, y_td_arr,stat_arr, cell_index_start, cell_index_end, prog_arr):
-			
-			#before starting, move it to the center of the wafer
-			if check_bar:
-				self.start_jobs_btn.setStyleSheet('background-color: rgb(255, 255, 0)')
-				self.start_jobs_btn.setText(f"{prog} in progress")
-				self.start_jobs_btn.repaint()
-				self.run(job, user, x_td, y_td, check_bar, start_index, end_index, prog)
-				self.reset_start_btn()
-	def die_start(self):
-		pass
-
+		if self.check_repeat.isChecked():
+			repetition = int(self.drop_repeat.currentText())
+		else: 
+			repetition = 1
+		for rep in range(repetition):
+			for job, user, x_td, y_td, check_bar, start_index, end_index, prog in  zip(job_file_arr, user_name_arr, x_td_arr, y_td_arr,stat_arr, cell_index_start, cell_index_end, prog_arr):
+				
+				#before starting, move it to the center of the wafer
+				if check_bar:
+					self.start_jobs_btn.setStyleSheet('background-color: rgb(255, 255, 0)')
+					self.start_jobs_btn.setText(f"{prog} in progress")
+					self.start_jobs_btn.repaint()
+					self.run(job, user, x_td, y_td, check_bar, start_index, end_index, prog)
+					self.reset_start_btn()
+	
 	####misc. table
 	def gen_liv_config(self):
 		# read values from gui
@@ -726,8 +1030,10 @@ class Ui(QtWidgets.QMainWindow):
 		T_set = temp_arr_clean,
 		LIV = eval(self.liv_meas_box.currentText()),
 		Spectrum = eval(self.spec_meas_box.currentText()),
+		Spectrum_I_SOA = float(self.spec_curr.currentText()),
 		cell_type = self.liv_cell_box.currentText(),
 		combi_mode = eval(self.combi_meas_box.currentText())
+		#cell_ids = eval(self.liv_cell_ids_input.toPlainText()).split(product_id+cell_type)[1:]       
 		)
 		yaml_filename = self.liv_wfr_line.text() + '_ManualLIV_JOB'
 		root_path = 'C:/Users/HP/Smart Photonics/Engineering - Test & Measurement/Internal Projects/Job generation'
@@ -737,8 +1043,9 @@ class Ui(QtWidgets.QMainWindow):
 			os.makedirs(folder_location)
 		with open(folder_location + '/'+yaml_filename+'.yaml' , 'w') as outfile:
 			yaml.dump(dict_to_write, outfile, default_flow_style=False)
-		
-		
+		df = pd.DataFrame({})
+		df.to_csv(folder_location + f'/{self.liv_wfr_line.text()}.csv')
+			
 		####Methods for MLIV meas
 	def get_temp(self):
 		tec_t = tec.Tec()          # TEC
@@ -752,17 +1059,17 @@ class Ui(QtWidgets.QMainWindow):
 		#### Pre-defined settings ####
 		current_dict = {
 			"DBRB12":0.120,
-			"ID_DBR9":0.120,
-			"ID_DBR11":0.120,
-			"ID_DBR8":0.120,
-			"ID_DBR10":0.120,
-			"ID_DBR7":0.120,
-			"DBRB6":0.120,
-			"ID_DBR3":0.120,
-			"ID_DBRB5":0.120,
-			"ID_DBR2":0.120,
-			"ID_DBRB4":0.120,
-			"ID_DBR1":0.120
+			#"ID_DBR9":0.120,
+			#"ID_DBR11":0.120,
+			#"ID_DBR8":0.120,
+			#"ID_DBR10":0.120,
+			#"ID_DBR7":0.120,
+			#"DBRB6":0.120,
+			#"ID_DBR3":0.120,
+			#"ID_DBRB5":0.120,
+			#"ID_DBR2":0.120,
+			#"ID_DBRB4":0.120,
+			#"ID_DBR1":0.120
 			}
 
 		LIV_settings = { # Settings for running LIV measurements
@@ -886,20 +1193,13 @@ class Ui(QtWidgets.QMainWindow):
 		#set light on
 		self.send_command(b'LI1\n')
 		self.send_command(b'TSTHD 2\n') #---sphere
-		# Connect the OSA, if needed
-		if spectrum:
-			o = pyOSA.initialize()
-			resolution = Spectrum_settings["resolution"]
-			sensitivity = Spectrum_settings["sensitivity"]
-			o.setup(resolution=resolution, sensitivity=sensitivity, autogain=True)
-			print(f"OSA initialized with resolution {resolution} sensitivity {sensitivity} and autogain True.")
-			
+		
 		### Set the chuck temperature ###
 		print("Connecting Tec and setting temperature to {}".format(temp_set))
 		tec_t.set_temperature(temp_set)
 		tec_t._set_enable()
 		print("Waiting for temperature to stabilise...")
-		tec_t._set(T_set = temp_set, T_win = 0.5)
+		tec_t._set(T_set = temp_set, T_win = 2)
 
 		self.go_probe()
 		self.gross_up()
@@ -949,15 +1249,20 @@ class Ui(QtWidgets.QMainWindow):
 														  pulse_width=LIV_settings["pulse_width"],
 														  pulse_mode=LIV_settings["pulse_mode"],
 														  )
+							
+							
 							if pl == 1310:
 								resp = LIV_settings["resp_at_1310"]
 							if pl == 1550:
 								resp = LIV_settings["resp_at_1550"]
-							power = [-c * resp for c in pds.magnitude]
+							power = [-i_c * resp for i_c in pds.magnitude]
+							c = [i for i in c.magnitude]
+							v = [i for i in v.magnitude]
+							
 							###Add a method to plot pyqt......
 							x, y1, y2, cell = c[1:], v[1:], power[1:], device_id
-							print("Data to plot!")
-							#ic(x, y1, y2, cell)
+							
+							ic(x, y1, y2, cell)
 							self.plot_win(x, y1, y2, cell)
 							
 							measurement_plan = 'LIV_{}'.format(device_id)
@@ -982,8 +1287,8 @@ class Ui(QtWidgets.QMainWindow):
 								'Session_start_time': session_start,
 								'SetTemperature': temp_set,
 								'Wafer': wafer_id,
-								'Current LD, [A]': c.magnitude,
-								'Voltage LD, [V]': v.magnitude,
+								'Current LD, [A]': c,
+								'Voltage LD, [V]': v,
 								'Photocurrent PD, [A]': pds.magnitude,
 								'Power PD, [W]': power
 							}
@@ -1013,28 +1318,49 @@ class Ui(QtWidgets.QMainWindow):
 						if spectrum: # Execute Spectral measurements
 							self.send_command(b'TSTHD 1\n') #---Fiber
 							for soa_current in i_soa:
-								while True:
-									spec_current = max_current * soa_current  # sets used current as a factor of max LIV currents
-									ktl.reset()
-									ktl.set_current(1, spec_current)
-									ktl.set_channel_state(1, 'on')
-									
-									acquisitions = o.acquire(number_of_acquisitions=1)
-									
-									acquisition = acquisitions[-1]
-									spectrum = acquisition["spectrum"]
-									wavelength = spectrum.get_x()
-									power = spectrum.get_y()
-									peak = spectrum.y_max
-									peak_index = power.index(peak)
-									
-									ktl.set_channel_state(1, 'off')
-									x = wavelength[peak_index - 500:peak_index + 500]
-									y1 = power[peak_index - 500:peak_index + 500]
-									cell = device_id
-									self.plot_win(x, y1, cell)
-									o.close()
-									break
+								spec_current = max_current * soa_current  # sets used current as a factor of max LIV currents
+								ktl.reset()
+								ktl.set_current(1, spec_current)
+								ktl.set_channel_state(1, 'on')
+								wavelength, power, peak_index = self.acq_osa()
+								ktl.set_channel_state(1, 'off')
+								x = wavelength[peak_index - 500:peak_index + 500]
+								y1 = power[peak_index - 500:peak_index + 500]
+								cell = device_id
+								self.plot_win(x, y1, cell)
+								#save data
+								measurement_plan = 'SPECTRAL_{}_{}'.format(
+								device_id, round(spec_current, 4))
+								now = str(datetime.datetime.now()).replace(' ', '_')
+								now = now.replace(':', '.')
+								fname = '{}_{}_{}_{}.txt'.format(
+								wafer_id, cell_id, measurement_plan, now)
+								data = {
+								'_openEPDA_version': openEPDA_version,
+								'CustomerID': customer_id,
+								'LotID': lot_id,
+								'ProductID': product_id,
+								'Cell': cell_id,
+								'Filename': fname,
+								'ToolID': 'TM0002',
+								'Measurement plan': measurement_plan,
+								'Mode': "DC",
+								'ObservationID': measurement_counter,
+								'OperatorID': operator_id,
+								'PL_wavelength': pl,
+								'MeasurementSession': 'TM0002_{}'.format(session_start),
+								'Session_start_time': session_start,
+								'SetTemperature': int(temp_set),
+								'Wafer': wafer_id,
+								'Sourcing_current [A]': round(spec_current, 4),
+								'Wavelength, [nm]': wavelength,
+								'Power, [W]': power
+								}
+								w = openepda.OpenEpdaDataDumper()
+								with open(os.path.join(path, fname), 'w', newline="\n") as f:
+									w.write(f, **data)
+								list_rawdata_files.append(os.path.join(path, fname))    
+								
 						if device_idx == 11 and spectrum:
 							self.send_command(b'CDW\n')#fine down
 							self.rel_mov(0, 4025)
@@ -1046,7 +1372,6 @@ class Ui(QtWidgets.QMainWindow):
 		self.send_command(b'CDW\n')#fine down
 		self.gross_down()
 		self.move_unload()
-		o.close()
 		tec_t.release()
 		ktl.release()
 
@@ -1112,10 +1437,6 @@ class Ui(QtWidgets.QMainWindow):
 				print(f"Zip file {zip_file_name_stripped} has been copied at backup location!")
 			else:
 				print(f"Warning! Zip file {zip_file_name_stripped} has NOT been copied at backup location!")
-		try:
-			df.to_csv(cells_file_path, index=False)
-		except:
-			pass
 	def start_jobs_in_thread(self):
 		current_tab_index = self.meas_tab.currentIndex()
 		if current_tab_index == 0:
@@ -1131,12 +1452,10 @@ class Ui(QtWidgets.QMainWindow):
 		self.worker_thread.started.connect(self.worker.run)
 		self.worker.finished.connect(self.on_jobs_finished)
 		self.worker_thread.start()
-
 	def on_jobs_finished(self, msg):
 		print(msg)
 		self.worker_thread.quit()
 		self.worker_thread.wait()
-
 	def start_jobs(self):
 		###########
 		#Indexes of the tables
@@ -1396,7 +1715,9 @@ class Ui(QtWidgets.QMainWindow):
 		Checks if x,y are different than current x, y coordinates.
 		If they are different, it moves the prober to relative x,y.
 		"""
+		
 		x, y = self.mp.get_cell_position(cell_name=cl)
+		
 		self.current_x, self.current_y = self.eq.prober.get_chuck_xy()
 		## Is the prober there already?
 		if (int(self.current_x), int(self.current_y)) != (int(x),int(y)):
@@ -1428,6 +1749,11 @@ class Ui(QtWidgets.QMainWindow):
 			print(f'********************{work_size}********************')
 			for cell in self.mp.get_cell_names:
 				self.go_to_cell_v2(cl=cell)
+
+				print('Moving.................................')
+				print('Going to cell: ', cell)
+				print('Moving.................................')
+
 				for ms in self.mp.get_meas_plan_for_cell(cell_name=cell):
 					if ms == 'PICTURE':
 						self.take_picture(picture_name='_'.join([self.wafer, self.batch, cell, ms])) 
@@ -1452,6 +1778,7 @@ class Ui(QtWidgets.QMainWindow):
 						self.perform_touch_down(cell=cell)
 						self.perform_measurement(ms=ms, cl=cell)
 				cnt = cnt+1
+				
 	def take_picture(self, picture_name): # ABI: new function, dedicated to taking pictures with monitoring camera
 		pass    
 		'''
@@ -1522,20 +1849,28 @@ class Ui(QtWidgets.QMainWindow):
 		T_set = self.m.get_plan_setting(setting='T_set')
 		print(' perform_measurement method sets temperature = to:', T_set)
 		self.eq.tec._set(T_set = T_set, T_win=0.5)
-		print ('tec status:', self.eq.tec.is_stable())
-		while not self.eq.tec.is_in_T_win(T_set = T_set, T_win=0.5):
-			print('tec status: T={} not in Twin {}<->{}'.format(self.eq.tec.get_temperature(),T_set-0.5,T_set+0.5))
+		#print ('tec status:', self.eq.tec.is_stable())
+		#while not self.eq.tec.is_in_T_win(T_set = T_set, T_win=0.5):
+		while abs(T_set -self.eq.tec.get_temperature() )>0.5:
+			print("Waiting for temp stabilisation")
+			print('tec status: T={} not in Twin {}<->{}'.format(self.eq.tec.get_temperature(),T_set-0.1,T_set+0.1))
 			time.sleep(1)
-		while not self.eq.tec.is_stable():
-			time.sleep(1)
-			print('tec status: Not stable, T={}'.format(self.eq.tec.get_temperature()))
-		print('######################')
-		print('Performing Measurement')
-		time.sleep(.1)
-		print('######################')
+		#while not self.eq.tec.is_stable():
+			#time.sleep(1)
+			#print('##################')
+			#print(abs(self.eq.tec.get_temperature() - T_set ))
+			#if abs(self.eq.tec.get_temperature() -T_set ) < 1:
+			#	break
+			#print('tec status: Not stable, T={}'.format(self.eq.tec.get_temperature()))
+			
+		#while 
+		#print('######################')
+		#print('Performing Measurement')
+		#time.sleep(.1)
+		#print('######################')
 		#Measure
 					
-		print('Plotting data...')
+		#SSprint('Plotting data...')
 		
 		t1 = (0,0,255)
 		t2 = (255,0,0)
@@ -1807,12 +2142,11 @@ class Ui(QtWidgets.QMainWindow):
 		except:
 			pass
 		event.accept()
-
 def main():
-    app = QtWidgets.QApplication(sys.argv)
-    window = Ui()
-    window.show()
-    sys.exit(app.exec_())
+	app = QtWidgets.QApplication(sys.argv)
+	window = Ui()
+	window.show()
+	sys.exit(app.exec_())
 
 if __name__ == '__main__': # only executes the below code if it python has run it as the main
 	main()
