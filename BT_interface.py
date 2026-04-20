@@ -4,12 +4,13 @@
 # Email: marcos.dasilva.eleoterio@smartphotonics.nl
 import pandas as pd
 import time
-import datetime
+from datetime import datetime
+from time import strftime, localtime
 import sys, os
 import numpy as np
 import pyvisa as visa
 from PyQt5 import QtGui, QtWidgets, uic, QtCore
-from PyQt5.QtWidgets import QTableWidgetItem, QFileDialog, QApplication
+from PyQt5.QtWidgets import QTableWidgetItem, QFileDialog, QApplication, QMessageBox
 from PyQt5.QtGui import QFont 
 from PyQt5.QtCore import QThread, QProcess, QTimer, QObject, pyqtSignal
 from zipfile import ZipFile
@@ -23,49 +24,71 @@ import glob
 import signal
 import subprocess
 from subprocess import call
-from icecream import ic
+#from icecream import ic
 from load_sample_V2  import *
 from align_sample_V2 import AlignSample
 sys.path.insert(1, 'C:/AMS')
-from smu.keithley2520 import Keithley2520
-import pyOSA
-from tec import tec
-import logging
-from collections.abc import MutableMapping
-import telegram
-import measurement_handler as measurement_handler
-from readers.readers import JOBReader
-from measurement_plan_maker.meas_plan_maker import MeasPlan
-from equipment import Equipment
-from utils.identify import Identify
-from utils.misc  import generate_session_ID, get_git_commit_id, get_probes_folder, get_jobs_folder, get_data_folder,get_batch_data_folder, get_backup_folder
-from utils.utils import boolean_operation, select_bar
-#Real-time analysis tools
-from realtime_analysis.quick_analysis import QuickAnalysis
-import openepda
-openEPDA_version = openepda.__version__
-from collections import OrderedDict
-# automated data extraction messageque support
-#from utils.smg import initiate_data_extraction #Commented because it was issuing importing error  MSE
-logger=logging.getLogger('test.AmsCore')
-start_time = time.time()
-ktl= Keithley2520()
+try:
+	from smu.keithley2520 import Keithley2520
+	import pyOSA
+	from tec import tec
+	import logging
+	from collections.abc import MutableMapping
+	import telegram
+	import measurement_handler as measurement_handler
+	from readers.readers import JOBReader
+	from measurement_plan_maker.meas_plan_maker import MeasPlan
+	from equipment import Equipment
+	from utils.identify import Identify
+	from utils.misc  import generate_session_ID, get_git_commit_id, get_probes_folder, get_jobs_folder, get_data_folder,get_batch_data_folder, get_backup_folder
+	from utils.utils import boolean_operation, select_bar
+	#Real-time analysis tools
+	from realtime_analysis.quick_analysis import QuickAnalysis
+	import openepda
+	openEPDA_version = openepda.__version__
+	from collections import OrderedDict
+	import mes_check as MesCom
+	# automated data extraction messageque support
+	#from utils.smg import initiate_data_extraction #Commented because it was issuing importing error  MSE
+	logger=logging.getLogger('test.AmsCore')
+	start_time = time.time()
+	ktl= Keithley2520()
+except Exception as err:
+	print(err)
+
+# Helper function to load YAML files
+def load_yaml_file(filepath):
+	"""Load and return YAML file contents."""
+	with open(filepath, 'r') as f:
+		return yaml.safe_load(f)
 
 class Worker(QObject):
 	finished = pyqtSignal(str)
+	error = pyqtSignal(str)  # Signal emitted when an error occurs
+	update_button = pyqtSignal(str, str, str)  # Signal for button updates: (stylesheet, text, border)
+	
 	def __init__(self, job_method):
 		"""Initializes the Worker with a job method to run in a thread."""
 		super().__init__()
 		self.job_method = job_method
+		self.stop_requested = False
 
 	def run(self):
 		"""Executes the job method and emits the finished signal when done."""
-		self.job_method()
-		self.finished.emit("Jobs finished")
+		try:
+			if not self.stop_requested:
+				self.job_method()
+			self.finished.emit("Jobs finished")
+		except Exception as e:
+			error_msg = f"Error during job execution: {str(e)}"
+			print(error_msg)
+			import traceback
+			traceback.print_exc()
+			self.error.emit(error_msg)
 
 	def stop(self):
 		"""Sets the stop_requested flag to True to request stopping the job."""
-		self.stop_requested=True
+		self.stop_requested = True
 
 class Ui(QtWidgets.QMainWindow):
 	def __init__(self):
@@ -81,7 +104,17 @@ class Ui(QtWidgets.QMainWindow):
 		self.start_time = time.time()
 		self.alignment = AlignSample()
 		self.loading = LoadSample()
-		self.tool_id, self.session_id = generate_session_ID()
+		self.worker = None  # Store worker reference for signal connection
+		self.thread = None  # Store thread reference
+		self.job_queue = []  # Queue to store jobs to be processed
+		self.stop_requested = False  # Flag to stop job processing
+		try:
+			self.tool_id, self.session_id = generate_session_ID()
+		except:
+			self.tool_id, self.session_id = 'tool_id', 'session_id'
+			print('Session ID generation failed!')
+			pass
+		
 		self.camera_picture_file_list = [] # list of file names of taken pictures
 		self.quick_analysis_file_list = [] # list of output file names from quick analysis routine
 		self._cell_probing_counter = 0 # counter of probing of the same cell
@@ -95,16 +128,7 @@ class Ui(QtWidgets.QMainWindow):
 		###Variable
 		self.job_folder_path1 = ''
 		self.job_folder_path2 = ''
-		#Methods to perform the first touchdown and save it 
-		#self.btn_touch1.clicked.connect(self.touch_bar1)
-		#self.btn_touch2.clicked.connect(self.touch_bar2)
-		#self.btn_touch3.clicked.connect(self.touch_bar3)
-		#self.btn_touch4.clicked.connect(self.touch_bar4)
-		#self.btn_touch5.clicked.connect(self.touch_bar5)
-		#self.btn_touch6.clicked.connect(self.touch_bar6)
-		#self.btn_touch7.clicked.connect(self.touch_bar7)
-
-		#Test for new touchdown method
+		#Test for new touchdown methods
 		self.btn_touch1.clicked.connect(partial(self.touch_bar, 1))
 		self.btn_touch2.clicked.connect(partial(self.touch_bar, 2))
 		self.btn_touch3.clicked.connect(partial(self.touch_bar, 3))
@@ -117,12 +141,19 @@ class Ui(QtWidgets.QMainWindow):
 		self.btn_job.clicked.connect(self.select_job)
 		
 		self.start_jobs_btn.clicked.connect(self.start_jobs) ###Start the jobs
+		self.btn_stop.clicked.connect(self.stop_all) ###Stop the jobs
 		#self.start_jobs_btn.clicked.connect(self.start_jobs_in_thread)
 		
 		self.unload_btn.clicked.connect(self.move_unload)
 		self.probe_btn.clicked.connect(self.go_probe)
 		self.gup_btn.clicked.connect(self.gross_up)
 		self.gdn_btn.clicked.connect(self.gross_down)
+		self.change_pos_btn.clicked.connect(self.change_pos)
+		self.fineup_btn.clicked.connect(self.fine_up)
+		self.finedown_btn.clicked.connect(self.fine_down)
+		self.btn_vac_on.clicked.connect(self.vac_on)
+		self.btn_vac_off.clicked.connect(self.vac_off)
+
 		##
 		self.btn_go_td1.clicked.connect(self.go_td1)
 		self.btn_go_td2.clicked.connect(self.go_td2)
@@ -137,14 +168,21 @@ class Ui(QtWidgets.QMainWindow):
 		self.tec_btn.clicked.connect(self.get_temp)
 		self.osa_acq_btn.clicked.connect(self.acq_osa)
 		self.liv_gen_btn.clicked.connect(self.gen_liv_config)
-
+		self.btn_mes_check.clicked.connect( lambda:self.run_mes_check(True))
+		#####
+		#self.die_btn_list.clicked.connect(self.get_liv_list)
+		self.die_btn_job.clicked.connect(self.select_die_config)
+		self.die_jobs_combo_box.currentTextChanged.connect(self.die_update_info)
+		self.die_loaded_cell.currentTextChanged.connect(self.update_load_cells)
+		self.mes_search_job.clicked.connect(self.search_jobs)
+		self.gen_bar_job.clicked.connect(self.gen_bars_job)
+		self.bars_job_refresh.clicked.connect(self.refresh_bars_combo_box)
 		self.show() # Show the GUI
 		self.bar.setValue(0)
 		self.write_values()
 		self.showMaximized()
 		#######Die measurement stuff
-		self.die_btn_job.clicked.connect(self.select_die_config)
-		self.die_jobs_combo_box.currentTextChanged.connect(self.die_update_info)
+		
 
 		################Keithley controls
 		self.ktl_meas_btn.clicked.connect(self.ktl_meas)
@@ -302,7 +340,7 @@ class Ui(QtWidgets.QMainWindow):
 		rm=visa.ResourceManager()
 		ktl = rm.open_resource(address)
 		ktl.write(':OUTP OFF')
-#####################################END OF KEITHLEY BLOCK
+
 ############OSA methods
 	def acq_osa(self):
 		"""Acquires a spectrum from the OSA and plots the result."""
@@ -338,7 +376,8 @@ class Ui(QtWidgets.QMainWindow):
 		except Exception as error:
 			print("Initialization failed ", error)
 			return [],[],[]
-		
+
+############Moving/controlling the probe
 	def rel_mov(self, x_inc, y_inc):
 		"""Moves the prober stage by the specified x and y increments."""
 		xy = self.send_command(b'PSXY\n')
@@ -362,6 +401,25 @@ class Ui(QtWidgets.QMainWindow):
 		self.send_command(b'LDC 0\n')
 		print('Moving to probe position!')
 		return
+	def change_pos(self):
+		"""Moves the prober to the change position."""
+		self.send_command(b'LDS\n')
+		print('Moving to change position!')
+		return
+	def fine_up(self):
+		'''Method to do the fine up'''
+		self.send_command(b'CUP\n')
+	def fine_down(self):
+		'''Method to do the fine down'''
+		self.send_command(b'CDW\n')
+	def vac_on(self):
+		'''Method to turn on the vacuum'''
+		self.send_command(b'VAC CV,1\n')
+	def vac_off(self):
+		'''Method to turn off the vacuum'''
+		self.send_command(b'VAC CV,0\n')
+
+############Updating GUI
 	def save_value(self):
 		"""Saves all current values from the interface."""
 		#method to save all values in interface
@@ -510,6 +568,7 @@ class Ui(QtWidgets.QMainWindow):
 
 		val_array = [*x_td_arr, *y_td_arr, job_file_arr[0], *start_index_arr, *end_index_arr, z]
 		return val_array
+
 #############Die LIV measurement methods
 	def select_die_config(self):
 			"""Selects the die measurement configuration file and updates the interface."""
@@ -517,16 +576,17 @@ class Ui(QtWidgets.QMainWindow):
 			self.die_job_folder_path = QFileDialog.getExistingDirectory(self,("Open Batch Folder"), job_root)
 			self.die_jobs_combo_box.clear()
 			#Fill the first combo box with Jobs available
-			job_folder_selection = glob.glob(self.job_folder_path+'/*ManualLIV_JOB.yaml')
-			job_folder_corr = [r'{}'.format(i) for i in job_folder_selection]
-			job_folder_corr = [i.replace('\\','/') for i in job_folder_corr]
-			job_folder_corr = job_folder_corr[0]
-			self.update_combo_box(self.jobs_combo_box, job_folder_selection)
-
-	def die_update_info(self, job_file_path):
+			job_folder_selection = glob.glob(self.die_job_folder_path+'/*ManualLIV_JOB.yaml')
+			self.update_combo_box(self.die_jobs_combo_box, job_folder_selection)
+			
+			job_folder_selection = glob.glob(self.die_job_folder_path+'/*.csv')
+			self.update_combo_box(self.die_list_combo_box, job_folder_selection)
+	def die_update_info(self):
 			"""Updates the die measurement information when any changes occurs with the dropdow based on the selected configuration file."""
 			#Get info from the selected .yaml job file
 			#Open the file and opens as a dictionary
+			job_file_path=self.die_jobs_combo_box.currentText()
+			cell_list=self.die_list_combo_box.currentText()
 			if job_file_path:
 				with open(job_file_path, 'r') as f:
 					job_dict = yaml.safe_load(f)
@@ -534,49 +594,53 @@ class Ui(QtWidgets.QMainWindow):
 			else: 
 				job_dict = {}
 			#Get parameters from the job dictionary
-			customer_id = job_dict.get("customer", None)
-			lot_id = job_dict.get("lot", None)
-			product_id = job_dict.get("product", None)
-			wafer_id = job_dict.get("wafer", None)
-			temp_set= job_dict.get("T_set", None)
-			liv = job_dict.get("LIV", False)
-			spectrum = job_dict.get("Spectrum", False)
-			cell_type = job_dict.get("cell_type", None)
-			cell_ids = job_dict.get("cell_ids", None)
+			customer_id   = job_dict.get("batch_information").get('customer')
+			lot_id        = job_dict.get("batch_information").get("lot")
+			product_id    = job_dict.get("batch_information").get("product")
+			wafer_id      = job_dict.get("batch_information").get("wafer")
+			temp_set      = job_dict.get("acquisition settings").get("T_set")
+			temp_set      = " ".join(str(x) for x in temp_set)
+			liv           = job_dict.get("acquisition settings").get("LIV")
+			spectrum      = job_dict.get("acquisition settings").get("Spectrum")
+			i_soa         = job_dict.get("acquisition settings").get("Spectrum I_SOA")
+			cell_type     = job_dict.get("acquisition settings").get("cell_type")
+			cell_ids      = pd.read_csv(cell_list)
+			pl            = job_dict.get("acquisition settings").get("PL")
+			amf           = job_dict.get("acquisition settings").get("amf")
+			combi_mode    = job_dict.get("acquisition settings").get("combi_mode")
+			cells_loaded  = self.die_loaded_cell.currentText()
 			
 			#Update the interface with the job parameters
 			self.die_cust_id.setText(str(customer_id))
 			self.die_batch_id.setText(str(lot_id))
-			self.die_product_id.setText(str(product_id))
-			self.die_job_id.setText(self.die_jobs_combo_box.currentText())
-			self.die_all_cells.clear()
-			self.die_all_cells.addItems(cell_ids)
-
+			self.die_wafer_id.setText(str(wafer_id))
+			self.die_prod_id.setText(str(product_id))
+			self.die_pl.setText(str(pl))
+			self.die_temp.setText(temp_set)
+			self.liv_cells_loaded.setText(cell_ids[0:cells_loaded])
+	def update_load_cells(self):
+		cell_list     =self.die_list_combo_box.currentText()
+		cell_ids      = pd.read_csv(cell_list).values
+		cells_loaded  = self.die_loaded_cell.currentText()
+		self.liv_cells_loaded.setText(cell_ids[0:cells_loaded])
+	def search_jobs(self):
+		try:
+			work_order,prod_id,lot_id = self.run_mes_check(False)
+			print(work_order,prod_id,lot_id)
+			#folder_path = 'C:/Users/HP/Smart Photonics/Engineering - Test & Measurement/Internal Projects/Job generation/'+work_order+'/'+prod_id+'/'+lot_id+'/'+'TM0002'
+			folder_path = 'C:/Users/MarcosDaSilvaEleoter/OneDrive - Smart Photonics/Test & Measurement/Internal Projects/Job generation/'+work_order+'/'+prod_id+'/'+lot_id+'/'+'TM0002'
+			print(folder_path)
+			job_folder_selection = glob.glob(folder_path+'/*_JOB.yaml')
+			self.update_combo_box(self.die_jobs_combo_box, job_folder_selection)
+			
+			job_folder_selection = glob.glob(folder_path+'/*.csv')
+			self.update_combo_box(self.die_list_combo_box, job_folder_selection)
+		except Exception as err:
+			print(err)
 	def die_start(self):
 		"""Starts die measurements. (Currently not implemented)"""
-		# collect cell ID`s and the other relevant parameters from the GUI
-		first_cell = self.die_all_cells.currentText()
-		number_of_cells = int(self.die_load_cell.currentText())
-		#collecting all cells to measure
-		all_cells_to_measure = [self.die_all_cells.itemText(i) for i in range(self.die_all_cells.count())]
-		start_index = all_cells_to_measure.index(first_cell)
-		cells_to_measure = all_cells_to_measure[start_index:start_index + number_of_cells]
-		#Start the measurement
-		#Call external function to perform the die measurements
-		# Send the following parameter to BarTester_LIV.py 
-		# 1) Customer ID
-		# 2) lot ID
-		# 3) Product ID
-		# 4) Wafer ID
-		# 5) wavelength
-		# 6) Temperatures
-		# 7) LIV boolean
-		# 8) Spectrum boolean
-		# 9) Cell type
-		# 10) Combi mode
-
-
-#############End of Die LIV measurement methods
+		job_file = self.die_jobs_combo_box.currentText()
+		cell_file = self.die_list_combo_box.currentText()
 
 ############# TOUCHDOWN METHODS
 	def touch_bar(self, bar_index):
@@ -602,6 +666,7 @@ class Ui(QtWidgets.QMainWindow):
 		getattr(self, f'table_bar{bar_index}').setItem(0, 1, QTableWidgetItem(str(y)))
 		self.file_save(self.collect())
 		self.reset_start_btn()
+
 ############# TOUCHDOWN METHODS
 	def touch_bar1(self):
 		"""Performs touchdown for bar 1 and updates the interface with X/Y values."""
@@ -995,57 +1060,202 @@ class Ui(QtWidgets.QMainWindow):
 			repetition = int(self.drop_repeat.currentText())
 		else: 
 			repetition = 1
+		
+		# Build job queue instead of processing immediately
+		self.job_queue = []
+		self.stop_requested = False
+		
 		for rep in range(repetition):
 			for job, user, x_td, y_td, check_bar, start_index, end_index, prog in  zip(job_file_arr, user_name_arr, x_td_arr, y_td_arr,stat_arr, cell_index_start, cell_index_end, prog_arr):
-				
-				#before starting, move it to the center of the wafer
 				if check_bar:
-					self.start_jobs_btn.setStyleSheet('background-color: rgb(255, 255, 0)')
-					self.start_jobs_btn.setText(f"{prog} in progress")
-					self.start_jobs_btn.repaint()
-					self.run(job, user, x_td, y_td, check_bar, start_index, end_index, prog)
-					self.reset_start_btn()
-	
-	####misc. table
+					self.job_queue.append({
+						'job': job,
+						'user': user,
+						'x_td': x_td,
+						'y_td': y_td,
+						'check_bar': check_bar,
+						'start_index': start_index,
+						'end_index': end_index,
+						'prog': prog
+					})
+		
+		# Start processing the job queue
+		if self.job_queue:
+			self.process_next_job()
+		else:
+			self.start_jobs_btn.setStyleSheet('background-color: rgb(255, 255, 0)')
+			self.start_jobs_btn.setText("No bars selected")
+			self.start_jobs_btn.repaint()
+			time.sleep(1)
+			self.reset_start_btn()
+	def process_next_job(self):
+		"""Process the next job in the queue without blocking the GUI."""
+		if self.stop_requested:
+			print('Job processing stopped by user')
+			self.job_queue = []
+			self.reset_start_btn()
+			return
+		
+		if not self.job_queue:
+			# All jobs completed
+			print('All jobs completed')
+			self.reset_start_btn()
+			return
+		
+		# Get next job from queue
+		current_job = self.job_queue.pop(0)
+		
+		# Update UI
+		self.start_jobs_btn.setStyleSheet('background-color: rgb(255, 255, 0)')
+		self.start_jobs_btn.setText(f"{current_job['prog']} in progress ({len(self.job_queue)})")
+		self.start_jobs_btn.repaint()
+
+		# Run job on the main Qt thread to avoid cross-thread QObject/UI errors
+		try:
+			self.run(
+				current_job['job'], current_job['user'], current_job['x_td'], current_job['y_td'],
+				current_job['check_bar'], current_job['start_index'], current_job['end_index'], current_job['prog']
+			)
+		except Exception as err:
+			self.on_job_error(str(err))
+			return
+
+		# Schedule next job after current one completes
+		if not self.stop_requested:
+			QTimer.singleShot(0, self.process_next_job)
+	def on_job_error(self, error_message):
+		"""Handle errors that occur during job execution."""
+		print(f"Job error occurred: {error_message}")
+		# Clear remaining jobs from queue
+		self.job_queue = []
+		self.stop_requested = True
+		# Reset button
+		self.reset_start_btn()
+		# Show error message to user
+		QMessageBox.critical(self, "Measurement Error", 
+						 f"An error occurred during measurement:\n\n{error_message}\n\nRemaining jobs have been cancelled.")
+
+####misc. table
 	def gen_liv_config(self):
 		# read values from gui
-		val_20c = 20*self.liv_temp_20c.isChecked()
-		val_40c = 40*self.liv_temp_40c.isChecked()
-		val_55c = 55*self.liv_temp_55c.isChecked()
-		val_80c = 80*self.liv_temp_80c.isChecked()
-		temp_arr = [val_20c,val_40c, val_55c, val_80c]
-		temp_arr_clean = []
-		for i in temp_arr:
-			if i >0:
-				temp_arr_clean.append(i)
-		if len(temp_arr_clean)==0:
-			temp_arr_clean = [20]
-		#######Writing values in a .yaml
-		dict_to_write = dict(
-		customer = self.liv_cust_line.text(),
-		lot = self.liv_batch_line.text(),
-		product = self.liv_prod_line.text(),
-		wafer = self.liv_wfr_line.text(),
-		PL = int(self.liv_wvgl_box.currentText()),
-		T_set = temp_arr_clean,
-		LIV = eval(self.liv_meas_box.currentText()),
-		Spectrum = eval(self.spec_meas_box.currentText()),
-		Spectrum_I_SOA = float(self.spec_curr.currentText()),
-		cell_type = self.liv_cell_box.currentText(),
-		combi_mode = eval(self.combi_meas_box.currentText())
-		#cell_ids = eval(self.liv_cell_ids_input.toPlainText()).split(product_id+cell_type)[1:]       
-		)
-		yaml_filename = self.liv_wfr_line.text() + '_ManualLIV_JOB'
-		root_path = 'C:/Users/HP/Smart Photonics/Engineering - Test & Measurement/Internal Projects/Job generation'
-		folder_location = root_path+f"/{self.liv_cust_line.text()}/{self.liv_prod_line.text()}/{self.liv_batch_line.text()}/TM0002"
-		##Creating directory if it is not there
-		if not os.path.exists(folder_location):
-			os.makedirs(folder_location)
-		with open(folder_location + '/'+yaml_filename+'.yaml' , 'w') as outfile:
-			yaml.dump(dict_to_write, outfile, default_flow_style=False)
-		df = pd.DataFrame({})
-		df.to_csv(folder_location + f'/{self.liv_wfr_line.text()}.csv')
+		wafer_array = AllItems = [self.liv_wafers_combo_box.itemText(i) for i in range(self.liv_wafers_combo_box.count())]
+		now=time.time()
+		for wafers_num in wafer_array:
+			val_20c = 20*self.liv_temp_20c.isChecked()
+			val_40c = 40*self.liv_temp_40c.isChecked()
+			val_55c = 55*self.liv_temp_55c.isChecked()
+			val_80c = 80*self.liv_temp_80c.isChecked()
+			temp_arr = [val_20c,val_40c, val_55c, val_80c]
+			temp_arr_clean = []
+			for i in temp_arr:
+				if i >0:
+					temp_arr_clean.append(i)
+			if len(temp_arr_clean)==0:
+				temp_arr_clean = [20]
+			#######Writing values in a .yaml
+			dict_to_write = {
+			'acquisition settings': dict(
+			all_measurements_in_one_die=True,
+			amf="MANUAL_BT_LIV_AMF_MULTI_TEMP.yaml",
+			ccf='dummy',
+			mdf='dummy',
+			mmf='dummy',
+			probecard='T1',
+			sample_type='wafer',
+			save_shell_output=True,
+			PL=int(self.liv_wvgl_box.currentText()),
+			T_set = temp_arr_clean,
+			LIV = eval(self.liv_meas_box.currentText()),
+			Spectrum = eval(self.spec_meas_box.currentText()),
+			Spectrum_I_SOA = float(self.spec_curr.currentText()),
+			cell_type = self.liv_cell_box.currentText(),
+			t1_version = eval(self.t1_version.currentText()),
+			combi_mode = eval(self.combi_meas_box.currentText())
+			),
+			'batch_information': dict(
+			batch=self.liv_batch_line.text(),
+			customer=self.liv_cust_line.text(),
+			lot=self.liv_batch_line.text(),
+			product=self.liv_prod_line.text(),
+			wafers= wafers_num
+			#cell_ids = eval(self.liv_cell_ids_input.toPlainText()).split(product_id+cell_type)[1:]
+			),
+			'date_and_version': dict(
+			author=self.op_id.currentText(),
+			date=strftime('%d-%b-%y %H.%M.%S', localtime(now)).split(' ')[0],
+			email='marcos.dasilva.eleoterio@smartphotonics.nl',
+			time=strftime('%d-%b-%y %H.%M.%S', localtime(now)).split(' ')[-1],
+			),
+			'post-acquisition settings': dict(
+			compressing_files=True,
+			job_type='PROD',
+			quick_analysis=False
+			),
+			'setup': 'TM0002'
+			}
 			
+			yaml_filename = wafers_num + '_ManualLIV_JOB'
+			root_path = 'C:/Users/HP/Smart Photonics/Engineering - Test & Measurement/Internal Projects/Job generation'
+			folder_location = root_path+f"/{self.liv_cust_line.text()}/{self.liv_prod_line.text()}/{self.liv_batch_line.text()}/TM0002"
+			##Creating directory if it is not there
+			if not os.path.exists(folder_location):
+				os.makedirs(folder_location)
+			with open(folder_location + '/'+yaml_filename+'.yaml' , 'w') as outfile:
+				yaml.dump(dict_to_write, outfile, default_flow_style=False)
+			df = pd.DataFrame({})
+			df.to_csv(folder_location + f'/{wafers_num}.csv')
+			try:
+				os.startfile(folder_location)
+			except Exception as e:
+				print(e)
+	def run_mes_check(self, update_gui=True):
+		traveler_info = {}
+		#update label
+		self.label_warning.setText("Retrieving traveler information from MES...")
+		new_font = QFont("Arial", 20)
+		new_font.setBold(True)
+		self.label_warning.setFont(new_font)
+		self.label_warning.setStyleSheet("color:red;background-color: yellow;")
+		QtWidgets.QApplication.processEvents()  # Force GUI update
+		start_connect = time.time()
+		
+		while traveler_info == {}:
+			rpc = MesCom.EzMesClient()
+			traveler_info = rpc.mes_get_traveler_information(self.wafers_line.text())
+			conn_time_delta = time.time() - start_connect
+			print(conn_time_delta)
+			if conn_time_delta>30:
+				self.label_warning.setText("Conn. timeout, try again!")
+				break
+		self.label_warning.setText("Mes data acquisition done.")
+		self.label_warning.setStyleSheet("color:blue;background-color: green;")
+		QtWidgets.QApplication.processEvents()  # Force GUI update
+		rpc.connection.close()
+		try:
+			lot_id = traveler_info['LotID']
+			wafers = traveler_info['Wafers']
+			prod_id = traveler_info['RequestedPart']
+			curr_step = traveler_info['CurrentStep']
+			wafers_arr = [wafers[i]['WaferId'] for i, key in enumerate(wafers)]
+			work_order = traveler_info['WorkOrder']
+			match = re.search(r'BLN03|PNC15|DFB01|DFB03|DFB04|BLN01|PNC21|PNC06|MPO06|MPS25|MPC057|OLSG2|T1|OMP05|MAC01', prod_id)
+			if match:
+				prod_id = match.group(0)
+			else:
+				prod_id = prod_id
+			if update_gui:
+				self.liv_batch_line.setText(lot_id)
+				self.liv_prod_line.setText(prod_id)
+				self.liv_wafers_combo_box.clear()
+				self.liv_wafers_combo_box.addItems(wafers_arr)
+				self.liv_cust_line.setText(work_order)
+			else:
+				print('No update')
+				return work_order,prod_id,lot_id
+		except Exception as err:
+			print(err)
+			#QMessageBox.about(self, "Error", "Failed to retrieve traveler information")
+
 		####Methods for MLIV meas
 	def get_temp(self):
 		tec_t = tec.Tec()          # TEC
@@ -1475,9 +1685,97 @@ class Ui(QtWidgets.QMainWindow):
 		self.start_jobs_btn.setStyleSheet('background-color: rgb(85, 255, 127)')
 		self.start_jobs_btn.setText("START")
 		self.start_jobs_btn.repaint()
+	def gen_bars_job(self):
+		#Collect the info
+		work_dir = os.getcwd() + '\\Job_gen_files\\'
+		costumer = self.liv_cust_line.text()
+		ccf_filepath = self.bar_ccf_file.currentText()
+		
+		val_20c = 20*self.bar_job_temp_20c.isChecked()
+		val_25c = 25*self.bar_job_temp_25c.isChecked()
+		val_40c = 40*self.bar_job_temp_40c.isChecked()
+		val_55c = 55*self.bar_job_temp_55c.isChecked()
+		val_75c = 75*self.bar_job_temp_75c.isChecked()
+		val_80c = 80*self.bar_job_temp_80c.isChecked()
+		temperatures = [val_20c,val_25c,val_40c, val_55c, val_75c, val_80c]
+		temp_arr_clean = []
+		for i in temperatures:
+			if i >0:
+				temp_arr_clean.append(i)
+		if len(temp_arr_clean)==0:
+			temp_arr_clean = [20]
+
+
+		#get all wafers in the combo box
+		AllItems = [self.liv_wafers_combo_box.itemText(i) for i in range(self.liv_wafers_combo_box.count())]
+		run_info = []
+		for i in AllItems:
+			arr_temp = [self.liv_batch_line.text(), self.liv_prod_line.text(), i]
+			run_info.append(arr_temp)
+			
+		run_job_file = work_dir+self.bar_job_file.currentText()
+		run_ccf_file = work_dir+self.bar_ccf_file.currentText()
+		#calling the job file gen
+		try:				
+			subprocess.Popen(['python', run_job_file, run_ccf_file, run_info, costumer, temp_arr_clean])
+		except Exception as e:
+			QMessageBox.about(self, "Error", "Failed to start job file generation script:\n" + str(e))
+			
+		print(costumer, run_ccf_file,'\n', temp_arr_clean,'\n', run_info,'\n', run_job_file)
+		
+	def refresh_bars_combo_box(self):
+		curr_dir = os.getcwd()
+		work_folder = os.path.join(curr_dir, 'Job_gen_files')
+		ccf_files = glob.glob(work_folder+'\*CCF.csv')
+		job_files = glob.glob(work_folder+'\*JOB.py')
+		self.bar_job_file.clear()
+		self.bar_ccf_file.clear()
+		job_files = [i.split('\\')[-1] for i in job_files]
+		ccf_files = [i.split('\\')[-1] for i in ccf_files]	
+		self.bar_job_file.addItems(job_files)
+		self.bar_ccf_file.addItems(ccf_files)
+		
+
+	def _abort_if_stop_requested(self):
+		"""Process UI events and abort current run if Stop was requested."""
+		QtWidgets.QApplication.processEvents()
+		if self.stop_requested:
+			raise RuntimeError('Measurement stopped by user')
+
 	def stop_all(self):
-		pass
-	#####core.py  starts here#######
+		"""Stops the currently running thread/worker and clears the job queue."""
+		# Set stop flag to prevent processing more jobs from queue
+		self.stop_requested = True
+		QtWidgets.QApplication.processEvents()
+		# Clear remaining jobs in queue
+		if hasattr(self, 'job_queue'):
+			remaining_jobs = len(self.job_queue)
+			self.job_queue = []
+			if remaining_jobs > 0:
+				print(f'Cleared {remaining_jobs} pending jobs from queue')
+		
+		if hasattr(self, 'worker') and self.worker is not None:
+			print('Stopping current worker...')
+			self.worker.stop()
+			if hasattr(self, 'thread') and self.thread is not None and self.thread.isRunning():
+				self.thread.quit()
+				# Don't use wait() here - it would block the GUI!
+				# The thread will clean up asynchronously
+				QTimer.singleShot(3000, lambda: self._force_terminate_thread())
+				self.end()
+
+				print('Thread stop requested')
+			QMessageBox.about(self, "Stopped", "Stop requested. Finishing current step and shutting down...")
+		else:
+			QMessageBox.about(self, "Stopped", "Stop requested. Finishing current step and shutting down...")
+	def _force_terminate_thread(self):
+		"""Force terminate thread if it hasn't stopped gracefully."""
+		if hasattr(self, 'thread') and self.thread is not None and self.thread.isRunning():
+			print('Force terminating thread...')
+			self.thread.terminate()
+			self.thread.wait(1000)
+
+#####core.py  starts here#######
 	def set_job_folder_fullpath(self, fp):
 		"""Sets the job folder fullpath.
 		Useful callback when core is run through the GUI.
@@ -1530,6 +1828,7 @@ class Ui(QtWidgets.QMainWindow):
 		if self.probes_fullpath:# Note: probes are located on a different folder       
 			self.probes_fullpath = os.path.join(get_probes_folder(), self.probes_fullpath)
 		else:
+			
 			self.fe.get_specified_configuration_files(probes=True)
 			self.probes_fullpath = self.fe.probes
 	
@@ -1614,21 +1913,28 @@ class Ui(QtWidgets.QMainWindow):
 	def run(self,job, user, x_td, y_td, check_bar, start_index, end_index, prog):
 		"""Runs the core
 		"""
+		self.stop_requested = False
 		self.init_process(job, user, x_td, y_td, check_bar, start_index, end_index, prog)
 		try:
+			self._abort_if_stop_requested()
 			self.eq.prober.move_to_probing_zone_center()
 			#self.eq.prober.go_to_xy(x_td,y_td) # move to the touchdown position 
 			self.eq.prober.move_chuck_gross_up()
 			self.match_coordinates(x_td, y_td)
 			self.eq.prober.set_light(on=False)
+			self._abort_if_stop_requested()
 		except Exception as error:
 			# handle the exception
 			print("An exception occurred:", error) # An exception occurred: division by zero
-			self.reset_start_btn()
 			self.end()
+			return
 		t,s=generate_session_ID()
 		self.session_start_time=s.strip(t+'_')
 		self.perform_measurement_loop(prog)
+		if self.stop_requested:
+			print('Measurement stopped by user')
+			self.end()
+			return
 		self.daq_successful = True
 		self.end()
 		self.post_acquisition_operations()
@@ -1748,6 +2054,7 @@ class Ui(QtWidgets.QMainWindow):
 			work_size = len(self.mp.get_cell_names)
 			print(f'********************{work_size}********************')
 			for cell in self.mp.get_cell_names:
+				self._abort_if_stop_requested()
 				self.go_to_cell_v2(cl=cell)
 
 				print('Moving.................................')
@@ -1755,6 +2062,7 @@ class Ui(QtWidgets.QMainWindow):
 				print('Moving.................................')
 
 				for ms in self.mp.get_meas_plan_for_cell(cell_name=cell):
+					self._abort_if_stop_requested()
 					if ms == 'PICTURE':
 						self.take_picture(picture_name='_'.join([self.wafer, self.batch, cell, ms])) 
 					else:
@@ -1766,11 +2074,13 @@ class Ui(QtWidgets.QMainWindow):
 		if self.meas_procedure == 'meas_wise': # each measurement on all dies, before passing to next measurement
 			start_time = time.time()
 			for ms in self.mp.planned_meas:
+				self._abort_if_stop_requested()
 				work_size = len(self.mp.planned_meas)
 				print(f'********************{work_size}*************planned_meas')
 				progress = int(round( 100*(1-(work_size-cnt)/work_size), 1))
 				exec("self." + progress_bar + ".setValue(progress)")
 				for cell in self.mp.get_cells_for_meas_plan(meas_name=ms):
+					self._abort_if_stop_requested()
 					self.go_to_cell_v2(cl=cell)
 					if ms == 'PICTURE':
 						self.take_picture(picture_name='_'.join([self.wafer, self.batch, cell, ms])) 
@@ -1778,7 +2088,6 @@ class Ui(QtWidgets.QMainWindow):
 						self.perform_touch_down(cell=cell)
 						self.perform_measurement(ms=ms, cl=cell)
 				cnt = cnt+1
-				
 	def take_picture(self, picture_name): # ABI: new function, dedicated to taking pictures with monitoring camera
 		pass    
 		'''
@@ -1814,7 +2123,10 @@ class Ui(QtWidgets.QMainWindow):
 			#get edge sensor status
 			edge_sensor_open = self.eq.prober.get_edge_sensor_status()
 			logger.info('Cell {} successfully probed: {}'.format(cell, edge_sensor_open))
-			td_date, td_time = [datetime.datetime.now().strftime('%Y.%m.%d'), datetime.datetime.now().strftime('%H.%M.%S')]
+			now = time.time()
+			#td_date, td_time = [datetime.datetime.now().datetime.strftime('%Y.%m.%d'), datetime.datetime.now().datetime.strftime('%H.%M.%S')]
+			td_date, td_time = [time.strftime('%Y.%m.%d',time.gmtime(now)), time.strftime('%H.%M.%S',time.gmtime(now))]
+			
 			self.touch_down_recorder.append([cell, z, td_date, td_time, edge_sensor_open])
 			zup=self.eq.prober.get_chuck_z()
 			self.logfile(f"{self.probename},{cell},Z_at_CUP,{zup}\n")
@@ -1824,8 +2136,6 @@ class Ui(QtWidgets.QMainWindow):
 		   Checks the temperature.
 		   Starts the measurement.
 		"""
-		
-		
 		self.m.tool_id            = self.tool_id
 		self.m.session_id         = self.session_id
 		self.m.operator           = self.operator
@@ -1848,30 +2158,15 @@ class Ui(QtWidgets.QMainWindow):
 		print('pre-set T_set')
 		T_set = self.m.get_plan_setting(setting='T_set')
 		print(' perform_measurement method sets temperature = to:', T_set)
-		self.eq.tec._set(T_set = T_set, T_win=0.5)
+		self.eq.tec._set(T_set = T_set, T_win=0.5, t_stab = 3600)
 		#print ('tec status:', self.eq.tec.is_stable())
 		#while not self.eq.tec.is_in_T_win(T_set = T_set, T_win=0.5):
 		while abs(T_set -self.eq.tec.get_temperature() )>0.5:
+			self._abort_if_stop_requested()
 			print("Waiting for temp stabilisation")
 			print('tec status: T={} not in Twin {}<->{}'.format(self.eq.tec.get_temperature(),T_set-0.1,T_set+0.1))
 			time.sleep(1)
-		#while not self.eq.tec.is_stable():
-			#time.sleep(1)
-			#print('##################')
-			#print(abs(self.eq.tec.get_temperature() - T_set ))
-			#if abs(self.eq.tec.get_temperature() -T_set ) < 1:
-			#	break
-			#print('tec status: Not stable, T={}'.format(self.eq.tec.get_temperature()))
-			
-		#while 
-		#print('######################')
-		#print('Performing Measurement')
-		#time.sleep(.1)
-		#print('######################')
-		#Measure
-					
-		#SSprint('Plotting data...')
-		
+
 		t1 = (0,0,255)
 		t2 = (255,0,0)
 		tfill = (0,0,0)
@@ -2113,7 +2408,7 @@ class Ui(QtWidgets.QMainWindow):
 
 		if(self.save_output_on_file):
 			sys.stdout = self.terminal_stdout # going back to printing to terminal
-			self.f_stdout.close()
+			#self.f_stdout.close()
 
 		print("\nMeasurement run finished!\n")
 		
