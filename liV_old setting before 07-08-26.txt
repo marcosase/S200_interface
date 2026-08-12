@@ -1,0 +1,11 @@
+LIV_settings = { # Settings for running LIV measurements
+		"current":0.4,
+		"step_size":1.E-3,
+		"pulse_delay": 2.E-4,  # s
+		"pulse_width": 1.E-5,  # s
+		"pulse_mode": 'DC',  # i.e. "Staircase" mode
+		"pl":  1550,
+		"resp_at_1310": -166.25,  # PD responsivity for wavelength 1310 nm = -166.25
+		"resp_at_1550": -133.51,  # PD responsivity for wavelength 1550 nm = -133.51
+		}
+		ktl.connect()

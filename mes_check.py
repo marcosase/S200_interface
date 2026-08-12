@@ -225,19 +225,13 @@ if __name__ == "__main__":
 
     rpc = EzMesClient()
 
-    wafer_id = input("Enter wafer id[34058 022 IP]:") or "34058 022 IP"
+    
 
     # Check wafer id
-    response = rpc.mes_generic_transaction_request(wafer_id=wafer_id)
+    response = rpc.mes_generic_transaction_request('FR2605-000093231')
     
-    traveler_id = response["Reply"]["Body"]["GenericJson"]["arData"][0]["TravelerId"]
-
-    assert traveler_id and traveler_id != 0, "Invalid traveler id"
-
-    # Get data linked to wafer id
-    traveler_info = rpc.mes_get_traveler_information(traveler_id=traveler_id)
-    pprint(traveler_info)
-
+    print(response)
+    
 __ezmes_instance__ = None
 
 def get_ezmes_client():

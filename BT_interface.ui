@@ -144,8 +144,8 @@ UP</string>
    <widget class="QLabel" name="label_37">
     <property name="geometry">
      <rect>
-      <x>1460</x>
-      <y>90</y>
+      <x>930</x>
+      <y>710</y>
       <width>451</width>
       <height>281</height>
      </rect>
@@ -201,7 +201,7 @@ UP</string>
      <enum>QTabWidget::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>0</number>
     </property>
     <property name="iconSize">
      <size>
@@ -542,7 +542,7 @@ Job FOLDER</string>
            <rect>
             <x>110</x>
             <y>170</y>
-            <width>161</width>
+            <width>241</width>
             <height>21</height>
            </rect>
           </property>
@@ -864,8 +864,8 @@ background-color: rgb(255, 255, 0);
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>360</y>
-            <width>581</width>
+            <y>350</y>
+            <width>751</width>
             <height>431</height>
            </rect>
           </property>
@@ -877,8 +877,8 @@ background-color: rgb(255, 255, 0);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>562</width>
-             <height>1020</height>
+             <width>732</width>
+             <height>838</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout">
@@ -903,8 +903,8 @@ background-color: rgb(255, 255, 0);
                <number>2</number>
               </property>
               <layout class="QGridLayout" name="gridLayout">
-               <item row="0" column="0">
-                <widget class="QCheckBox" name="check_bar1">
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_13">
                  <property name="font">
                   <font>
                    <family>Arial</family>
@@ -915,7 +915,7 @@ background-color: rgb(255, 255, 0);
                   </font>
                  </property>
                  <property name="text">
-                  <string>Bar1</string>
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Start Cell ID:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                  </property>
                 </widget>
                </item>
@@ -938,6 +938,22 @@ background-color: rgb(255, 255, 0);
                  </property>
                 </widget>
                </item>
+               <item row="0" column="0">
+                <widget class="QCheckBox" name="check_bar1">
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>12</pointsize>
+                   <weight>50</weight>
+                   <italic>false</italic>
+                   <bold>false</bold>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Bar1</string>
+                 </property>
+                </widget>
+               </item>
                <item row="0" column="2">
                 <widget class="QPushButton" name="btn_go_td1">
                  <property name="font">
@@ -957,8 +973,8 @@ background-color: rgb(255, 255, 0);
                  </property>
                 </widget>
                </item>
-               <item row="1" column="0">
-                <widget class="QLabel" name="label_13">
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_14">
                  <property name="font">
                   <font>
                    <family>Arial</family>
@@ -969,27 +985,11 @@ background-color: rgb(255, 255, 0);
                   </font>
                  </property>
                  <property name="text">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Start Cell ID:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Last Cell ID:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                  </property>
                 </widget>
                </item>
-               <item row="1" column="1" colspan="2">
-                <widget class="QLineEdit" name="line_start1">
-                 <property name="font">
-                  <font>
-                   <family>Arial</family>
-                   <pointsize>12</pointsize>
-                   <weight>50</weight>
-                   <italic>false</italic>
-                   <bold>false</bold>
-                  </font>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true">background-color: rgb(85, 255, 127);</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="3" rowspan="2">
+               <item row="0" column="4" rowspan="3">
                 <widget class="QTableWidget" name="table_bar1">
                  <property name="styleSheet">
                   <string notr="true">font: 75 10pt &quot;Arial&quot;;</string>
@@ -1019,16 +1019,16 @@ background-color: rgb(255, 255, 0);
                   <number>1</number>
                  </property>
                  <attribute name="horizontalHeaderVisible">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </attribute>
                  <attribute name="horizontalHeaderCascadingSectionResizes">
                   <bool>false</bool>
                  </attribute>
-                 <attribute name="horizontalHeaderMinimumSectionSize">
-                  <number>39</number>
-                 </attribute>
                  <attribute name="horizontalHeaderDefaultSectionSize">
                   <number>95</number>
+                 </attribute>
+                 <attribute name="horizontalHeaderMinimumSectionSize">
+                  <number>39</number>
                  </attribute>
                  <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
                   <bool>false</bool>
@@ -1039,14 +1039,14 @@ background-color: rgb(255, 255, 0);
                  <attribute name="verticalHeaderCascadingSectionResizes">
                   <bool>false</bool>
                  </attribute>
-                 <attribute name="verticalHeaderMinimumSectionSize">
-                  <number>2</number>
-                 </attribute>
                  <attribute name="verticalHeaderDefaultSectionSize">
                   <number>20</number>
                  </attribute>
                  <attribute name="verticalHeaderHighlightSections">
                   <bool>true</bool>
+                 </attribute>
+                 <attribute name="verticalHeaderMinimumSectionSize">
+                  <number>2</number>
                  </attribute>
                  <attribute name="verticalHeaderShowSortIndicator" stdset="0">
                   <bool>false</bool>
@@ -1099,6 +1099,21 @@ background-color: rgb(255, 255, 0);
                    </color>
                   </property>
                  </column>
+                 <column>
+                  <property name="text">
+                   <string>θ(1E-3° )</string>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <pointsize>10</pointsize>
+                    <weight>75</weight>
+                    <bold>true</bold>
+                   </font>
+                  </property>
+                  <property name="textAlignment">
+                   <set>AlignCenter</set>
+                  </property>
+                 </column>
                  <item row="0" column="0">
                   <property name="text">
                    <string>0</string>
@@ -1129,10 +1144,25 @@ background-color: rgb(255, 255, 0);
                    <set>AlignCenter</set>
                   </property>
                  </item>
+                 <item row="0" column="2">
+                  <property name="text">
+                   <string>0</string>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <pointsize>11</pointsize>
+                    <weight>75</weight>
+                    <bold>true</bold>
+                   </font>
+                  </property>
+                  <property name="textAlignment">
+                   <set>AlignCenter</set>
+                  </property>
+                 </item>
                 </widget>
                </item>
-               <item row="2" column="0">
-                <widget class="QLabel" name="label_14">
+               <item row="0" column="3">
+                <widget class="QPushButton" name="btn_align1">
                  <property name="font">
                   <font>
                    <family>Arial</family>
@@ -1142,12 +1172,31 @@ background-color: rgb(255, 255, 0);
                    <bold>false</bold>
                   </font>
                  </property>
+                 <property name="styleSheet">
+                  <string notr="true">background-color: rgb(0, 170, 255);</string>
+                 </property>
                  <property name="text">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Last Cell ID:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  <string>Align.</string>
                  </property>
                 </widget>
                </item>
-               <item row="2" column="1" colspan="2">
+               <item row="1" column="1" colspan="3">
+                <widget class="QLineEdit" name="line_start1">
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>12</pointsize>
+                   <weight>50</weight>
+                   <italic>false</italic>
+                   <bold>false</bold>
+                  </font>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true">background-color: rgb(85, 255, 127);</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1" colspan="3">
                 <widget class="QLineEdit" name="line_end1">
                  <property name="font">
                   <font>
@@ -1178,22 +1227,6 @@ background-color: rgb(255, 255, 0);
                <number>2</number>
               </property>
               <layout class="QGridLayout" name="gridLayout_3">
-               <item row="0" column="0">
-                <widget class="QCheckBox" name="check_bar2">
-                 <property name="font">
-                  <font>
-                   <family>Arial</family>
-                   <pointsize>12</pointsize>
-                   <weight>50</weight>
-                   <italic>false</italic>
-                   <bold>false</bold>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>Bar2</string>
-                 </property>
-                </widget>
-               </item>
                <item row="0" column="1">
                 <widget class="QPushButton" name="btn_touch2">
                  <property name="font">
@@ -1229,8 +1262,24 @@ background-color: rgb(255, 255, 0);
                  </property>
                 </widget>
                </item>
-               <item row="1" column="1" colspan="2">
-                <widget class="QLineEdit" name="line_start2">
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_18">
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>12</pointsize>
+                   <weight>50</weight>
+                   <italic>false</italic>
+                   <bold>false</bold>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Last Cell ID:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="2">
+                <widget class="QPushButton" name="btn_go_td2">
                  <property name="font">
                   <font>
                    <family>Arial</family>
@@ -1241,11 +1290,49 @@ background-color: rgb(255, 255, 0);
                   </font>
                  </property>
                  <property name="styleSheet">
-                  <string notr="true">background-color: rgb(85, 255, 127);</string>
+                  <string notr="true">background-color: rgb(0, 170, 255);</string>
+                 </property>
+                 <property name="text">
+                  <string>Check touchdown</string>
                  </property>
                 </widget>
                </item>
-               <item row="1" column="3" rowspan="2">
+               <item row="0" column="0">
+                <widget class="QCheckBox" name="check_bar2">
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>12</pointsize>
+                   <weight>50</weight>
+                   <italic>false</italic>
+                   <bold>false</bold>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Bar2</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="3">
+                <widget class="QPushButton" name="btn_align2">
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>12</pointsize>
+                   <weight>50</weight>
+                   <italic>false</italic>
+                   <bold>false</bold>
+                  </font>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true">background-color: rgb(0, 170, 255);</string>
+                 </property>
+                 <property name="text">
+                  <string>Align.</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="4" rowspan="3">
                 <widget class="QTableWidget" name="table_bar2">
                  <property name="styleSheet">
                   <string notr="true">font: 75 10pt &quot;Arial&quot;;</string>
@@ -1275,16 +1362,16 @@ background-color: rgb(255, 255, 0);
                   <number>1</number>
                  </property>
                  <attribute name="horizontalHeaderVisible">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </attribute>
                  <attribute name="horizontalHeaderCascadingSectionResizes">
                   <bool>false</bool>
                  </attribute>
-                 <attribute name="horizontalHeaderMinimumSectionSize">
-                  <number>39</number>
-                 </attribute>
                  <attribute name="horizontalHeaderDefaultSectionSize">
                   <number>95</number>
+                 </attribute>
+                 <attribute name="horizontalHeaderMinimumSectionSize">
+                  <number>39</number>
                  </attribute>
                  <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
                   <bool>false</bool>
@@ -1295,14 +1382,14 @@ background-color: rgb(255, 255, 0);
                  <attribute name="verticalHeaderCascadingSectionResizes">
                   <bool>false</bool>
                  </attribute>
-                 <attribute name="verticalHeaderMinimumSectionSize">
-                  <number>2</number>
-                 </attribute>
                  <attribute name="verticalHeaderDefaultSectionSize">
                   <number>20</number>
                  </attribute>
                  <attribute name="verticalHeaderHighlightSections">
                   <bool>true</bool>
+                 </attribute>
+                 <attribute name="verticalHeaderMinimumSectionSize">
+                  <number>2</number>
                  </attribute>
                  <attribute name="verticalHeaderShowSortIndicator" stdset="0">
                   <bool>false</bool>
@@ -1355,6 +1442,21 @@ background-color: rgb(255, 255, 0);
                    </color>
                   </property>
                  </column>
+                 <column>
+                  <property name="text">
+                   <string>θ(1E-3° )</string>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <pointsize>10</pointsize>
+                    <weight>75</weight>
+                    <bold>true</bold>
+                   </font>
+                  </property>
+                  <property name="textAlignment">
+                   <set>AlignCenter</set>
+                  </property>
+                 </column>
                  <item row="0" column="0">
                   <property name="text">
                    <string>0</string>
@@ -1385,26 +1487,25 @@ background-color: rgb(255, 255, 0);
                    <set>AlignCenter</set>
                   </property>
                  </item>
+                 <item row="0" column="2">
+                  <property name="text">
+                   <string>0</string>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <pointsize>11</pointsize>
+                    <weight>75</weight>
+                    <bold>true</bold>
+                   </font>
+                  </property>
+                  <property name="textAlignment">
+                   <set>AlignCenter</set>
+                  </property>
+                 </item>
                 </widget>
                </item>
-               <item row="2" column="0">
-                <widget class="QLabel" name="label_18">
-                 <property name="font">
-                  <font>
-                   <family>Arial</family>
-                   <pointsize>12</pointsize>
-                   <weight>50</weight>
-                   <italic>false</italic>
-                   <bold>false</bold>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Last Cell ID:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="1" colspan="2">
-                <widget class="QLineEdit" name="line_end2">
+               <item row="1" column="1" colspan="3">
+                <widget class="QLineEdit" name="line_start2">
                  <property name="font">
                   <font>
                    <family>Arial</family>
@@ -1419,8 +1520,8 @@ background-color: rgb(255, 255, 0);
                  </property>
                 </widget>
                </item>
-               <item row="0" column="2">
-                <widget class="QPushButton" name="btn_go_td2">
+               <item row="2" column="1" colspan="3">
+                <widget class="QLineEdit" name="line_end2">
                  <property name="font">
                   <font>
                    <family>Arial</family>
@@ -1431,10 +1532,7 @@ background-color: rgb(255, 255, 0);
                   </font>
                  </property>
                  <property name="styleSheet">
-                  <string notr="true">background-color: rgb(0, 170, 255);</string>
-                 </property>
-                 <property name="text">
-                  <string>Check touchdown</string>
+                  <string notr="true">background-color: rgb(85, 255, 127);</string>
                  </property>
                 </widget>
                </item>
@@ -1523,8 +1621,24 @@ background-color: rgb(255, 255, 0);
                  </property>
                 </widget>
                </item>
-               <item row="1" column="1" colspan="2">
-                <widget class="QLineEdit" name="line_start3">
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_20">
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>12</pointsize>
+                   <weight>50</weight>
+                   <italic>false</italic>
+                   <bold>false</bold>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Last Cell ID:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="3">
+                <widget class="QPushButton" name="btn_align3">
                  <property name="font">
                   <font>
                    <family>Arial</family>
@@ -1535,11 +1649,14 @@ background-color: rgb(255, 255, 0);
                   </font>
                  </property>
                  <property name="styleSheet">
-                  <string notr="true">background-color: rgb(85, 255, 127);</string>
+                  <string notr="true">background-color: rgb(0, 170, 255);</string>
+                 </property>
+                 <property name="text">
+                  <string>Align.</string>
                  </property>
                 </widget>
                </item>
-               <item row="1" column="3" rowspan="2">
+               <item row="0" column="4" rowspan="3">
                 <widget class="QTableWidget" name="table_bar3">
                  <property name="styleSheet">
                   <string notr="true">font: 75 10pt &quot;Arial&quot;;</string>
@@ -1569,16 +1686,16 @@ background-color: rgb(255, 255, 0);
                   <number>1</number>
                  </property>
                  <attribute name="horizontalHeaderVisible">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </attribute>
                  <attribute name="horizontalHeaderCascadingSectionResizes">
                   <bool>false</bool>
                  </attribute>
-                 <attribute name="horizontalHeaderMinimumSectionSize">
-                  <number>39</number>
-                 </attribute>
                  <attribute name="horizontalHeaderDefaultSectionSize">
                   <number>95</number>
+                 </attribute>
+                 <attribute name="horizontalHeaderMinimumSectionSize">
+                  <number>39</number>
                  </attribute>
                  <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
                   <bool>false</bool>
@@ -1589,14 +1706,14 @@ background-color: rgb(255, 255, 0);
                  <attribute name="verticalHeaderCascadingSectionResizes">
                   <bool>false</bool>
                  </attribute>
-                 <attribute name="verticalHeaderMinimumSectionSize">
-                  <number>2</number>
-                 </attribute>
                  <attribute name="verticalHeaderDefaultSectionSize">
                   <number>20</number>
                  </attribute>
                  <attribute name="verticalHeaderHighlightSections">
                   <bool>true</bool>
+                 </attribute>
+                 <attribute name="verticalHeaderMinimumSectionSize">
+                  <number>2</number>
                  </attribute>
                  <attribute name="verticalHeaderShowSortIndicator" stdset="0">
                   <bool>false</bool>
@@ -1649,6 +1766,21 @@ background-color: rgb(255, 255, 0);
                    </color>
                   </property>
                  </column>
+                 <column>
+                  <property name="text">
+                   <string>θ(1E-3° )</string>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <pointsize>10</pointsize>
+                    <weight>75</weight>
+                    <bold>true</bold>
+                   </font>
+                  </property>
+                  <property name="textAlignment">
+                   <set>AlignCenter</set>
+                  </property>
+                 </column>
                  <item row="0" column="0">
                   <property name="text">
                    <string>0</string>
@@ -1679,10 +1811,25 @@ background-color: rgb(255, 255, 0);
                    <set>AlignCenter</set>
                   </property>
                  </item>
+                 <item row="0" column="2">
+                  <property name="text">
+                   <string>0</string>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <pointsize>11</pointsize>
+                    <weight>75</weight>
+                    <bold>true</bold>
+                   </font>
+                  </property>
+                  <property name="textAlignment">
+                   <set>AlignCenter</set>
+                  </property>
+                 </item>
                 </widget>
                </item>
-               <item row="2" column="0">
-                <widget class="QLabel" name="label_20">
+               <item row="1" column="1" colspan="3">
+                <widget class="QLineEdit" name="line_start3">
                  <property name="font">
                   <font>
                    <family>Arial</family>
@@ -1692,12 +1839,12 @@ background-color: rgb(255, 255, 0);
                    <bold>false</bold>
                   </font>
                  </property>
-                 <property name="text">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Last Cell ID:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 <property name="styleSheet">
+                  <string notr="true">background-color: rgb(85, 255, 127);</string>
                  </property>
                 </widget>
                </item>
-               <item row="2" column="1" colspan="2">
+               <item row="2" column="1" colspan="3">
                 <widget class="QLineEdit" name="line_end3">
                  <property name="font">
                   <font>
@@ -1779,22 +1926,6 @@ background-color: rgb(255, 255, 0);
                  </property>
                 </widget>
                </item>
-               <item row="3" column="1" colspan="2">
-                <widget class="QLineEdit" name="line_end4">
-                 <property name="font">
-                  <font>
-                   <family>Arial</family>
-                   <pointsize>12</pointsize>
-                   <weight>50</weight>
-                   <italic>false</italic>
-                   <bold>false</bold>
-                  </font>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true">background-color: rgb(85, 255, 127);</string>
-                 </property>
-                </widget>
-               </item>
                <item row="0" column="2">
                 <widget class="QPushButton" name="btn_go_td4">
                  <property name="font">
@@ -1814,7 +1945,42 @@ background-color: rgb(255, 255, 0);
                  </property>
                 </widget>
                </item>
-               <item row="1" column="4" rowspan="3">
+               <item row="1" column="0" rowspan="2">
+                <widget class="QLabel" name="label_21">
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>12</pointsize>
+                   <weight>50</weight>
+                   <italic>false</italic>
+                   <bold>false</bold>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Start Cell ID:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="3">
+                <widget class="QPushButton" name="btn_align4">
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>12</pointsize>
+                   <weight>50</weight>
+                   <italic>false</italic>
+                   <bold>false</bold>
+                  </font>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true">background-color: rgb(0, 170, 255);</string>
+                 </property>
+                 <property name="text">
+                  <string>Align.</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="4" rowspan="4">
                 <widget class="QTableWidget" name="table_bar4">
                  <property name="styleSheet">
                   <string notr="true">font: 75 10pt &quot;Arial&quot;;</string>
@@ -1844,16 +2010,16 @@ background-color: rgb(255, 255, 0);
                   <number>1</number>
                  </property>
                  <attribute name="horizontalHeaderVisible">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </attribute>
                  <attribute name="horizontalHeaderCascadingSectionResizes">
                   <bool>false</bool>
                  </attribute>
-                 <attribute name="horizontalHeaderMinimumSectionSize">
-                  <number>39</number>
-                 </attribute>
                  <attribute name="horizontalHeaderDefaultSectionSize">
                   <number>95</number>
+                 </attribute>
+                 <attribute name="horizontalHeaderMinimumSectionSize">
+                  <number>39</number>
                  </attribute>
                  <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
                   <bool>false</bool>
@@ -1864,14 +2030,14 @@ background-color: rgb(255, 255, 0);
                  <attribute name="verticalHeaderCascadingSectionResizes">
                   <bool>false</bool>
                  </attribute>
-                 <attribute name="verticalHeaderMinimumSectionSize">
-                  <number>2</number>
-                 </attribute>
                  <attribute name="verticalHeaderDefaultSectionSize">
                   <number>20</number>
                  </attribute>
                  <attribute name="verticalHeaderHighlightSections">
                   <bool>true</bool>
+                 </attribute>
+                 <attribute name="verticalHeaderMinimumSectionSize">
+                  <number>2</number>
                  </attribute>
                  <attribute name="verticalHeaderShowSortIndicator" stdset="0">
                   <bool>false</bool>
@@ -1924,6 +2090,21 @@ background-color: rgb(255, 255, 0);
                    </color>
                   </property>
                  </column>
+                 <column>
+                  <property name="text">
+                   <string>θ(1E-3° )</string>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <pointsize>10</pointsize>
+                    <weight>75</weight>
+                    <bold>true</bold>
+                   </font>
+                  </property>
+                  <property name="textAlignment">
+                   <set>AlignCenter</set>
+                  </property>
+                 </column>
                  <item row="0" column="0">
                   <property name="text">
                    <string>0</string>
@@ -1954,10 +2135,25 @@ background-color: rgb(255, 255, 0);
                    <set>AlignCenter</set>
                   </property>
                  </item>
+                 <item row="0" column="2">
+                  <property name="text">
+                   <string>0</string>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <pointsize>11</pointsize>
+                    <weight>75</weight>
+                    <bold>true</bold>
+                   </font>
+                  </property>
+                  <property name="textAlignment">
+                   <set>AlignCenter</set>
+                  </property>
+                 </item>
                 </widget>
                </item>
-               <item row="1" column="0" rowspan="2">
-                <widget class="QLabel" name="label_21">
+               <item row="1" column="1" rowspan="2" colspan="3">
+                <widget class="QLineEdit" name="line_start4">
                  <property name="font">
                   <font>
                    <family>Arial</family>
@@ -1967,13 +2163,13 @@ background-color: rgb(255, 255, 0);
                    <bold>false</bold>
                   </font>
                  </property>
-                 <property name="text">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Start Cell ID:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 <property name="styleSheet">
+                  <string notr="true">background-color: rgb(85, 255, 127);</string>
                  </property>
                 </widget>
                </item>
-               <item row="1" column="1" rowspan="2" colspan="2">
-                <widget class="QLineEdit" name="line_start4">
+               <item row="3" column="1" colspan="3">
+                <widget class="QLineEdit" name="line_end4">
                  <property name="font">
                   <font>
                    <family>Arial</family>
@@ -2087,16 +2283,16 @@ background-color: rgb(255, 255, 0);
                   <number>1</number>
                  </property>
                  <attribute name="horizontalHeaderVisible">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </attribute>
                  <attribute name="horizontalHeaderCascadingSectionResizes">
                   <bool>false</bool>
                  </attribute>
-                 <attribute name="horizontalHeaderMinimumSectionSize">
-                  <number>39</number>
-                 </attribute>
                  <attribute name="horizontalHeaderDefaultSectionSize">
                   <number>95</number>
+                 </attribute>
+                 <attribute name="horizontalHeaderMinimumSectionSize">
+                  <number>39</number>
                  </attribute>
                  <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
                   <bool>false</bool>
@@ -2107,14 +2303,14 @@ background-color: rgb(255, 255, 0);
                  <attribute name="verticalHeaderCascadingSectionResizes">
                   <bool>false</bool>
                  </attribute>
-                 <attribute name="verticalHeaderMinimumSectionSize">
-                  <number>2</number>
-                 </attribute>
                  <attribute name="verticalHeaderDefaultSectionSize">
                   <number>20</number>
                  </attribute>
                  <attribute name="verticalHeaderHighlightSections">
                   <bool>true</bool>
+                 </attribute>
+                 <attribute name="verticalHeaderMinimumSectionSize">
+                  <number>2</number>
                  </attribute>
                  <attribute name="verticalHeaderShowSortIndicator" stdset="0">
                   <bool>false</bool>
@@ -2167,6 +2363,21 @@ background-color: rgb(255, 255, 0);
                    </color>
                   </property>
                  </column>
+                 <column>
+                  <property name="text">
+                   <string>θ(1E-3° )</string>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <pointsize>10</pointsize>
+                    <weight>75</weight>
+                    <bold>true</bold>
+                   </font>
+                  </property>
+                  <property name="textAlignment">
+                   <set>AlignCenter</set>
+                  </property>
+                 </column>
                  <item row="0" column="0">
                   <property name="text">
                    <string>0</string>
@@ -2183,6 +2394,21 @@ background-color: rgb(255, 255, 0);
                   </property>
                  </item>
                  <item row="0" column="1">
+                  <property name="text">
+                   <string>0</string>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <pointsize>11</pointsize>
+                    <weight>75</weight>
+                    <bold>true</bold>
+                   </font>
+                  </property>
+                  <property name="textAlignment">
+                   <set>AlignCenter</set>
+                  </property>
+                 </item>
+                 <item row="0" column="2">
                   <property name="text">
                    <string>0</string>
                   </property>
@@ -2231,8 +2457,27 @@ background-color: rgb(255, 255, 0);
                  </property>
                 </widget>
                </item>
-               <item row="3" column="1" colspan="2">
-                <widget class="QLineEdit" name="line_end5">
+               <item row="0" column="3">
+                <widget class="QPushButton" name="btn_align5">
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>12</pointsize>
+                   <weight>50</weight>
+                   <italic>false</italic>
+                   <bold>false</bold>
+                  </font>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true">background-color: rgb(0, 170, 255);</string>
+                 </property>
+                 <property name="text">
+                  <string>Align.</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1" colspan="3">
+                <widget class="QLineEdit" name="line_start5">
                  <property name="font">
                   <font>
                    <family>Arial</family>
@@ -2247,8 +2492,8 @@ background-color: rgb(255, 255, 0);
                  </property>
                 </widget>
                </item>
-               <item row="1" column="1" colspan="2">
-                <widget class="QLineEdit" name="line_start5">
+               <item row="3" column="1" colspan="3">
+                <widget class="QLineEdit" name="line_end5">
                  <property name="font">
                   <font>
                    <family>Arial</family>
@@ -2308,16 +2553,16 @@ background-color: rgb(255, 255, 0);
                   <number>1</number>
                  </property>
                  <attribute name="horizontalHeaderVisible">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </attribute>
                  <attribute name="horizontalHeaderCascadingSectionResizes">
                   <bool>false</bool>
                  </attribute>
-                 <attribute name="horizontalHeaderMinimumSectionSize">
-                  <number>39</number>
-                 </attribute>
                  <attribute name="horizontalHeaderDefaultSectionSize">
                   <number>95</number>
+                 </attribute>
+                 <attribute name="horizontalHeaderMinimumSectionSize">
+                  <number>39</number>
                  </attribute>
                  <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
                   <bool>false</bool>
@@ -2328,14 +2573,14 @@ background-color: rgb(255, 255, 0);
                  <attribute name="verticalHeaderCascadingSectionResizes">
                   <bool>false</bool>
                  </attribute>
-                 <attribute name="verticalHeaderMinimumSectionSize">
-                  <number>2</number>
-                 </attribute>
                  <attribute name="verticalHeaderDefaultSectionSize">
                   <number>20</number>
                  </attribute>
                  <attribute name="verticalHeaderHighlightSections">
                   <bool>true</bool>
+                 </attribute>
+                 <attribute name="verticalHeaderMinimumSectionSize">
+                  <number>2</number>
                  </attribute>
                  <attribute name="verticalHeaderShowSortIndicator" stdset="0">
                   <bool>false</bool>
@@ -2388,6 +2633,21 @@ background-color: rgb(255, 255, 0);
                    </color>
                   </property>
                  </column>
+                 <column>
+                  <property name="text">
+                   <string>θ(1E-3° )</string>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <pointsize>10</pointsize>
+                    <weight>75</weight>
+                    <bold>true</bold>
+                   </font>
+                  </property>
+                  <property name="textAlignment">
+                   <set>AlignCenter</set>
+                  </property>
+                 </column>
                  <item row="0" column="0">
                   <property name="text">
                    <string>0</string>
@@ -2404,6 +2664,21 @@ background-color: rgb(255, 255, 0);
                   </property>
                  </item>
                  <item row="0" column="1">
+                  <property name="text">
+                   <string>0</string>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <pointsize>11</pointsize>
+                    <weight>75</weight>
+                    <bold>true</bold>
+                   </font>
+                  </property>
+                  <property name="textAlignment">
+                   <set>AlignCenter</set>
+                  </property>
+                 </item>
+                 <item row="0" column="2">
                   <property name="text">
                    <string>0</string>
                   </property>
@@ -2506,8 +2781,27 @@ background-color: rgb(255, 255, 0);
                  </property>
                 </widget>
                </item>
-               <item row="3" column="1" colspan="2">
-                <widget class="QLineEdit" name="line_end6">
+               <item row="0" column="3">
+                <widget class="QPushButton" name="btn_align6">
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>12</pointsize>
+                   <weight>50</weight>
+                   <italic>false</italic>
+                   <bold>false</bold>
+                  </font>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true">background-color: rgb(0, 170, 255);</string>
+                 </property>
+                 <property name="text">
+                  <string>Align.</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1" colspan="3">
+                <widget class="QLineEdit" name="line_start6">
                  <property name="font">
                   <font>
                    <family>Arial</family>
@@ -2522,8 +2816,8 @@ background-color: rgb(255, 255, 0);
                  </property>
                 </widget>
                </item>
-               <item row="1" column="1" colspan="2">
-                <widget class="QLineEdit" name="line_start6">
+               <item row="3" column="1" colspan="3">
+                <widget class="QLineEdit" name="line_end6">
                  <property name="font">
                   <font>
                    <family>Arial</family>
@@ -2583,16 +2877,16 @@ background-color: rgb(255, 255, 0);
                   <number>1</number>
                  </property>
                  <attribute name="horizontalHeaderVisible">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </attribute>
                  <attribute name="horizontalHeaderCascadingSectionResizes">
                   <bool>false</bool>
                  </attribute>
-                 <attribute name="horizontalHeaderMinimumSectionSize">
-                  <number>39</number>
-                 </attribute>
                  <attribute name="horizontalHeaderDefaultSectionSize">
                   <number>95</number>
+                 </attribute>
+                 <attribute name="horizontalHeaderMinimumSectionSize">
+                  <number>39</number>
                  </attribute>
                  <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
                   <bool>false</bool>
@@ -2603,14 +2897,14 @@ background-color: rgb(255, 255, 0);
                  <attribute name="verticalHeaderCascadingSectionResizes">
                   <bool>false</bool>
                  </attribute>
-                 <attribute name="verticalHeaderMinimumSectionSize">
-                  <number>2</number>
-                 </attribute>
                  <attribute name="verticalHeaderDefaultSectionSize">
                   <number>20</number>
                  </attribute>
                  <attribute name="verticalHeaderHighlightSections">
                   <bool>true</bool>
+                 </attribute>
+                 <attribute name="verticalHeaderMinimumSectionSize">
+                  <number>2</number>
                  </attribute>
                  <attribute name="verticalHeaderShowSortIndicator" stdset="0">
                   <bool>false</bool>
@@ -2663,6 +2957,21 @@ background-color: rgb(255, 255, 0);
                    </color>
                   </property>
                  </column>
+                 <column>
+                  <property name="text">
+                   <string>θ(1E-3° )</string>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <pointsize>10</pointsize>
+                    <weight>75</weight>
+                    <bold>true</bold>
+                   </font>
+                  </property>
+                  <property name="textAlignment">
+                   <set>AlignCenter</set>
+                  </property>
+                 </column>
                  <item row="0" column="0">
                   <property name="text">
                    <string>0</string>
@@ -2679,6 +2988,21 @@ background-color: rgb(255, 255, 0);
                   </property>
                  </item>
                  <item row="0" column="1">
+                  <property name="text">
+                   <string>0</string>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <pointsize>11</pointsize>
+                    <weight>75</weight>
+                    <bold>true</bold>
+                   </font>
+                  </property>
+                  <property name="textAlignment">
+                   <set>AlignCenter</set>
+                  </property>
+                 </item>
+                 <item row="0" column="2">
                   <property name="text">
                    <string>0</string>
                   </property>
@@ -2781,8 +3105,27 @@ background-color: rgb(255, 255, 0);
                  </property>
                 </widget>
                </item>
-               <item row="3" column="1" colspan="2">
-                <widget class="QLineEdit" name="line_end7">
+               <item row="0" column="3">
+                <widget class="QPushButton" name="btn_align7">
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>12</pointsize>
+                   <weight>50</weight>
+                   <italic>false</italic>
+                   <bold>false</bold>
+                  </font>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true">background-color: rgb(0, 170, 255);</string>
+                 </property>
+                 <property name="text">
+                  <string>Align.</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1" colspan="3">
+                <widget class="QLineEdit" name="line_start7">
                  <property name="font">
                   <font>
                    <family>Arial</family>
@@ -2797,8 +3140,8 @@ background-color: rgb(255, 255, 0);
                  </property>
                 </widget>
                </item>
-               <item row="1" column="1" colspan="2">
-                <widget class="QLineEdit" name="line_start7">
+               <item row="3" column="1" colspan="3">
+                <widget class="QLineEdit" name="line_end7">
                  <property name="font">
                   <font>
                    <family>Arial</family>
@@ -4392,7 +4735,7 @@ Job File</string>
         </font>
        </property>
        <property name="text">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;LIV config maker&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;T1 config maker&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="textFormat">
         <enum>Qt::AutoText</enum>
@@ -4678,14 +5021,36 @@ Job File</string>
         </property>
        </item>
       </widget>
+      <widget class="QCheckBox" name="liv_temp_85c">
+       <property name="geometry">
+        <rect>
+         <x>330</x>
+         <y>60</y>
+         <width>41</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>12</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>85</string>
+       </property>
+      </widget>
      </widget>
      <widget class="QFrame" name="frame_7">
       <property name="geometry">
        <rect>
         <x>10</x>
         <y>560</y>
-        <width>361</width>
-        <height>291</height>
+        <width>781</width>
+        <height>311</height>
        </rect>
       </property>
       <property name="styleSheet">
@@ -4700,7 +5065,7 @@ Job File</string>
       <widget class="QLabel" name="label_63">
        <property name="geometry">
         <rect>
-         <x>110</x>
+         <x>270</x>
          <y>0</y>
          <width>191</width>
          <height>21</height>
@@ -4726,7 +5091,7 @@ Job File</string>
        <property name="geometry">
         <rect>
          <x>160</x>
-         <y>140</y>
+         <y>130</y>
          <width>171</width>
          <height>21</height>
         </rect>
@@ -4751,7 +5116,7 @@ Job File</string>
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>100</y>
+         <y>90</y>
          <width>101</width>
          <height>21</height>
         </rect>
@@ -4829,7 +5194,7 @@ Job File</string>
        <property name="geometry">
         <rect>
          <x>160</x>
-         <y>100</y>
+         <y>90</y>
          <width>71</width>
          <height>21</height>
         </rect>
@@ -4845,7 +5210,7 @@ Job File</string>
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>180</y>
+         <y>170</y>
          <width>121</width>
          <height>41</height>
         </rect>
@@ -4901,7 +5266,7 @@ Job File</string>
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>140</y>
+         <y>130</y>
          <width>141</width>
          <height>21</height>
         </rect>
@@ -4919,6 +5284,317 @@ Job File</string>
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Voltage meas. (V):&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
       </widget>
+      <widget class="QFrame" name="frame_12">
+       <property name="geometry">
+        <rect>
+         <x>520</x>
+         <y>0</y>
+         <width>261</width>
+         <height>101</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(228, 230, 255, 255), stop:1 rgba(255, 255, 255, 255));</string>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <widget class="QLabel" name="label_74">
+        <property name="geometry">
+         <rect>
+          <x>80</x>
+          <y>0</y>
+          <width>101</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+          <pointsize>14</pointsize>
+          <weight>75</weight>
+          <italic>false</italic>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Detectors&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="textFormat">
+         <enum>Qt::AutoText</enum>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="btn_move_fiber">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>40</y>
+          <width>101</width>
+          <height>41</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+          <pointsize>12</pointsize>
+          <weight>50</weight>
+          <italic>false</italic>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the folder which contains the .yaml job files&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(0, 170, 255);</string>
+        </property>
+        <property name="text">
+         <string>Go Fiber Pos</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_76">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>280</y>
+          <width>91</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+          <pointsize>12</pointsize>
+          <weight>50</weight>
+          <italic>false</italic>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Cell ID`s:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+       </widget>
+       <widget class="QTextEdit" name="liv_cell_ids_input_2">
+        <property name="geometry">
+         <rect>
+          <x>130</x>
+          <y>280</y>
+          <width>231</width>
+          <height>61</height>
+         </rect>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(85, 255, 127);</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="btn_move_sphere">
+        <property name="geometry">
+         <rect>
+          <x>130</x>
+          <y>40</y>
+          <width>111</width>
+          <height>41</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+          <pointsize>12</pointsize>
+          <weight>50</weight>
+          <italic>false</italic>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the folder which contains the .yaml job files&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(0, 170, 255);</string>
+        </property>
+        <property name="text">
+         <string>Go sphere Pos</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QPushButton" name="liv_acq_btn">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>250</y>
+         <width>121</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>12</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the folder which contains the .yaml job files&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(0, 170, 255);</string>
+       </property>
+       <property name="text">
+        <string>Get LIV</string>
+       </property>
+      </widget>
+      <widget class="QFrame" name="frame_13">
+       <property name="geometry">
+        <rect>
+         <x>150</x>
+         <y>170</y>
+         <width>231</width>
+         <height>61</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(228, 230, 255, 255), stop:1 rgba(255, 255, 255, 255));</string>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <widget class="QLabel" name="label_79">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>280</y>
+          <width>91</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+          <pointsize>12</pointsize>
+          <weight>50</weight>
+          <italic>false</italic>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Cell ID`s:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+       </widget>
+       <widget class="QTextEdit" name="liv_cell_ids_input_4">
+        <property name="geometry">
+         <rect>
+          <x>130</x>
+          <y>280</y>
+          <width>231</width>
+          <height>61</height>
+         </rect>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(85, 255, 127);</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_64">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>0</y>
+          <width>111</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+          <pointsize>12</pointsize>
+          <weight>50</weight>
+          <italic>false</italic>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Center wav. (nm):&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="line_center_wav">
+        <property name="geometry">
+         <rect>
+          <x>130</x>
+          <y>0</y>
+          <width>61</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+          <pointsize>12</pointsize>
+          <weight>50</weight>
+          <italic>false</italic>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(85, 255, 127);</string>
+        </property>
+        <property name="text">
+         <string>1550</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="line_range_wav">
+        <property name="geometry">
+         <rect>
+          <x>130</x>
+          <y>30</y>
+          <width>61</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+          <pointsize>12</pointsize>
+          <weight>50</weight>
+          <italic>false</italic>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(85, 255, 127);</string>
+        </property>
+        <property name="text">
+         <string>200</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_65">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>30</y>
+          <width>111</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+          <pointsize>12</pointsize>
+          <weight>50</weight>
+          <italic>false</italic>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Range (nm):&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+       </widget>
+      </widget>
      </widget>
      <widget class="QFrame" name="frame_10">
       <property name="geometry">
@@ -4926,7 +5602,7 @@ Job File</string>
         <x>390</x>
         <y>200</y>
         <width>411</width>
-        <height>351</height>
+        <height>201</height>
        </rect>
       </property>
       <property name="styleSheet">
@@ -4941,9 +5617,9 @@ Job File</string>
       <widget class="QLabel" name="label_67">
        <property name="geometry">
         <rect>
-         <x>110</x>
+         <x>50</x>
          <y>0</y>
-         <width>131</width>
+         <width>341</width>
          <height>21</height>
         </rect>
        </property>
@@ -4957,7 +5633,7 @@ Job File</string>
         </font>
        </property>
        <property name="text">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bar JobGen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bar2 JobGen (under constrc.)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="textFormat">
         <enum>Qt::AutoText</enum>
@@ -5265,6 +5941,28 @@ Job File</string>
        </property>
        <property name="text">
         <string>↻</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="bar_job_temp_85c">
+       <property name="geometry">
+        <rect>
+         <x>120</x>
+         <y>140</y>
+         <width>41</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>12</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>85</string>
        </property>
       </widget>
      </widget>
@@ -5884,7 +6582,7 @@ QPushButton:hover{
      <x>0</x>
      <y>0</y>
      <width>1879</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>

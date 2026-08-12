@@ -21,10 +21,15 @@ email='antonio.bonardi@smartphotonics.nl'
 
 job_version='1.0.3'
 
-CCF_filepath = sys.argv[2]
-run_info = sys.argv[3]
-customer = sys.argv[4]
-temperatures = sys.argv[5]
+
+print('$$$$$$$$$$$$$')
+print(sys.argv)
+print('$$$$$$$$$$$$$$')
+CCF_filepath = sys.argv[1]
+print('CCF passed')
+run_info = eval(sys.argv[2])
+customer = sys.argv[3]
+temperatures = sys.argv[4]
 print('############################')
 print(customer, CCF_filepath, temperatures, run_info)
 #LIV settings
@@ -51,6 +56,7 @@ ascending=False                  #For EF reverse MMF. CCF must be reversed as we
 wavelength_span=200              #nm
 # spectrum_current=0.300 
 enable_spectral_measurement=False
+directory = 'C:/Users/MarcosDaSilvaEleoter/OneDrive - Smart Photonics/Test & Measurement/Internal Projects/Job generation/' + customer + '/'+ run_info[0][1] + '/' + run_info[0][0] + '/' +'TM0002/' # directory to save the generated files
 
 for temperature in temperatures:
     
@@ -100,7 +106,7 @@ for temperature in temperatures:
                                               quick_analysis=False)
         final_job.update(code)
      
-        with open(f'{filename_format}_JOB.yaml', 'w') as file:
+        with open(f'{directory+filename_format}_JOB.yaml', 'w') as file:
             yaml.dump(data=final_job, stream=file, default_flow_style=False)
 
         # %% MDF and AMF
@@ -286,25 +292,23 @@ for temperature in temperatures:
         final_mdf.update({'measurement_settings':measurement_settings})
             
             
-        with open(f'{filename_format}_MDF.yaml', 'w') as file:
+        with open(f'{directory+filename_format}_MDF.yaml', 'w') as file:
             yaml.dump(data=final_mdf, stream=file, default_flow_style=False)
-                    
-            
+                
         #%% write AMF
-        with open(f'{filename_format}_AMF.yaml', 'w') as file:
+        with open(f'{directory+filename_format}_AMF.yaml', 'w') as file:
             yaml.dump(data=amf, stream=file, default_flow_style=False)
             file.write('---\n')
-    
-        
+            
         #%% MMF
         mmf_matrix = []
         mmf_list = ["Dies/Measurements"] + list(measurement_settings.keys())
     
         ccf = pd.read_csv(CCF_filepath)
         cells = ccf.CellID
-        cell_types = ccf.CellType
+        mmf_cell_types = ccf.CellType
         
-        for cell_type,cell in  tqdm(zip(cell_types,cell_ids)):
+        for cell_type,cell in  zip(mmf_cell_types,cell_ids):
             # laser_id = cell
             # laser_alias = fp_id_alias[laser_id]
             # find the cell type matching
@@ -315,4 +319,4 @@ for temperature in temperatures:
         mmfdf=pd.DataFrame(mmf_matrix, columns=mmf_list)
         #mmfdf=mmfdf.sort_values(by='Dies/Measurements', ascending=ascending)
            
-        mmfdf.to_csv(f'{filename_format}_MMF.csv', index=False)
+        mmfdf.to_csv(f'{directory+filename_format}_MMF.csv', index=False)
