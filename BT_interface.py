@@ -29,7 +29,8 @@ from load_sample_V2  import *
 from align_sample_V2 import AlignSample
 sys.path.insert(1, 'C:\\AMS')
 try:
-	from smu.keithley2520 import Keithley2520
+	#from smu.keithley2520 import Keithley2520 # Tool is broken
+	from smu.keithley2602B import Keithley2602B
 	#import pyOSA
 	from tec import tec
 	import logging
@@ -53,7 +54,8 @@ try:
 	#from utils.smg import initiate_data_extraction #Commented because it was issuing importing error  MSE
 	logger=logging.getLogger('test.AmsCore')
 	start_time = time.time()
-	ktl= Keithley2520()
+	# ktl= Keithley2520()
+	ktl= Keithley2602B()
 except Exception as err:
 	print('##############')
 	print(err)
