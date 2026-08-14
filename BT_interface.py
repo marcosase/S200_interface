@@ -329,7 +329,7 @@ class Ui(QtWidgets.QMainWindow):
 			pg.QtGui.QGuiApplication.processEvents()
 	def ktl_meas(self):
 		"""Performs a Keithley measurement and updates the voltage display in the UI."""
-		address="GPIB0::25::INSTR"
+		address="GPIB0::27::INSTR"
 		rm=visa.ResourceManager()
 		ktl = rm.open_resource(address)
 		current = float(self.ktl_curr.value())/1000
@@ -346,7 +346,7 @@ class Ui(QtWidgets.QMainWindow):
 		self.volt_meas.setText(str(volt))
 	def ktl_on(self):
 		"""Turns on the Keithley source with the specified current."""
-		address="GPIB0::25::INSTR"
+		address="GPIB0::27::INSTR"
 		rm=visa.ResourceManager()
 		ktl = rm.open_resource(address)
 		current = float(self.ktl_curr.value())/1000
@@ -358,7 +358,7 @@ class Ui(QtWidgets.QMainWindow):
 		ktl.write(':OUTP ON')
 	def ktl_off(self):
 		"""Turns off the Keithley source output."""
-		address="GPIB0::25::INSTR"
+		address="GPIB0::27::INSTR"
 		rm=visa.ResourceManager()
 		ktl = rm.open_resource(address)
 		ktl.write(':OUTP OFF')
@@ -1062,14 +1062,19 @@ class Ui(QtWidgets.QMainWindow):
 		self.start_jobs_btn.repaint()
 
 		# Run job on the main Qt thread to avoid cross-thread QObject/UI errors
-		try:
-			self.run(
+# 		try:
+# 			self.run(
+# 				current_job['job'], current_job['user'], current_job['x_td'], current_job['y_td'],
+# 				current_job['check_bar'], current_job['start_index'], current_job['end_index'], current_job['prog']
+# 			)
+# 		except Exception as err:
+# 			self.on_job_error(str(err))
+# 			return
+		
+		self.run(
 				current_job['job'], current_job['user'], current_job['x_td'], current_job['y_td'],
-				current_job['check_bar'], current_job['start_index'], current_job['end_index'], current_job['prog']
-			)
-		except Exception as err:
-			self.on_job_error(str(err))
-			return
+				current_job['check_bar'], current_job['start_index'], current_job['end_index'], current_job['prog'])
+		
 
 		# Schedule next job after current one completes
 		if not self.stop_requested:
@@ -2118,7 +2123,7 @@ class Ui(QtWidgets.QMainWindow):
 		
 		self.m.pl_value           = self.mp.get_physical_parameter('PL_wavelength') #PL was not broadcasted
 		# Set the measurement plan
-		self.m.set_plan(meas_plan = ms) # Replaced with self.m.get_plans_from_mdf()
+		self.m.set_plan(meas_plan = ms) # ReplacJob error occurred:ed with self.m.get_plans_from_mdf()
 		self.m.plan = ms
 		self.m.plan_settings = self.mp.get_settings_for_measurement(meas_name=ms) # broadcast the plan setting dict to measurement_handler
 		print('$$$$$$$$$$$$$$$$$$')

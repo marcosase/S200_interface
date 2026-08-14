@@ -27,7 +27,7 @@ from subprocess import call
 sys.path.insert(1, 'C:/AMS')
 
 try:
-	from smu.keithley2520 import Keithley2520
+	from smu.keithley2602 import keithley2602B
 	import pyOSA
 	from tec import tec
 	import logging
@@ -50,7 +50,7 @@ try:
 	#from utils.smg import initiate_data_extraction #Commented because it was issuing importing error  MSE
 	logger=logging.getLogger('test.AmsCore')
 	start_time = time.time()
-	ktl= Keithley2520()
+	ktl= keithley2602B()
 except Exception as err:
 	print(err)
 
@@ -315,22 +315,28 @@ class Ui(QtWidgets.QMainWindow):
 		self.volt_meas.setText(str(volt))
     def ktl_on(self):
 		"""Turns on the Keithley source with the specified current."""
-		address="GPIB0::25::INSTR"
+		address="GPIB0::27::INSTR"
 		rm=visa.ResourceManager()
 		ktl = rm.open_resource(address)
 		current = float(self.ktl_curr.value())/1000
 
-		ktl.write('*RST')
-		ktl.write("SOUR1:VOLT:PROT 5")
-		ktl.write(":SOUR1:FUNC DC")
-		ktl.write(f":SOUR1:CURR {current}")
-		ktl.write(':OUTP ON')
+		ktl.write("smub.source.func = smub.OUTPUT_DCAMPS")
+		ktl.write("smub.source.leveli = {}".format(current))
+		ktl.write("smub.source.output = smub.OUTPUT_ON")
+		
+		#ktl.write('*RST')
+		#ktl.write("SOUR1:VOLT:PROT 5")
+		#ktl.write(":SOUR1:FUNC DC")
+		#ktl.write(f":SOUR1:CURR {current}")
+		#ktl.write(':OUTP ON')
     def ktl_off(self):
 		"""Turns off the Keithley source output."""
-		address="GPIB0::25::INSTR"
+		address="GPIB0::27::INSTR"
 		rm=visa.ResourceManager()
 		ktl = rm.open_resource(address)
-		ktl.write(':OUTP OFF')
+		#ktl.write(':OUTP OFF')
+		ktl.write("smub.source.output = smub.OUTPUT_OFF")
+		rm.close()
 
 ############OSA methods
     def acq_osa(self):
@@ -1225,7 +1231,7 @@ class Ui(QtWidgets.QMainWindow):
 		tec_t = tec.Tec()          # TEC
 		tec_t.connect(port="COM4")
 		
-		ktl = Keithley2520()    # SMU
+		ktl = keithley2602B()    # SMU
 		ktl.connect()
 		print('Is connected!!!!!!!!!!!!')
 		while True:
