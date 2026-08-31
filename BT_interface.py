@@ -796,7 +796,8 @@ class Ui(QtWidgets.QMainWindow):
 		combo_object.addItems(array)
 	def select_job(self):
 		"""Opens a folder dialog and populates the job combo box with available jobs."""
-		job_root='C:/Users/smp-user/OneDrive - Smart Photonics/Test  Measurement - Engineering/Internal Projects/Job generation/'
+		#job_root='C:/Users/smp-user/OneDrive - Smart Photonics/Test  Measurement - Engineering/Internal Projects/Job generation/'
+		job_root='C:/Users/HP/Smart Photonics/Engineering - Test & Measurement/Internal Projects/Job generation/'
 		self.job_folder_path1 = QFileDialog.getExistingDirectory(self,("Open Batch Folder"), job_root)
 		self.jobs_combo_box.clear()
 		#Fill the first combo box with Jobs available
