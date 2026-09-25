@@ -2105,7 +2105,6 @@ class Ui(QtWidgets.QMainWindow):
 			self.touch_down_recorder.append([cell, z, td_date, td_time, edge_sensor_open])
 			zup=self.eq.prober.get_chuck_z()
 			self.logfile(f"{self.probename},{cell},Z_at_CUP,{zup}\n")
-
 	def perform_measurement(self, ms, cl):
 		"""Sets the measurement plan.
 		   Passes identifiers for the measurement file to the MeasurementHandler.
@@ -2122,36 +2121,30 @@ class Ui(QtWidgets.QMainWindow):
 		self.m.current_customer   = self.customer
 		self.m.current_product    = self.product
 		self.m.current_cell       = cl
-
+		
 		self.m.pl_value           = self.mp.get_physical_parameter('PL_wavelength') #PL was not broadcasted
 		# Set the measurement plan
-		self.m.set_plan(meas_plan=ms)  # ReplacJob error occurred:ed with self.m.get_plans_from_mdf(
+		self.m.set_plan(meas_plan = ms) # ReplacJob error occurred:ed with self.m.get_plans_from_mdf()
 		self.m.plan = ms
-		self.m.plan_settings = self.mp.get_settings_for_measurement(meas_name=ms)  # broadcast the plan setting dict to measurement_handler
+		self.m.plan_settings = self.mp.get_settings_for_measurement(meas_name=ms) # broadcast the plan setting dict to measurement_handler
 		print('$$$$$$$$$$$$$$$$$$')
 		self.meas_mod = self.m.plan_settings['meas_module']
 		print(self.meas_mod)
 		print('pre-set T_set')
 		T_set = self.m.get_plan_setting(setting='T_set')
-
-		print('perform_measurement method sets temperature = to:', T_set)
-		self.eq.tec._set(T_set=T_set, T_win=0.5, t_stab = 3600)  # Commented by Marcos 28/05/26
-
-		print('tec status:', self.eq.tec.is_stable())
+		
+		print(' perform_measurement method sets temperature = to:', T_set)
+		self.eq.tec._set(T_set = T_set, T_win=0.5, t_stab = 3600)#Commented by Marcos 28/05/26
+		
+		print ('tec status:', self.eq.tec.is_stable())
 		#while not self.eq.tec.is_in_T_win(T_set = T_set, T_win=0.5):
-
-		# Check if the temperature is within the required range, if not wait until it is
-		while True:
+		
+		while abs(T_set -self.eq.tec.get_temperature() )>0.2:
 			self._abort_if_stop_requested()
-			# Get the TEC temperature
-			tec_T = self.eq.tec.get_temperature()
-			# Temperature is within the required range
-			if abs(T_set - tec_T) <= 0.2:
-				break
 			print("Waiting for temp stabilisation")
-			print('tec status: T={} not in Twin {}<->{}'.format(tec_T, T_set - 0.1, T_set + 0.1))
+			print('tec status: T={} not in Twin {}<->{}'.format(self.eq.tec.get_temperature(),T_set-0.1,T_set+0.1))
 			time.sleep(1)
-			
+
 		t1 = (0,0,255)
 		t2 = (255,0,0)
 		tfill = (0,0,0)
