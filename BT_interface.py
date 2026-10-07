@@ -8,11 +8,10 @@ from datetime import datetime
 from time import strftime, localtime
 import sys, os
 import numpy as np
-import pyvisa as visa
-from PyQt5 import QtGui, QtWidgets, uic, QtCore
+from PyQt5 import QtWidgets, uic, QtCore
 from PyQt5.QtWidgets import QTableWidgetItem, QFileDialog, QApplication, QMessageBox
 from PyQt5.QtGui import QFont 
-from PyQt5.QtCore import QThread, QProcess, QTimer, QObject, pyqtSignal
+from PyQt5.QtCore import QThread, QTimer, QObject, pyqtSignal
 from zipfile import ZipFile
 import pyqtgraph as pg
 import serial
@@ -21,43 +20,41 @@ import config
 import re
 import yaml
 import glob
-import signal
 import subprocess
 from subprocess import call
-#from icecream import ic
 from load_sample_V2  import *
 from align_sample_V2 import AlignSample
 sys.path.insert(1, 'C:\\AMS')
 try:
 	#from smu.keithley2520 import Keithley2520 # Tool is broken
 	from smu.keithley2602B import Keithley2602B
-	#import pyOSA
+	ktl= Keithley2602B()
+	#import pyOSA 
 	from tec import tec
 	import logging
+	logger=logging.getLogger('test.AmsCore')
 	from collections.abc import MutableMapping
 	import telegram
 	import measurement_handler as measurement_handler
 	from readers.readers import JOBReader
+	
 	from measurement_plan_maker.meas_plan_maker import MeasPlan
-	from equipment import Equipment
 	from utils.identify import Identify
 	from utils.misc  import generate_session_ID, get_git_commit_id, get_probes_folder, get_jobs_folder, get_data_folder,get_batch_data_folder, get_backup_folder
 	from utils.utils import boolean_operation, select_bar
+	
 	#Real-time analysis tools
 	from realtime_analysis.quick_analysis import QuickAnalysis
 	import openepda
 	openEPDA_version = openepda.__version__
-	from collections import OrderedDict
+	from collections  import OrderedDict
 	import mes_check as MesCom
 	from Yokogawa import AQ6370D as osa
-	# automated data extraction messageque support
-	#from utils.smg import initiate_data_extraction #Commented because it was issuing importing error  MSE
-	logger=logging.getLogger('test.AmsCore')
 	start_time = time.time()
-	# ktl= Keithley2520()
-	ktl= Keithley2602B()
+	from equipment import Equipment
+	
 except Exception as err:
-	print('##############')
+	print('######LIB NOT LOADED########')
 	print(err)
 	print('##############')
 
@@ -205,7 +202,6 @@ class Ui(QtWidgets.QMainWindow):
 		
 		t1 = (0,0,255)
 		t2 = (255,0,0)
-		tfill = (0,0,0)
 		
 		pen_t1 = pg.mkPen(color=(0, 0, 255), width=3, style=QtCore.Qt.SolidLine)
 		pen_t2 = pg.mkPen(color=(255, 0, 0), width=3, style=QtCore.Qt.SolidLine)
@@ -213,30 +209,7 @@ class Ui(QtWidgets.QMainWindow):
 		color1 = '#%02x%02x%02x' % t1
 		color2 = '#%02x%02x%02x' % t2
 	
-		if y2 != None:
-			
-			x_label = 'Current(A)'
-			y_label = 'voltage(V)'
-			y2_label = 'Power(W)'
-			title = 'LIV'
-
-			self.p1 = self.plotter.plotItem
-			self.p1.setLabels(left = y_label)
-
-			#Create a new ViewBox
-			self.p2 = pg.ViewBox()
-			self.p1.showAxis('right')
-			self.p1.scene().addItem(self.p2)
-			self.p1.getAxis('right').linkToView(self.p2)
-			self.p2.setXLink(self.p1)
-			self.p1.getAxis('left').setLabel(y_label, color=color1)
-			self.p1.getAxis('right').setLabel(y2_label, color=color2)
-			self.p1.getAxis('bottom').setLabel(x_label)        
-			self.p1.vb.sigResized.connect(self.updateViews)
-			self.updateViews()
-			self.set_graph(title, x_label, y_label)
-			self.clear_plot()
-			
+		if y2 is not None:
 			#ic(x, y1, y2)
 			x_label = 'Current(A)'
 			y_label = 'voltage(V)'
@@ -329,39 +302,24 @@ class Ui(QtWidgets.QMainWindow):
 			pg.QtGui.QGuiApplication.processEvents()
 	def ktl_meas(self):
 		"""Performs a Keithley measurement and updates the voltage display in the UI."""
-		address="GPIB0::27::INSTR"
-		rm=visa.ResourceManager()
-		ktl = rm.open_resource(address)
 		current = float(self.ktl_curr.value())/1000
-		ktl.write('*RST')
-		
-		ktl.write("SOUR1:VOLT:PROT 5")
-		ktl.write(":SOUR1:FUNC DC")
-		ktl.write(f":SOUR1:CURR {current}")
-		
-		ktl.write(':OUTP ON')
-		value = ktl.query(":READ?")
-		ktl.write(':OUTP OFF')
-		volt = float(value.split(',')[0])
+		ktl.connect()
+		ktl.set_current('a', current)
+		volt = ktl.measure_voltage('a')
+		ktl.release()
 		self.volt_meas.setText(str(volt))
-	def ktl_on(self):
-		"""Turns on the Keithley source with the specified current."""
-		address="GPIB0::27::INSTR"
-		rm=visa.ResourceManager()
-		ktl = rm.open_resource(address)
-		current = float(self.ktl_curr.value())/1000
 
-		ktl.write('*RST')
-		ktl.write("SOUR1:VOLT:PROT 5")
-		ktl.write(":SOUR1:FUNC DC")
-		ktl.write(f":SOUR1:CURR {current}")
-		ktl.write(':OUTP ON')
+	def ktl_on(self):
+		ktl.connect()
+		current = float(self.ktl_curr.value())/1000
+		ktl.set_current('a', current)
+		ktl.set_channel_state(channel='a', state='on')
+		ktl.release()
+
 	def ktl_off(self):
-		"""Turns off the Keithley source output."""
-		address="GPIB0::27::INSTR"
-		rm=visa.ResourceManager()
-		ktl = rm.open_resource(address)
-		ktl.write(':OUTP OFF')
+		ktl.connect()
+		ktl.set_channel_state(channel='a', state='off')
+		ktl.release()
 
 ############OSA methods
 	def acq_osa(self):
@@ -414,7 +372,6 @@ class Ui(QtWidgets.QMainWindow):
 		except Exception as error:
 			print("Initialization failed ", error)
 			return [],[],[]
-
 	def acq_liv(self):
 		"""Performs an LIV measurement"""
 		
@@ -424,35 +381,37 @@ class Ui(QtWidgets.QMainWindow):
 		"pulse_delay": 2.E-5,  # s
 		"pulse_width": 0.001,  # s
 		"pulse_mode": 'DC',  # i.e. "Staircase" mode
-		"pl":  1550,
+		"pl":  1310,
 		"resp_at_1310": -166.25,  # PD responsivity for wavelength 1310 nm = -166.25
 		"resp_at_1550": -133.51,  # PD responsivity for wavelength 1550 nm = -133.51
 		}
 		ktl.connect()
-		c, v, pd_curr = ktl.LIVpulsedsweep(sweepstart=0,
-											sweepstop=LIV_settings["current"],
-											step_size=LIV_settings["step_size"],
-											smua_ilimit=0.5,  # not used, limit is internally calculated for best performance
-											smua_vlimit=5,
-											pulse_delay=LIV_settings["pulse_delay"],
-											pulse_width=LIV_settings["pulse_width"],
-											pulse_mode=LIV_settings["pulse_mode"],
-											pd_revbias=-5
-											# pulse_mode="PULSE"
-											)
-		ktl.release()
-		
+		c,v,pd = ktl.sweep_and_measure(source_channel='a', 
+									  measure_channel='a', 
+									  start_value=0, 
+									  end_value=LIV_settings["current"], 
+									  step_size=LIV_settings["step_size"], 
+									  pulse_mode=LIV_settings["pulse_mode"], 
+									  pulse_period=None, 
+									  measurement_delay=LIV_settings["pulse_delay"],
+									  steps=int(abs(LIV_settings["current"]-0)/LIV_settings["step_size"]), 
+									  step_time=100, 
+									  time_out=0,
+									  pulse_width=LIV_settings["pulse_width"], 
+									  nplc=0.01)  
+		v = [float(i[0]) for i in v ]
 		if LIV_settings["pl"] == 1550:
 			resp = LIV_settings["resp_at_1550"]
 		else:
 			resp = LIV_settings["resp_at_1310"]
-		power = [-c * resp for c in pd_curr.magnitude]
+		power = [-i * resp for i in c]
+		#power = c
 		with open(r"C:\Users\HP\OneDrive - Smart Photonics\Documents\Current_LIV_data_S200\Get_LIV.txt", "w") as f:
-			print(c.magnitude, file=f)
-			print(v.magnitude, file=f)
+			print(c, file=f)
+			print(v, file=f)
 			print(power, file=f)
 		print(r"Data saved in: C:\Users\HP\OneDrive - Smart Photonics\Documents\Current_LIV_data_S200\Get_LIV.txt")
-		self.plot_win(c.magnitude, v.magnitude, power)
+		self.plot_win(c, v, power)
 
 ############Moving/controlling the probe
 	def rel_mov(self, x_inc, y_inc):
@@ -526,6 +485,7 @@ class Ui(QtWidgets.QMainWindow):
 			return True
 		else:
 			return False
+
 ############Updating GUI
 	def save_value(self):
 		"""Saves all current values from the interface."""
@@ -614,7 +574,6 @@ class Ui(QtWidgets.QMainWindow):
 					)
 				else :
 					break
-
 	def send_command(self, command):
 		"""Sends a command to the prober via serial and returns the response."""
 		ser = self.ser_connect()
@@ -790,7 +749,7 @@ class Ui(QtWidgets.QMainWindow):
 		self.file_save(self.collect())
 		self.reset_start_btn()
 
-############# TOUCHDOWN METHODS		
+############# TOUCHDOWN METHODS
 	def update_combo_box(self,combo_object, array):
 		"""Adds items from the array to the specified combo box."""
 		combo_object.addItems(array)
@@ -1334,7 +1293,7 @@ class Ui(QtWidgets.QMainWindow):
 		cell_id_list = df.CellID.values.tolist()
 		n_cells = len(cell_id_list)
 		# make a folder for storing raw data
-		path = f'D:/PRODUCTION/data/{customer_id}/manual_BT_liv/{product_id}_{lot_id}'
+		path = f'C:/PRODUCTION/data/{customer_id}/manual_BT_liv/{product_id}_{lot_id}'
 		if not os.path.isdir(path):
 			os.makedirs(path)
 		##### End of sample information collection and subsequent actions #####
@@ -1343,7 +1302,7 @@ class Ui(QtWidgets.QMainWindow):
 		tec_t = tec.Tec()          # TEC
 		tec_t.connect(port="COM4")
 		
-		ktl = Keithley2520()    # SMU
+		#ktl = Keithley2520()    # SMU
 		ktl.connect()
 		print('Is connected!!!!!!!!!!!!')
 		while True:
@@ -1699,8 +1658,6 @@ class Ui(QtWidgets.QMainWindow):
 		except Exception as e:
 			print(e)
 			QMessageBox.about(self, "Error", "Failed to start job file generation script:\n" + str(e))
-			
-				
 	def refresh_bars_combo_box(self):
 		curr_dir = os.getcwd()
 		work_folder = os.path.join(curr_dir, 'Job_gen_files')
@@ -1712,14 +1669,11 @@ class Ui(QtWidgets.QMainWindow):
 		ccf_files = [i.split('\\')[-1] for i in ccf_files]	
 		self.bar_job_file.addItems(job_files)
 		self.bar_ccf_file.addItems(ccf_files)
-		
-
 	def _abort_if_stop_requested(self):
 		"""Process UI events and abort current run if Stop was requested."""
 		QtWidgets.QApplication.processEvents()
 		if self.stop_requested:
 			raise RuntimeError('Measurement stopped by user')
-
 	def stop_all(self):
 		"""Stops the currently running thread/worker and clears the job queue."""
 		# Set stop flag to prevent processing more jobs from queue
@@ -1908,7 +1862,14 @@ class Ui(QtWidgets.QMainWindow):
 			return
 		t,s=generate_session_ID()
 		self.session_start_time=s.strip(t+'_')
-		self.perform_measurement_loop(prog)
+		try:
+			self.perform_measurement_loop(prog)
+		except RuntimeError:
+			if not self.stop_requested:
+				raise
+			print('Measurement stopped by user')
+			self.end()
+			return
 		if self.stop_requested:
 			print('Measurement stopped by user')
 			self.end()
@@ -1968,7 +1929,6 @@ class Ui(QtWidgets.QMainWindow):
 	def set_current_cell(self,cell):
 		self.current_cell=cell
 	def init_probemonitor(self, port):
-		import serial
 		self.probe_mon=serial.Serial(port)
 	def probemonitor(self): #TODO: check if we can reduce 10 reads to 1
 		res=[]
@@ -1981,7 +1941,7 @@ class Ui(QtWidgets.QMainWindow):
 	def logfile(self, data):
 		timedate=time.strftime("%d-%m-%Y", time.gmtime())
 		header='time,probecard,cellid,fcn,val0,val1,val2,val3,val4,val5,val6,val7,val8,val9\n' #es measurement is acquired 10 times, some noise observed in the past
-		fname='d:/PRODUCTION/probes/monitor/probemonitor_{}.csv'.format(timedate)
+		fname='c:/PRODUCTION/probes/monitor/probemonitor_{}.csv'.format(timedate)
 		
 		#write header if file does not exist. Should use a proper method with init wich solves this nicely.
 		if not os.path.isfile(fname):
@@ -2105,7 +2065,6 @@ class Ui(QtWidgets.QMainWindow):
 			self.touch_down_recorder.append([cell, z, td_date, td_time, edge_sensor_open])
 			zup=self.eq.prober.get_chuck_z()
 			self.logfile(f"{self.probename},{cell},Z_at_CUP,{zup}\n")
-
 	def perform_measurement(self, ms, cl):
 		"""Sets the measurement plan.
 		   Passes identifiers for the measurement file to the MeasurementHandler.
@@ -2369,8 +2328,14 @@ class Ui(QtWidgets.QMainWindow):
 	def end(self):
 		"""Ends the core.
 		"""
-		self.loading.unload_sample()
-		self.release_equipment()
+		try:
+			self.loading.unload_sample()
+		except Exception as error:
+			print(f'Failed to unload sample during cleanup: {error}')
+		try:
+			self.release_equipment()
+		except Exception as error:
+			print(f'Failed to release equipment during cleanup: {error}')
 		self.reset_start_btn()
 		#send telegram message it is done
 		msg = "Measurement finised: "
@@ -2413,7 +2378,7 @@ class Ui(QtWidgets.QMainWindow):
 		# make a backup copy of the compressed zip file
 		self.backup_output_files()
 	def cleanup(self):
-		print(print("Doing cleanup in end()"))
+		print("Doing cleanup in end()")
 		QtWidgets.QApplication.quit()
 	def closeEvent(self, event):
 		print("Window closed")

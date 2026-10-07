@@ -7,10 +7,11 @@ Script for executing LIV and/or Spectral measurements on T1 cells (HS28 platform
 @author: AntonioBonardi
 
 """
+from smu.keithley2602B import Keithley2602B
+ktl= Keithley2602B()
 
-from smu.keithley2520 import Keithley2520
 #from osa import Osa203c as OSA
-import pyOSA
+from Yokogawa import AQ6370D
 import yaml
 import openepda
 import datetime
@@ -32,17 +33,17 @@ t_start = time.time()
 config_file_folder = "C:\\Users\\HP\\Smart Photonics\\Engineering - Test & Measurement\\Internal Projects\\Job generation\\JobGeneratorTemplates\\Bar Tester LIV" # folder from which upload the config files for the zip file
 
 current_dict = {  # Max current value for each FP laser in T1 cell, from Northern side to Southern one
-    "FP1500": 0.120,
-    "FP1000": 0.120,
-    "FP500": 0.120,
-    "FP300": 0.090,  
+    "FP1500": 0.49,
+    "FP1000": 0.49,
+    "FP500": 0.24,
+    "FP300": 0.14,  
     }
 
 current_dict_inv = {  # Max current value for each FP laser in T1 cell, from Northern side to Southern one
-    "FP300": 0.090,
-    "FP500": 0.120,
-    "FP1000": 0.120,
-    "FP1500": 0.090,  
+    "FP300": 0.140,
+    "FP500": 0.240,
+    "FP1000": 0.490,
+    "FP1500": 0.490,  
     }
 
 ###New current_dic tadded for DBR testing, Marcos 14/08/2024
@@ -69,37 +70,11 @@ current_lol = {
      "loli_05":0.120
      }
 current_dict_tiger = {  # Max current value for each FP laser in T1 cell, from Northern side to Southern one
-    "FP300": 0.144,
-    "FP500": 0.24,
-    "FP1000": 0.48,
-    "FP1500": 0.5, 
+    "FP300":0.144,
+    "FP500":0.24,
+    "FP1000":0.48,
+    "FP1500":0.5  
     }
-
-# #####Dict for testing the laser bars
-# current_dict = {
-# "36 P12B#01-09-B":0.120,
-# "36 P12B#01-08-B":0.120,
-# "36 P12B#01-07-B":0.120,
-# "36 P12B#01-06-B":0.120,
-# "36 P12B#01-05-B":0.120,
-# "36 P12B#01-04-B":0.120,
-# "36 P12B#01-03-B":0.120,
-# "36 P12B#01-02-B":0.120,
-# "36 P12B#01-01-B":0.120,
-# "36 P12B#01-00-B":0.120
-#     }
-
-
-#####Dict for testing the laser bars
-# current_dict = {
-# "ID-DBR9":0.120,
-# "ID-DBR8":0.120,
-# "ID-DBR7":0.120,
-# "ID-DBR3":0.120,
-# "ID-DBR2":0.120,
-# "ID-DBR1":0.120
-#      }
-
 
 LIV_settings = { # Settings for running LIV measurements
     "pulse_delay": 1.E-3,  # s
@@ -115,49 +90,37 @@ Spectrum_settings = { # Settings for running Spectral measurements
     "sensitivity": 'high',  # 0 = low, 1 = medium low, 2 = medium high, 3 = high
     "spectrum_window": 100 # nm, width of wavelength range for spectral measurements
     } 
-##############
-#next_wg = 250 # um, distance on y-axis between consecutive FP lasers 
-##############
 
-# #next_wvg changed for the DBr lasers testing
+#next_wvg changed for the DBr lasers testing
 next_wg2 = 325 # nm, distance on y-axis between consecutive DBR lasers 
-
 # next_wg = 300 # nm, distance on y-axis between consecutive FP lasers 
-    
+#next_wg = 250 # um, distance on y-axis between consecutive FP lasers     
 #### End of predefined settings ####
-
 # Ask for operator ID
 operator = input("Operator ID: ")
 while len(operator) != 3:
     print(f"ERROR! Operator ID must be a 3-character string, but the string {operator} has been entered. Please provide a correct Operator ID") 
     operator = input("Re-enter Operator ID: ")
 
-
 ##### Collect measurement and sample information #####
 ### Ask user for JOB file ###
 job_file_path = ""
 answer = input("Is a config file available? [Y/N]")
+
 if answer.upper() == "Y" or answer.upper() == "YES":
     root = tk.Tk()
-    job_file_path = filedialog.askopenfilename(
-                                               title = "Select JOB file"
-                                               )
-    
+    job_file_path = filedialog.askopenfilename(title = "Select JOB file")
     root.destroy()
     del root
+
 #################
 cells_answer = input("Is CellID file available? [Y/N]")
 if cells_answer.upper() == "Y" or cells_answer.upper() == "YES":
     root = tk.Tk()
-    cells_file_path = filedialog.askopenfilename(
-                                               title = "Select cells file"
-                                               ) 
-    
+    cells_file_path = filedialog.askopenfilename(title = "Select cells file")    
     root.destroy()
     del root
-
 #################    
-
 ### Open the JOB file, if provided, and feed it into the job_dict ###
 if job_file_path:
     with open(job_file_path, 'r') as f:
@@ -167,19 +130,19 @@ else:
     job_dict = {}
     
 ### Get information out of the JOB file, ask the Operator for the missing ones ###
-customer_id = job_dict.get("customer", None)
-lot_id = job_dict.get("lot", None)
-product_id = job_dict.get("product", None)
-wafer_id = job_dict.get("wafer", None)
-pl = job_dict.get("PL", None)
-temp_set= job_dict.get("T_set", None)
-liv = job_dict.get("LIV", False)
-spectrum = job_dict.get("Spectrum", False)
-i_soa = job_dict.get("Spectrum I_SOA", None)
-#cell_type = job_dict.get("cell_type", "T1") ##COMMENTED BY MARCOS
-cell_type = job_dict.get("cell_type", "T3")
-combi_mode = job_dict.get("combi_mode",None)
-cell_ids = job_dict.get("cell_ids", None)
+customer_id = job_dict.get("batch_information").get('customer')
+lot_id = job_dict.get("batch_information").get("lot")
+product_id = job_dict.get("batch_information").get("product")
+wafer_id = job_dict.get("batch_information").get("wafers")
+pl = job_dict.get("acquisition settings").get("PL")
+temp_set= job_dict.get("acquisition settings").get("T_set")
+liv = job_dict.get("acquisition settings").get("LIV")
+spectrum = job_dict.get("acquisition settings").get("Spectrum")
+i_soa = job_dict.get("acquisition settings").get("Spectrum I_SOA")
+cell_type = job_dict.get("acquisition settings").get("cell_type")
+combi_mode = job_dict.get("acquisition settings").get("combi_mode",None)
+amf_filename = job_dict.get("acquisition settings").get("amf") # if no amf file name is given, HS28_T1_LIV_AMF is used instead
+t1_version = job_dict.get("acquisition settings").get("t1_version") # if no amf file name is given, HS28_T1_LIV_AMF is used instead
 
 if not customer_id:
     customer_id = input("Customer ID: ")
@@ -201,7 +164,7 @@ while not (liv or spectrum):
     answer=("Perform Spectral measurments? [Y/N]")
     if answer.upper() != "Y" or answer.upper() != "YES":
         spectrum=True
-
+    
 # Set the SOA current at which to perform the spectral measurement(s)
 if spectrum:
     if not i_soa:
@@ -233,6 +196,11 @@ if cells_answer.upper() == "Y" or cells_answer.upper() == "YES":
     size = df.shape[0]
     new_size = -1*(size - cell_loaded)
     cell_id_list = df[0].values.tolist()[0:cell_loaded]
+    cell_id_list = [i.upper() for i in cell_id_list]
+    try:
+        cell_id_list = [i.split(cell_type)[-1] for i in cell_id_list]
+    except:
+        cell_id_list = cell_id_list
     n_cells = len(cell_id_list)
     df = df[new_size:]  
     df.to_csv(cells_file_path, index=False, header=False)
@@ -282,27 +250,16 @@ print(f"      LIV measurements: {liv}")
 print(f" Spectrum measurements: {spectrum}")
 print("")
 
-#if input("Press enter to confirm, or N to cancel: ") != "":
-#    print()
-#    print()
-#    print("          ┻━┻︵ \(°□°)/ ︵ ┻━┻          ")
-#    print()
-#    raise SystemExit("Job specifics were incorrect, exiting program")
-
 # make a folder for storing raw data
 path = f'D:\PRODUCTION\data\{customer_id}\manual_BT_liv\{product_id}_{lot_id}'
 if not os.path.isdir(path):
     os.makedirs(path)
-
 ##### End of sample information collection and subsequent actions #####
 
 #### Connect the instruments ####
 tec = tec.Tec()          # TEC
 tec.connect(port="COM4")
-
-ktl = Keithley2520()    # SMU
 ktl.connect()
-
 p = prober.Prober()     # Bar Tester
 p.connect()
 p.set_light(on=True)
@@ -311,14 +268,14 @@ p.move_testhead(position='sphere')
 
 # Connect the OSA, if needed
 if spectrum:
-    o = pyOSA.initialize()
-    resolution = Spectrum_settings["resolution"]
-    sensitivity = Spectrum_settings["sensitivity"]
-    window_width = Spectrum_settings.get("spectrum_window")
-    start_spectrum = pl - window_width / 2
-    end_spectrum = pl + window_width / 2
-    o.setup(resolution=resolution, sensitivity=sensitivity, autogain=True) 
-
+    address = "GPIB0::1::INSTR"
+    start_wav = pl-100
+    stop_wav = pl+100
+    res = 0.2
+    sens = 1 #Normal hod(NHLD),Normal auto(NAUT), NORM, HIGH1,HIGH2,HIGH3
+    speed = 0 #0: 1X|1:2X
+    osa = AQ6370D.Osa203c()
+    osa.connect(address)
 ### Set the chuck temperature ###
 print("Connecting Tec and setting temperature to {}".format(temp_set))
 #tec.set_temperature(temp_set)
@@ -333,14 +290,13 @@ if input("Press enter to confirm, or type \'kill\' to exit procedure: ") == "kil
     p.release()
     tec.release()
     ktl.release()
-    o.close()
+    osa.close()
     raise SystemExit("User canceled procedure, exiting program")
 p.move_to_probing_zone_center()
 
 ##### Start the acquisition run  #####   
 # go to default position (next to integrating sphere)
 p.go_to_xy('002500', '100700')
-     
 cells_list = []     
 session_start = str(datetime.datetime.now()).replace(' ', '_')
 measurement_counter = 0
@@ -351,25 +307,28 @@ x_td = p.get_chuck_x()
 y_td = p.get_chuck_y()
 
 temp_arr = temp_set
-print(temp_arr)
-print('########################################')
-time.sleep(10)
 
 if tec.get_temperature() > 50:
     temp_arr = np.flip(temp_set)
 
+if not type(temp_arr)==list or type(temp_arr)==np.ndarray: 
+    temp_arr = temp_arr
+
 for temp_val in temp_arr:
-    tec._set(T_set = temp_val, T_win = 0.5)
+    p.set_light(on=False)
+    print(temp_val)
+    print('###############')
+    #tec._set(T_set = temp_val, T_win = 0.5)
+    tec.set_temperature(temp_val)
     p.go_to_xy(x_td, y_td)
     time.sleep(0.5)
     delta_t = abs(tec.get_temperature() - temp_val)
     
-    while delta_t > 1:
-        print('Temp. not stable!', tec.get_temperature() - temp_val)
+    while delta_t > 0.5:
         time.sleep(1)
         delta_t = abs(tec.get_temperature() - temp_val)
-        print(delta_t)
-    print(delta_t)
+        print("Temperature difference is: ",delta_t)
+    
     #input('\nPress enter when done:')
         
     for idx in tqdm(range(n_cells)): # For loop on individual cells
@@ -396,29 +355,15 @@ for temp_val in temp_arr:
             cell_id = input("Cell ID: ")
     
         nok = True
-        #while nok:
-        #    while cell_id in cells_list:
-        #        print(f"ERROR! Cell ID must be unique. Entered value {cell_id} has been already assigned")
-        #        cell_id = input("Re-enter Cell ID: ")
-        #        
-        #    while not cell_id.startswith(str(cell_type)+" "):
-        #        print(f"WARNING! Cell ID must start with the give cell type, i.e. \'{cell_type}\', and have a whitespace after it")
-        #        #answer = input(f"Cell ID will be converted to {cell_type} {cell_id}. Do you accept the proposed new name? [Y/N]") 
-        #        answer = 'Y'
-        #        if answer.upper()=="Y" or answer.upper()=="YES":
+        
         cell_id = f"{cell_type} {cell_id}"
-        #        else:
-        #            answer = input("Do you want to provide a new cell ID? [Y/N] If not, entered one will be kept")
-        #            if answer.upper()=="Y" or answer.upper()=="YES":
-        #                cell_id = input("Re-enter Cell ID: ")
-        #            elif not cell_id in cells_list:
-        #                nok=False
         
         if cell_id.startswith(str(cell_type)+" ") and not cell_id in cells_list:
                  nok = False
                 
         cells_list.append(cell_id)
-        if cell_type=='TD1':
+        #if cell_type=='TD1' or cell_type=='T1' : #T1 added as inv, the new version has 'inverted' FP (i.e. FP300 ---> FP1500 )
+        if cell_type=='TD1' or t1_version==8:
             current_dict = current_dict_inv
         elif cell_type=='T3':
             current_dict = current_lol
@@ -458,11 +403,10 @@ for temp_val in temp_arr:
                     next_wg=350
                 elif cell_type =='T3':
                     next_wg=620
-                elif cell_type=='T1':
+                elif cell_type=='T1' or cell_type=='T1_tiger':
                     next_wg=250
                 elif cell_type=='TD1':
                     next_wg=250
-                
                 p.go_to_xy(p.get_chuck_x(), (p.get_chuck_y() + next_wg))
                 print('')
                 print(
@@ -474,19 +418,32 @@ for temp_val in temp_arr:
             print('t={}'.format(temperature))
             #t = input('\n Start measurement?')
             p.move_chuck_fine_up()
+            step_size=LIV_settings["step_size"]
             if liv: # Execute LIV measurements
               
                 #while True:
                 p.move_testhead(position='sphere')
-                c, v, pd = ktl.LIVpulsedsweep(sweepstart=0,
-                                              sweepstop=max_current,
-                                              step_size=LIV_settings["step_size"],
-                                              smua_ilimit=0.5,  # not used, limit is internally calculated for best performance
-                                              smua_vlimit=5,
-                                              pulse_delay=LIV_settings["pulse_delay"],
-                                              pulse_width=LIV_settings["pulse_width"],
-                                              pulse_mode=LIV_settings["pulse_mode"],
-                                              )
+                print('$$$$$$$$$$$$$$$$$$$$$$$$$$')
+                print(max_current, LIV_settings["step_size"],
+                     LIV_settings["pulse_mode"],
+                     LIV_settings["pulse_delay"], 
+                     int(abs(max_current-0)/LIV_settings["step_size"]), 
+                     LIV_settings["pulse_width"])
+               
+                c,v,pd = ktl.sweep_and_measure(source_channel='a', 
+                                              measure_channel='a', 
+                                              start_value=0, 
+                                              end_value=max_current, 
+                                              step_size=LIV_settings["step_size"], 
+                                              pulse_mode=LIV_settings["pulse_mode"], 
+                                              pulse_period=None, 
+                                              measurement_delay=LIV_settings["pulse_delay"],
+                                              steps=int(abs(max_current-0)/LIV_settings["step_size"]), 
+                                              step_time=100, 
+                                              time_out=0,
+                                              pulse_width=LIV_settings["pulse_width"], 
+                                              nplc=0.01)  
+
                 if pl == 1310:
                     resp = LIV_settings["resp_at_1310"]
                 if pl == 1550:
@@ -516,7 +473,7 @@ for temp_val in temp_arr:
                 #    print("Measurement discarded.. retrying...")
                 #    t =""
                 else:  # press enter, save data, close plot
-                    measurement_plan = 'LIV_{}'.format(device_id) + '_' + str(round(temp_val)) + 'C'
+                    measurement_plan = 'LIV_{}'.format(device_id) + '_' + str(int(temp_val)) + 'C'
                     now = str(datetime.datetime.now()).replace(' ', '_')
                     now = now.replace(':', '.')
                     fname = '{}_{}_{}_{}.txt'.format(
@@ -549,22 +506,25 @@ for temp_val in temp_arr:
                         w.write(f, **data)
                     list_rawdata_files.append(os.path.join(path, fname))    
                     measurement_counter += 1
-                                     
-                
-                
+              
                 if combi_mode:
                     print('#################################')
                     print('Starting pulsed mode measurement')
                     print('#################################')
-                    c, v, pd = ktl.LIVpulsedsweep(sweepstart=0,
-                                                  sweepstop=max_current*3,
-                                                  step_size=LIV_settings["step_size"],
-                                                  smua_ilimit=0.5,  # not used, limit is internally calculated for best performance
-                                                  smua_vlimit=5,
-                                                  pulse_delay=LIV_settings["pulse_delay"],
-                                                  pulse_width=LIV_settings["pulse_width"],
-                                                  pulse_mode="PULS",
-                                                  )
+                                                                      
+                    c,v,pd = ktl.sweep_and_measure(source_channel='a', 
+                                              measure_channel='a', 
+                                              start_value=0, 
+                                              end_value=max_current*3, 
+                                              step_size=step_size, 
+                                              pulse_mode=LIV_settings["pulse_mode"], 
+                                              pulse_period=None, 
+                                              measurement_delay=LIV_settings["pulse_delay"],
+                                              steps=int(abs(sweepstop-sweepstart)/step_size), 
+                                              step_time=100, 
+                                              time_out=0,
+                                              pulse_width=LIV_settings["pulse_width"], 
+                                              nplc=0.01)  
                             
                     if pl == 1310:
                         resp = LIV_settings["resp_at_1310"]
@@ -626,28 +586,27 @@ for temp_val in temp_arr:
                         with open(os.path.join(path, fname), 'w', newline="\n") as f:
                             w.write(f, **data)
                         list_rawdata_files.append(os.path.join(path, fname))    
-                        break
-                    break
+                        
+                    
             if spectrum: # Execute Spectral measurements
                 p.move_testhead(position='fiber')
                 for soa_current in i_soa:
                     while True:
                         spec_current = max_current * soa_current  # sets used current as a factor of max LIV currents
-                        ktl.reset()
-                        ktl.set_current(1, spec_current)
-                        ktl.set_channel_state(1, 'on')
-                                                               
-                        acquisitions = o.acquire(number_of_acquisitions=1)
-                        acquisition = acquisitions[-1]
-                        spectrum = acquisition["spectrum"]
-                        wavelength = spectrum.get_x()
-                        power = spectrum.get_y()
-                        peak = spectrum.y_max
-                        peak_index = power.index(peak)
+                        #if temp_val ==25:
+                        #    spec_current = 0.015
+                        #else:
+                        #    spec_current = 0.030
                         
-                        ktl.set_channel_state(1, 'off')
+                        ktl.reset()
+                        ktl.set_current('a', spec_current)
+                        ktl.set_channel_state('a', 'on')
+                        
+                        wavelength,power, units = osa._perform_measurement(start_wav, stop_wav, res, sens, speed, 100)
+                        
+                        ktl.set_channel_state('a', 'off')
                         fig, ax1 = plt.subplots()
-                        ax1.plot(wavelength[peak_index-500:peak_index+500], power[peak_index-500:peak_index+500], "b")
+                        ax1.plot(wavelength, power, "b")
                         ax1.set_ylabel("Power [W]", color="b")
                         ax1.set_xlabel("Wavelength [nm]")
                         plt.draw()
@@ -697,14 +656,15 @@ for temp_val in temp_arr:
                             measurement_counter += 1
                             break
                     if kill: break # interrupt the for loop if "Kill" command
-            if device_idx==3 and (cell_type=='T1' or cell_type=='TD1'):
+            if device_idx==3 and (cell_type=='T1' or cell_type=='TD1' or cell_type=='T1_tiger'):
+                print('Moving to next device!!!!!!!')
                 p.move_chuck_fine_down()
                 p.go_to_xy(p.get_chuck_x(), (p.get_chuck_y() + 3255)) 
-                p.set_light(on=True)
+                #p.set_light(on=False)
                 #p.run_probe_height_screen()
                                
 
-######## Ending the measurement #######
+######## Ending the measurement #######cc
 ### Return BT to load position and disconnect tools ###
 print('returning chuck to loading position and releasing equipment')
 p.set_light(on=False)
@@ -712,10 +672,11 @@ p.move_chuck_fine_down()
 p.move_chuck_gross_down()
 p.move_to_manual_load_position()
 p.release()
+tec.set_temperature(20)
 tec.release()
 ktl.release()
 try:
-    o.release()
+    osa.release()
 except:
     pass
 
