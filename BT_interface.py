@@ -197,18 +197,12 @@ class Ui(QtWidgets.QMainWindow):
 		self.ktl_off_btn.clicked.connect(self.ktl_off)
 	def plot_win(self, x, y1, y2 = None, cell = None):
 		"""Plots measurement data on the plot window. Handles both LIV and spectrum plots."""
-		print('Plotting data')
-		print('#############')
-		
 		t1 = (0,0,255)
 		t2 = (255,0,0)
-		
 		pen_t1 = pg.mkPen(color=(0, 0, 255), width=3, style=QtCore.Qt.SolidLine)
 		pen_t2 = pg.mkPen(color=(255, 0, 0), width=3, style=QtCore.Qt.SolidLine)
-		
 		color1 = '#%02x%02x%02x' % t1
 		color2 = '#%02x%02x%02x' % t2
-	
 		if y2 is not None:
 			#ic(x, y1, y2)
 			x_label = 'Current(A)'
@@ -276,8 +270,6 @@ class Ui(QtWidgets.QMainWindow):
 				print(err)
 				pass
 		else:
-			self.clear_plot()
-			self.plotter.clear()
 			x_label = 'Wavelength(nm)'
 			y_label = 'Power (dBm)'
 			title = 'Spectrum'
@@ -324,6 +316,16 @@ class Ui(QtWidgets.QMainWindow):
 ############OSA methods
 	def acq_osa(self):
 		"""Acquires a spectrum from the OSA and plots the result."""
+		cont_mode_state = self.spec_cont_mode.isChecked()
+		if cont_mode_state:
+			while cont_mode_state:
+				self.get_spectrum()
+				cont_mode_state = self.spec_cont_mode.isChecked()
+		else:
+			self.get_spectrum()
+
+	def get_spectrum(self):
+		'''get 1 spectrum'''
 		Spectrum_settings = { # Settings for running Spectral measurements
 			"resolution": 1,  # 0 = low, 1 = high
 			"sensitivity": 1,  # 0 = low, 1 = medium low, 2 = medium high, 3 = high
@@ -339,8 +341,6 @@ class Ui(QtWidgets.QMainWindow):
 		speed = Spectrum_settings["speed"]
 		interval = Spectrum_settings["spectrum_window"]
 		autogain = Spectrum_settings["autogain"]
-		
-		print('Initializing OSA')
 		try:
 			o = osa.Osa203c()
 			o.connect()
@@ -349,13 +349,8 @@ class Ui(QtWidgets.QMainWindow):
 			o.set_resolution_mode(resolution)
 			o.set_sensitivity_mode(sensitivity)
 			o.set_auto_gain(autogain)
-			
-			print('Starting acquisition')
 			time_before = time.time()
-			
 			x,y,units = o._perform_measurement(start_wav, stop_wav, res, sens, speed, interval)
-			
-			print('Measuremen t ready')
 			print(time.time()-time_before)
 			
 			wavelength = x
@@ -372,45 +367,55 @@ class Ui(QtWidgets.QMainWindow):
 		except Exception as error:
 			print("Initialization failed ", error)
 			return [],[],[]
+			
+	def responsivity(self, v_meas, wavelength_nm, r_int=1):
+		photocurrent = v_meas*r_int
+		if wavelength_nm == 1310:
+			a, b, c = 7.50196297e-04, -2.01470493e+00, 1.48709813e+03
+		elif wavelength_nm == 1550:
+			a, b, c = 2.61822186e-04, -7.83412220e-01, 7.13068194e+02
+		else:
+			raise ValueError("Wavelength outside the optimized 1310nm or 1550nm bands.")
+		# Calculate 1/R using the polynomial
+		inv_R = a * (wavelength_nm ** 2) + b * wavelength_nm + c
+		# Power = Current * (1/R)
+		power_W = photocurrent*inv_R
+		return power_W
+
 	def acq_liv(self):
 		"""Performs an LIV measurement"""
 		
 		LIV_settings = { # Settings for running LIV measurements
-		"current":0.2,
-		"step_size":1.E-3,
+		"current":0.35,
+		"step_size":5E-4,
 		"pulse_delay": 2.E-5,  # s
 		"pulse_width": 0.001,  # s
 		"pulse_mode": 'DC',  # i.e. "Staircase" mode
 		"pl":  1310,
-		"resp_at_1310": -166.25,  # PD responsivity for wavelength 1310 nm = -166.25
-		"resp_at_1550": -133.51,  # PD responsivity for wavelength 1550 nm = -133.51
 		}
 		ktl.connect()
-		c,v,pd = ktl.sweep_and_measure(source_channel='a', 
-									  measure_channel='a', 
-									  start_value=0, 
-									  end_value=LIV_settings["current"], 
-									  step_size=LIV_settings["step_size"], 
-									  pulse_mode=LIV_settings["pulse_mode"], 
-									  pulse_period=None, 
-									  measurement_delay=LIV_settings["pulse_delay"],
-									  steps=int(abs(LIV_settings["current"]-0)/LIV_settings["step_size"]), 
-									  step_time=100, 
-									  time_out=0,
-									  pulse_width=LIV_settings["pulse_width"], 
-									  nplc=0.01)  
-		v = [float(i[0]) for i in v ]
+		c,v,pd = ktl.LIVsweep(sweepstart=0, 
+							sweepstop=LIV_settings["current"],
+							nsteps = int(abs(LIV_settings["current"]-0)/LIV_settings["step_size"]), 
+							step_size = LIV_settings["step_size"], 
+							smua_ilimit=1, 
+							smua_vlimit=5, 
+							pd_revbias=-5, 
+							measdelay=0.00, 
+							pulse_width=LIV_settings["pulse_width"], 
+							nplc=0.01) 
 		if LIV_settings["pl"] == 1550:
-			resp = LIV_settings["resp_at_1550"]
-		else:
-			resp = LIV_settings["resp_at_1310"]
-		power = [-i * resp for i in c]
-		#power = c
-		with open(r"C:\Users\HP\OneDrive - Smart Photonics\Documents\Current_LIV_data_S200\Get_LIV.txt", "w") as f:
-			print(c, file=f)
-			print(v, file=f)
-			print(power, file=f)
-		print(r"Data saved in: C:\Users\HP\OneDrive - Smart Photonics\Documents\Current_LIV_data_S200\Get_LIV.txt")
+			power = [self.responsivity(i, 1550) for i in pd.magnitude]
+		elif LIV_settings["pl"] == 1310:
+			power = [self.responsivity(i, 1310) for i in pd.magnitude]
+		print(power)
+		
+		
+		#with open(r"C:\Users\HP\OneDrive - Smart Photonics\Documents\Current_LIV_data_S200\Get_LIV.txt", "w") as f:
+		#	print(c, file=f)
+		#	print(v, file=f)
+		#	print(power, file=f)
+		#print(r"Data saved in: C:\Users\HP\OneDrive - Smart Photonics\Documents\Current_LIV_data_S200\Get_LIV.txt")
 		self.plot_win(c, v, power)
 
 ############Moving/controlling the probe

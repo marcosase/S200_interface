@@ -17,9 +17,6 @@ v0.0.0 May 24th, 2018 - KV - Module was drafted.
 v0.0.1 Oct  5th, 2018 - KV - Module was implemented.
 v0.0.2 Oct  8th, 2018 - KV - ThorlabsPD and KeithleyPD were implemented.
 """
-
-
-
 __version__ = '0.0.2'
 __author__  = 'Kostas Voutyras, kostas.voutyras@smartphotonics.nl'
 
@@ -34,8 +31,6 @@ sys.path.insert(1, 'C:/AMS')
 from API.Instrument import Instrument
 
 logger=logging.getLogger('test.bt_pd_lib')
-
-
 class Photodetector(Instrument):
     """This class implements the Photodetector.
     Contains the methods:
@@ -59,21 +54,10 @@ class Photodetector(Instrument):
         """Sets the photodetector ID.
         """
 
-        if self.is_supported(ID):
-            self.ID=ID
-        else:
-            self.lg.error('Photodetector {} not supported'.format(ID))
-            raise ValueError('Photodetector {} is not supported.\n Currently supported:{}'.format(ID, self.supported_detectors))
-
+        
+        self.ID=ID
+       
         self.configure()
-
-    def is_supported(self, ID):
-        if ID in self.supported_detectors:
-
-            return True
-        else:
-            return False
-
 
     def get_responsivity_file_dir(self):
         """Sets the base directory
@@ -90,8 +74,6 @@ class Photodetector(Instrument):
         """Finds all the supported detectors
         """
         d=self.get_responsivity_file_dir()
-        print('Directory print:::::::::::::')
-        print(d)
         _, __, fls=os.walk(d).__next__()
         self.supported_detectors = [f.strip('.txt') for f in fls]
 
@@ -179,6 +161,7 @@ class Photodetector(Instrument):
         # Form the filename and destination folder
 
         config_fn = '{}{}'.format(self.get_ID(),'.txt')
+        print("Photodetector configuration file: ", config_fn)
         self.config_f = os.path.join(self.get_responsivity_file_dir() , config_fn)
 
         # Open the file, read the data
@@ -216,12 +199,14 @@ class Photodetector(Instrument):
 
 
 class ThorlabsPD(Photodetector):
-    """Implements a Thorlabs S148C photodetector.
+    """Implements a Thorlabs S144C photodetector.
     The class inherits from Photodetector.
     """
     def __init__(self):
         super().__init__()
-        super().set_ID(ID='THORLABS S148C')
+        super().set_ID(ID='THORLABS S144C')
+
+
 
 
 class KeithleyPD(Photodetector):
@@ -235,9 +220,9 @@ class KeithleyPD(Photodetector):
 
 if __name__=='__main__':
 
-    p=Photodetector()
-#    p.set_ID(ID='THORLABS S148C')
-    p.set_ID(ID='KEITHLEY 2520-INT')
+    p=ThorlabsPD()
+    # p.set_ID(ID='THORLABS S148C')
+#    p.set_ID(ID='KEITHLEY 2520-INT')
 
     p.set_wavelength(wvl=1310)
     r=p.get_responsivity()

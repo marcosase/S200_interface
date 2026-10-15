@@ -201,7 +201,7 @@ UP</string>
      <enum>QTabWidget::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>3</number>
     </property>
     <property name="iconSize">
      <size>
@@ -877,8 +877,8 @@ background-color: rgb(255, 255, 0);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>728</width>
-             <height>1002</height>
+             <width>732</width>
+             <height>838</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout">
@@ -1024,11 +1024,11 @@ background-color: rgb(255, 255, 0);
                  <attribute name="horizontalHeaderCascadingSectionResizes">
                   <bool>false</bool>
                  </attribute>
-                 <attribute name="horizontalHeaderMinimumSectionSize">
-                  <number>39</number>
-                 </attribute>
                  <attribute name="horizontalHeaderDefaultSectionSize">
                   <number>95</number>
+                 </attribute>
+                 <attribute name="horizontalHeaderMinimumSectionSize">
+                  <number>39</number>
                  </attribute>
                  <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
                   <bool>false</bool>
@@ -1039,14 +1039,14 @@ background-color: rgb(255, 255, 0);
                  <attribute name="verticalHeaderCascadingSectionResizes">
                   <bool>false</bool>
                  </attribute>
-                 <attribute name="verticalHeaderMinimumSectionSize">
-                  <number>2</number>
-                 </attribute>
                  <attribute name="verticalHeaderDefaultSectionSize">
                   <number>20</number>
                  </attribute>
                  <attribute name="verticalHeaderHighlightSections">
                   <bool>true</bool>
+                 </attribute>
+                 <attribute name="verticalHeaderMinimumSectionSize">
+                  <number>2</number>
                  </attribute>
                  <attribute name="verticalHeaderShowSortIndicator" stdset="0">
                   <bool>false</bool>
@@ -1367,11 +1367,11 @@ background-color: rgb(255, 255, 0);
                  <attribute name="horizontalHeaderCascadingSectionResizes">
                   <bool>false</bool>
                  </attribute>
-                 <attribute name="horizontalHeaderMinimumSectionSize">
-                  <number>39</number>
-                 </attribute>
                  <attribute name="horizontalHeaderDefaultSectionSize">
                   <number>95</number>
+                 </attribute>
+                 <attribute name="horizontalHeaderMinimumSectionSize">
+                  <number>39</number>
                  </attribute>
                  <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
                   <bool>false</bool>
@@ -1382,14 +1382,14 @@ background-color: rgb(255, 255, 0);
                  <attribute name="verticalHeaderCascadingSectionResizes">
                   <bool>false</bool>
                  </attribute>
-                 <attribute name="verticalHeaderMinimumSectionSize">
-                  <number>2</number>
-                 </attribute>
                  <attribute name="verticalHeaderDefaultSectionSize">
                   <number>20</number>
                  </attribute>
                  <attribute name="verticalHeaderHighlightSections">
                   <bool>true</bool>
+                 </attribute>
+                 <attribute name="verticalHeaderMinimumSectionSize">
+                  <number>2</number>
                  </attribute>
                  <attribute name="verticalHeaderShowSortIndicator" stdset="0">
                   <bool>false</bool>
@@ -1691,11 +1691,11 @@ background-color: rgb(255, 255, 0);
                  <attribute name="horizontalHeaderCascadingSectionResizes">
                   <bool>false</bool>
                  </attribute>
-                 <attribute name="horizontalHeaderMinimumSectionSize">
-                  <number>39</number>
-                 </attribute>
                  <attribute name="horizontalHeaderDefaultSectionSize">
                   <number>95</number>
+                 </attribute>
+                 <attribute name="horizontalHeaderMinimumSectionSize">
+                  <number>39</number>
                  </attribute>
                  <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
                   <bool>false</bool>
@@ -1706,14 +1706,14 @@ background-color: rgb(255, 255, 0);
                  <attribute name="verticalHeaderCascadingSectionResizes">
                   <bool>false</bool>
                  </attribute>
-                 <attribute name="verticalHeaderMinimumSectionSize">
-                  <number>2</number>
-                 </attribute>
                  <attribute name="verticalHeaderDefaultSectionSize">
                   <number>20</number>
                  </attribute>
                  <attribute name="verticalHeaderHighlightSections">
                   <bool>true</bool>
+                 </attribute>
+                 <attribute name="verticalHeaderMinimumSectionSize">
+                  <number>2</number>
                  </attribute>
                  <attribute name="verticalHeaderShowSortIndicator" stdset="0">
                   <bool>false</bool>
@@ -2015,11 +2015,11 @@ background-color: rgb(255, 255, 0);
                  <attribute name="horizontalHeaderCascadingSectionResizes">
                   <bool>false</bool>
                  </attribute>
-                 <attribute name="horizontalHeaderMinimumSectionSize">
-                  <number>39</number>
-                 </attribute>
                  <attribute name="horizontalHeaderDefaultSectionSize">
                   <number>95</number>
+                 </attribute>
+                 <attribute name="horizontalHeaderMinimumSectionSize">
+                  <number>39</number>
                  </attribute>
                  <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
                   <bool>false</bool>
@@ -2030,14 +2030,14 @@ background-color: rgb(255, 255, 0);
                  <attribute name="verticalHeaderCascadingSectionResizes">
                   <bool>false</bool>
                  </attribute>
-                 <attribute name="verticalHeaderMinimumSectionSize">
-                  <number>2</number>
-                 </attribute>
                  <attribute name="verticalHeaderDefaultSectionSize">
                   <number>20</number>
                  </attribute>
                  <attribute name="verticalHeaderHighlightSections">
                   <bool>true</bool>
+                 </attribute>
+                 <attribute name="verticalHeaderMinimumSectionSize">
+                  <number>2</number>
                  </attribute>
                  <attribute name="verticalHeaderShowSortIndicator" stdset="0">
                   <bool>false</bool>
@@ -2288,11 +2288,11 @@ background-color: rgb(255, 255, 0);
                  <attribute name="horizontalHeaderCascadingSectionResizes">
                   <bool>false</bool>
                  </attribute>
-                 <attribute name="horizontalHeaderMinimumSectionSize">
-                  <number>39</number>
-                 </attribute>
                  <attribute name="horizontalHeaderDefaultSectionSize">
                   <number>95</number>
+                 </attribute>
+                 <attribute name="horizontalHeaderMinimumSectionSize">
+                  <number>39</number>
                  </attribute>
                  <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
                   <bool>false</bool>
@@ -2303,14 +2303,14 @@ background-color: rgb(255, 255, 0);
                  <attribute name="verticalHeaderCascadingSectionResizes">
                   <bool>false</bool>
                  </attribute>
-                 <attribute name="verticalHeaderMinimumSectionSize">
-                  <number>2</number>
-                 </attribute>
                  <attribute name="verticalHeaderDefaultSectionSize">
                   <number>20</number>
                  </attribute>
                  <attribute name="verticalHeaderHighlightSections">
                   <bool>true</bool>
+                 </attribute>
+                 <attribute name="verticalHeaderMinimumSectionSize">
+                  <number>2</number>
                  </attribute>
                  <attribute name="verticalHeaderShowSortIndicator" stdset="0">
                   <bool>false</bool>
@@ -2558,11 +2558,11 @@ background-color: rgb(255, 255, 0);
                  <attribute name="horizontalHeaderCascadingSectionResizes">
                   <bool>false</bool>
                  </attribute>
-                 <attribute name="horizontalHeaderMinimumSectionSize">
-                  <number>39</number>
-                 </attribute>
                  <attribute name="horizontalHeaderDefaultSectionSize">
                   <number>95</number>
+                 </attribute>
+                 <attribute name="horizontalHeaderMinimumSectionSize">
+                  <number>39</number>
                  </attribute>
                  <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
                   <bool>false</bool>
@@ -2573,14 +2573,14 @@ background-color: rgb(255, 255, 0);
                  <attribute name="verticalHeaderCascadingSectionResizes">
                   <bool>false</bool>
                  </attribute>
-                 <attribute name="verticalHeaderMinimumSectionSize">
-                  <number>2</number>
-                 </attribute>
                  <attribute name="verticalHeaderDefaultSectionSize">
                   <number>20</number>
                  </attribute>
                  <attribute name="verticalHeaderHighlightSections">
                   <bool>true</bool>
+                 </attribute>
+                 <attribute name="verticalHeaderMinimumSectionSize">
+                  <number>2</number>
                  </attribute>
                  <attribute name="verticalHeaderShowSortIndicator" stdset="0">
                   <bool>false</bool>
@@ -2882,11 +2882,11 @@ background-color: rgb(255, 255, 0);
                  <attribute name="horizontalHeaderCascadingSectionResizes">
                   <bool>false</bool>
                  </attribute>
-                 <attribute name="horizontalHeaderMinimumSectionSize">
-                  <number>39</number>
-                 </attribute>
                  <attribute name="horizontalHeaderDefaultSectionSize">
                   <number>95</number>
+                 </attribute>
+                 <attribute name="horizontalHeaderMinimumSectionSize">
+                  <number>39</number>
                  </attribute>
                  <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
                   <bool>false</bool>
@@ -2897,14 +2897,14 @@ background-color: rgb(255, 255, 0);
                  <attribute name="verticalHeaderCascadingSectionResizes">
                   <bool>false</bool>
                  </attribute>
-                 <attribute name="verticalHeaderMinimumSectionSize">
-                  <number>2</number>
-                 </attribute>
                  <attribute name="verticalHeaderDefaultSectionSize">
                   <number>20</number>
                  </attribute>
                  <attribute name="verticalHeaderHighlightSections">
                   <bool>true</bool>
+                 </attribute>
+                 <attribute name="verticalHeaderMinimumSectionSize">
+                  <number>2</number>
                  </attribute>
                  <attribute name="verticalHeaderShowSortIndicator" stdset="0">
                   <bool>false</bool>
@@ -5205,7 +5205,7 @@ Job/config File</string>
         </rect>
        </property>
        <property name="maximum">
-        <number>200</number>
+        <number>1000</number>
        </property>
        <property name="value">
         <number>100</number>
@@ -5599,6 +5599,28 @@ Job/config File</string>
          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Range (nm):&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
        </widget>
+      </widget>
+      <widget class="QCheckBox" name="spec_cont_mode">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>210</y>
+         <width>141</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>12</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Continous mode</string>
+       </property>
       </widget>
      </widget>
      <widget class="QFrame" name="frame_10">
@@ -6587,7 +6609,7 @@ QPushButton:hover{
      <x>0</x>
      <y>0</y>
      <width>1875</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>
