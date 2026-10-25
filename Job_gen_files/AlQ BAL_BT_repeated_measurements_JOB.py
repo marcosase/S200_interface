@@ -25,11 +25,11 @@ job_version='1.0.3'
 print('$$$$$$$$$$$$$')
 print(sys.argv)
 print('$$$$$$$$$$$$$$')
-CCF_filepath = sys.argv[1]
+CCF_filepath = "C:\\Users\\marco\\Coding\\S200_interface\\Job_gen_files\\AAR01_alfaVersion_bars_CCF.csv"
 print('CCF passed')
-run_info = eval(sys.argv[2])
-customer = sys.argv[3]
-temperatures = sys.argv[4]
+run_info = [('info1','info2','info3')]
+customer = 'numti'
+temperatures = [25]
 print('############################')
 print(customer, CCF_filepath, temperatures, run_info)
 #LIV settings
@@ -56,11 +56,11 @@ ascending=False                  #For EF reverse MMF. CCF must be reversed as we
 wavelength_span=200              #nm
 # spectrum_current=0.300 
 enable_spectral_measurement=False
-directory = 'C:/Users/MarcosDaSilvaEleoter/OneDrive - Smart Photonics/Test & Measurement/Internal Projects/Job generation/' + customer + '/'+ run_info[0][1] + '/' + run_info[0][0] + '/' +'TM0002/' # directory to save the generated files
+directory = r"C:\Users\marco\Coding\S200_interface\Job_gen_files"
 
 for temperature in temperatures:
-    
-    for lot,product,wafer in tqdm(run_info):
+    for lot,product,wafer in run_info:
+        
         # %% JOB
 
         filename_format='{}_{}_{}_{}deg'.format(customer, lot, wafer,temperature)
