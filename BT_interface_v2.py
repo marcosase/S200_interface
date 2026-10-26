@@ -24,6 +24,10 @@ import glob
 import subprocess
 from subprocess import call
 import codecs
+sys.path.insert(1, 'C:\\AMS')
+from smu.keithley2602B import Keithley2602B
+ktl = Keithley2602B()
+
 
 class Ui(QtWidgets.QMainWindow):
 	class OutputStream(QObject):
@@ -589,9 +593,11 @@ class Ui(QtWidgets.QMainWindow):
 		self.send_command(b'CDW\n')
 	def vac_on(self):
 		"""Turn on the prober vacuum."""
+		print('Vac ON command sent')
 		self.send_command(b'VAC CV,1\n')
 	def vac_off(self):
 		"""Turn off the prober vacuum."""
+		print('Vac Off command sent')
 		self.send_command(b'VAC CV,0\n')
 	def check_idn(self):
 		"""Checks the prober's identity by sending the GID command."""

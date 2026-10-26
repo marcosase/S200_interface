@@ -695,10 +695,19 @@ Job FOLDER</string>
             <height>31</height>
            </rect>
           </property>
+          <property name="font">
+           <font>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>9</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
+          </property>
           <property name="styleSheet">
            <string notr="true">font: 75 10pt &quot;Arial&quot;;
 background-color: rgb(255, 255, 0);
-</string>
+font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
           </property>
          </widget>
          <widget class="QProgressBar" name="bar">
@@ -6584,9 +6593,9 @@ QPushButton:hover{
     <property name="geometry">
      <rect>
       <x>840</x>
-      <y>680</y>
-      <width>661</width>
-      <height>311</height>
+      <y>700</y>
+      <width>1021</width>
+      <height>291</height>
      </rect>
     </property>
    </widget>
