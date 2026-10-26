@@ -30,16 +30,19 @@ class Ui(QtWidgets.QMainWindow):
 		text_written = pyqtSignal(str)
 
 		def __init__(self, original_stream, parent=None):
+			"""Wrap a stream and emit a signal whenever text is written."""
 			super().__init__(parent)
 			self.original_stream = original_stream
 
 		def write(self, text):
+			"""Write text to the wrapped stream and forward it to connected slots."""
 			self.original_stream.write(text)
 			self.original_stream.flush()
 			if text:
 				self.text_written.emit(text)
 
 		def flush(self):
+			"""Flush the wrapped output stream."""
 			self.original_stream.flush()
 	class Worker(QObject):
 		"""
@@ -263,16 +266,19 @@ class Ui(QtWidgets.QMainWindow):
 		else:
 			pass
 	def display_out(self, text):
+		"""Append text to the interface output display and scroll to the end."""
 		self.output_display.moveCursor(QTextCursor.End)
 		self.output_display.insertPlainText(text)
 		self.output_display.ensureCursorVisible()
 
 	def display_terminal_output(self, text):
+		"""Write subprocess output to the application's original terminal stream."""
 		if self._original_stdout is not None:
 			self._original_stdout.write(text)
 			self._original_stdout.flush()
 
 	def display_subprocess_output(self, text):
+		"""Forward subprocess output to both the interface and terminal."""
 		self.display_out(text)
 		self.display_terminal_output(text)
 
@@ -413,6 +419,7 @@ class Ui(QtWidgets.QMainWindow):
 		self.volt_meas.setText(str(volt))
 
 	def ktl_on(self):
+		"""Connect to the Keithley, set the selected current, and enable channel A."""
 		ktl.connect()
 		current = float(self.ktl_curr.value())/1000
 		ktl.set_current('a', current)
@@ -420,6 +427,7 @@ class Ui(QtWidgets.QMainWindow):
 		ktl.release()
 
 	def ktl_off(self):
+		"""Connect to the Keithley and disable channel A."""
 		ktl.connect()
 		ktl.set_channel_state(channel='a', state='off')
 		ktl.release()
@@ -436,7 +444,7 @@ class Ui(QtWidgets.QMainWindow):
 			self.get_spectrum()
 
 	def get_spectrum(self):
-		'''get 1 spectrum'''
+		"""Acquire one OSA spectrum, plot it, and return wavelength, power, and peak data."""
 		Spectrum_settings = { # Settings for running Spectral measurements
 			"resolution": 1,  # 0 = low, 1 = high
 			"sensitivity": 1,  # 0 = low, 1 = medium low, 2 = medium high, 3 = high
@@ -478,6 +486,7 @@ class Ui(QtWidgets.QMainWindow):
 			return [],[],[]
 			
 	def responsivity(self, v_meas, wavelength_nm, r_int=1):
+		"""Convert measured voltage to optical power using wavelength-specific responsivity."""
 		photocurrent = v_meas*r_int
 		if wavelength_nm == 1310:
 			a, b, c = 7.50196297e-04, -2.01470493e+00, 1.48709813e+03
@@ -528,10 +537,10 @@ class Ui(QtWidgets.QMainWindow):
 		command = f'GTXY {x},{y}\n'.encode() # go to the next  laser
 		self.send_command(command)
 	def gross_up(self):
-		'''Method to do the gross up'''
+		"""Send the prober command for a gross upward stage movement."""
 		self.send_command(b'GUP\n')
 	def gross_down(self):
-		'''Method to do the gross down'''
+		"""Send the prober command for a gross downward stage movement."""
 		self.send_command(b'GDW\n')
 	def move_unload(self):
 		"""Moves the prober to the unload position."""
@@ -544,11 +553,11 @@ class Ui(QtWidgets.QMainWindow):
 		print('Moving to probe position!')
 		return
 	def go_fiber(self):
-		'''Moves detector stage to  fiber position'''
+		"""Move the detector stage to the fiber position."""
 		self.send_command(b'TSTHD 1\n')
 		return
 	def go_sphere(self):
-		'''Moves detector stage to  fiber position'''
+		"""Move the detector stage to the integrating-sphere position."""
 		self.send_command(b'TSTHD 2\n')
 		return
 	def align(self, bar_index):
@@ -573,16 +582,16 @@ class Ui(QtWidgets.QMainWindow):
 		print('Moving to change position!')
 		return
 	def fine_up(self):
-		'''Method to do the fine up'''
+		"""Send the prober command for a fine upward stage movement."""
 		self.send_command(b'CUP\n')
 	def fine_down(self):
-		'''Method to do the fine down'''
+		"""Send the prober command for a fine downward stage movement."""
 		self.send_command(b'CDW\n')
 	def vac_on(self):
-		'''Method to turn on the vacuum'''
+		"""Turn on the prober vacuum."""
 		self.send_command(b'VAC CV,1\n')
 	def vac_off(self):
-		'''Method to turn off the vacuum'''
+		"""Turn off the prober vacuum."""
 		self.send_command(b'VAC CV,0\n')
 	def check_idn(self):
 		"""Checks the prober's identity by sending the GID command."""
@@ -598,6 +607,7 @@ class Ui(QtWidgets.QMainWindow):
 		#method to save all values in interface
 		print('saved!')
 	def write_values(self):
+		"""Load saved touchdown coordinates and measurement ranges into the interface."""
 		try:
 			df = pd.read_csv('backup_values.csv')
 			# set xy touch down values
@@ -812,12 +822,14 @@ class Ui(QtWidgets.QMainWindow):
 			self.liv_cells_loaded.setText(cell_ids[0:cells_loaded])
 
 	def update_load_cells(self):
+		"""Update the displayed loaded-cell list from the selected cell-list CSV."""
 		cell_list     =self.die_list_combo_box.currentText()
 		cell_ids      = pd.read_csv(cell_list).values
 		cells_loaded  = self.die_loaded_cell.currentText()
 		self.liv_cells_loaded.setText(cell_ids[0:cells_loaded])
 
 	def search_jobs(self):
+		"""Retrieve traveler details and populate die job and cell-list selections."""
 		try:
 			work_order,prod_id,lot_id = self.run_mes_check(False)
 			print(work_order,prod_id,lot_id)
@@ -1163,6 +1175,7 @@ class Ui(QtWidgets.QMainWindow):
 			self.thread.start()
 
 	def on_thread_finished(self):
+		"""Clear the completed worker thread and launch the next queued measurement."""
 		self.thread = None
 		self.start_next_command()
 
@@ -1185,6 +1198,7 @@ class Ui(QtWidgets.QMainWindow):
 
 ####misc. table
 	def gen_liv_config(self):
+		"""Generate manual LIV job YAML and placeholder cell-list CSV files for selected wafers."""
 		# read values from gui
 		wafer_array = AllItems = [self.liv_wafers_combo_box.itemText(i) for i in range(self.liv_wafers_combo_box.count())]
 		now=time.time()
@@ -1260,6 +1274,10 @@ class Ui(QtWidgets.QMainWindow):
 				print(e)
 
 	def run_mes_check(self, update_gui=True):
+		"""Retrieve traveler data from MES and optionally update the LIV form.
+
+		When ``update_gui`` is false, return the work order, product ID, and lot ID.
+		"""
 		traveler_info = {}
 		#update label
 		self.label_warning.setText("Retrieving traveler information from MES...")
@@ -1309,6 +1327,7 @@ class Ui(QtWidgets.QMainWindow):
 
 		####Methods for MLIV meas
 	def get_temp(self):
+		"""Read the TEC temperature and display it in the interface."""
 		tec_t = tec.Tec()          # TEC
 		tec_t.connect(port="COM4")
 		temp = tec_t.get_temperature()
@@ -1316,9 +1335,11 @@ class Ui(QtWidgets.QMainWindow):
 		tec_t.release()
 
 	def chunker(self, seq, size):
+		"""Yield consecutive slices of ``seq`` containing at most ``size`` items."""
 		return(seq[pos:pos+size] for pos in range(0, len(seq),size))
 	
 	def start_jobs_in_thread(self):
+		"""Run the selected measurement-tab handler from a worker thread."""
 		current_tab_index = self.meas_tab.currentIndex()
 		if current_tab_index == 0:
 			job_method = self.bar_start
@@ -1334,10 +1355,12 @@ class Ui(QtWidgets.QMainWindow):
 		self.worker.finished.connect(self.on_jobs_finished)
 		self.worker_thread.start()
 	def on_jobs_finished(self, msg):
+		"""Handle completion of the threaded job handler and stop its thread."""
 		print(msg)
 		self.worker_thread.quit()
 		self.worker_thread.wait()
 	def start_jobs(self):
+		"""Dispatch job execution to the handler for the currently selected tab."""
 		###########
 		#Indexes of the tables
 		#0: Bar measurements
@@ -1351,10 +1374,12 @@ class Ui(QtWidgets.QMainWindow):
 		elif current_tab_index == 2:
 			self.spc_start()
 	def reset_start_btn(self):
+		"""Restore the start button to its idle label and styling."""
 		self.start_jobs_btn.setStyleSheet('background-color: rgb(85, 255, 127)')
 		self.start_jobs_btn.setText("START")
 		self.start_jobs_btn.repaint()
 	def gen_bars_job(self):
+		"""Run the selected bar job generator and stream its output to the UI."""
 		#Collect the info
 		work_dir = os.getcwd() + '\\Job_gen_files\\'
 		costumer = self.liv_cust_line.text()
@@ -1419,12 +1444,15 @@ class Ui(QtWidgets.QMainWindow):
 			QMessageBox.about(self, "Error", "Failed to start job file generation script:\n" + str(e))
 
 	def on_jobgen_finished(self, result):
+		"""Report the job-generation subprocess result."""
 		print("Job file generation finished.", result)
 
 	def on_jobgen_thread_finished(self):
+		"""Release references to the completed job-generation thread and worker."""
 		self.jobgen_thread = None
 		self.jobgen_worker = None
 	def refresh_bars_combo_box(self):
+		"""Reload available bar job-generator scripts and CCF files into their selectors."""
 		curr_dir = os.getcwd()
 		work_folder = os.path.join(curr_dir, 'Job_gen_files')
 		ccf_files = glob.glob(work_folder+'/*CCF.csv')
@@ -1442,6 +1470,7 @@ class Ui(QtWidgets.QMainWindow):
 			raise RuntimeError('Measurement stopped by user')
 
 	def set_graph(self, titulo, eixo_x, eixo_y):
+		"""Configure the active plot title, axis labels, grid, and legend."""
 		# THESE PARAMETERS ARE FOR RESIZING AND MOVING THE POSITION OF THE LEGEND BOX
 		# I INCREASED X-SIZE AND Y-OFFSET
 		self.p1.addLegend(size=(110, 0) ,offset=(10, 10))
@@ -1467,12 +1496,14 @@ class Ui(QtWidgets.QMainWindow):
 		self.p1.setLabel('left', eixo_y, **labelStyle)
 		self.p1.setLabel('top',)
 	def clear_plot(self):
+		"""Clear the plot and remove any secondary-axis curve."""
 		self.plotter.clear()
 		self.p1.clear()
 		if hasattr(self, 'plot2') and self.plot2 is not None:
 			self.p2.removeItem(self.plot2)
 			self.plot2 = None
 	def updateViews(self):
+		"""Synchronize the secondary plot view geometry with the primary view."""
 		self.p2.setGeometry(self.p1.vb.sceneBoundingRect())
 		self.p2.linkedViewChanged(self.p1.vb, self.p2.XAxis)
 	def stop_execution(self):
@@ -1482,6 +1513,7 @@ class Ui(QtWidgets.QMainWindow):
 			self.worker.stop()
 
 	def closeEvent(self, event):
+		"""Handle window closure and accept the close event after cleanup."""
 		print("Window closed")
 		try:
 			self.end()
@@ -1490,6 +1522,7 @@ class Ui(QtWidgets.QMainWindow):
 		event.accept()
 
 def main():
+	"""Create the Qt application, show the main window, and run its event loop."""
 	app = QtWidgets.QApplication(sys.argv)
 	window = Ui()
 	window.show()
