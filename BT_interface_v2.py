@@ -23,6 +23,7 @@ import yaml
 import glob
 import subprocess
 from subprocess import call
+import codecs
 
 class Ui(QtWidgets.QMainWindow):
 	class OutputStream(QObject):
@@ -54,6 +55,7 @@ class Ui(QtWidgets.QMainWindow):
 		"""
 		finished = pyqtSignal(str)
 		all_done = pyqtSignal()
+		output_ready = pyqtSignal(str)
 		
 		def __init__(self, cmd, ui_method):
 			"""
@@ -66,6 +68,7 @@ class Ui(QtWidgets.QMainWindow):
 			self.cmd = cmd
 			self.ui_method = ui_method
 			self.stop_requested = False
+			self.core_process = None
 
 		def run(self):
 			"""
@@ -79,29 +82,38 @@ class Ui(QtWidgets.QMainWindow):
 				self.finished.emit("Execution stopped by user before starting next command")
 				return
 			
-			self.core_process = subprocess.Popen(self.cmd, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
-			
-			while True:
-				if self.stop_requested:
-					self.core_process.kill()
-					self.core_process.wait()
-					self.core_process = None
-					self.finished.emit("Stopped by user")
-					return
-				out_line = self.core_process.stdout.readline()
-				if out_line == b'' and (self.core_process is None or self.core_process.poll() is not None):
-					break
-				if out_line:
-					print(out_line.decode().strip())
+			try:
+				self.core_process = subprocess.Popen(
+					self.cmd,
+					stdout=subprocess.PIPE,
+					stderr=subprocess.STDOUT,
+					bufsize=0,
+				)
+				decoder = codecs.getincrementaldecoder('utf-8')(errors='replace')
 
-			if self.core_process is not None:
-				out, err = self.core_process.communicate()
-				result = out.decode().strip() if out else "No output!"
-				print("Exit code:", self.core_process.returncode)
-				print("stdout:", out.decode(errors="replace"))
-				print("stderr:", err.decode(errors="replace"))
-			else:
-				result = "Process was terminated"
+				while True:
+					if self.stop_requested:
+						self.core_process.kill()
+						self.core_process.wait()
+						self.core_process = None
+						self.finished.emit("Stopped by user")
+						return
+					output = self.core_process.stdout.read(4096)
+					if not output:
+						break
+					text = decoder.decode(output)
+					if text:
+						self.output_ready.emit(text)
+
+				final_text = decoder.decode(b'', final=True)
+				if final_text:
+					self.output_ready.emit(final_text)
+				return_code = self.core_process.wait()
+				result = f"Process exited with code {return_code}"
+				self.core_process = None
+			except OSError as error:
+				self.output_ready.emit(f"Failed to run {self.cmd[0]}: {error}\n")
+				result = f"Process could not be started: {error}"
 			self.finished.emit(result)
 			self.all_done.emit()
 
@@ -140,6 +152,8 @@ class Ui(QtWidgets.QMainWindow):
 		sys.stderr = self._stderr_stream
 		###definitions from core.py
 		self.thread = None
+		self.jobgen_thread = None
+		self.jobgen_worker = None
 		self.curr_files = 0
 		###Variable
 		self.job_folder_path1 = ''
@@ -235,12 +249,16 @@ class Ui(QtWidgets.QMainWindow):
 			#arrange plot data
 			files.sort(key=os.path.getctime)
 			#get paramenter from epda files
-			#fh=openepda.OpenEpdaDataLoader()
-			#fh_read = fh.read_file(files[-1])
-			df = pd.read_csv(files[-1])
-			x = df['current']
-			y1 = df['power']
-			y2 = None
+			fh=openepda.OpenEpdaDataLoader()
+			fh_read = fh.read_file(files[-1])
+			self.meas_plan = fh_read['Measurement plan'].split('_')[0]
+			self.cell = fh_read['Cell']
+			x  = fh_read['I_soa, A']
+			y1 = fh_read['V_soa, V']
+			if self.meas_plan=='LIV':
+				y2 = fh_read['P_PD, W']
+			else:
+				y2 = None
 			self.plot_win(x,y1,y2)
 		else:
 			pass
@@ -248,6 +266,15 @@ class Ui(QtWidgets.QMainWindow):
 		self.output_display.moveCursor(QTextCursor.End)
 		self.output_display.insertPlainText(text)
 		self.output_display.ensureCursorVisible()
+
+	def display_terminal_output(self, text):
+		if self._original_stdout is not None:
+			self._original_stdout.write(text)
+			self._original_stdout.flush()
+
+	def display_subprocess_output(self, text):
+		self.display_out(text)
+		self.display_terminal_output(text)
 
 	def get_total_meas(self, start_index, end_index):
 		"""Calculates the total meas based on the current mmf and bar used."""
@@ -284,7 +311,7 @@ class Ui(QtWidgets.QMainWindow):
 			x_label = 'Current(A)'
 			y_label = 'voltage(V)'
 			y2_label = 'Power(W)'
-			title = 'LIV'
+			title = f'LIV_{self.cell}'
 			self.p1 = self.plotter.plotItem
 			self.p1.setLabels(left = y_label)
 			#Create a new ViewBox
@@ -328,7 +355,7 @@ class Ui(QtWidgets.QMainWindow):
 				self.p1.vb.disableAutoRange(axis = pg.ViewBox.YAxis)
 
 				try:
-					self.p1.plot(pcurr, volt, pen = pen_t1, name = self.m.current_cell)
+					self.p1.plot(pcurr, volt, pen = pen_t1, name = cell)
 					self.plot2 = pg.PlotCurveItem(pcurr[10:-1], power[10:-1], pen = pen_t2, name = cell)
 				except Exception as err:
 					print(err)
@@ -820,20 +847,36 @@ class Ui(QtWidgets.QMainWindow):
 
 ############# TOUCHDOWN METHODS
 	def update_combo_box(self,combo_object, array):
-		"""Adds items from the array to the specified combo box."""
-		combo_object.addItems(array)
+		"""Adds each item once, removing duplicates already present."""
+		seen = set()
+		duplicates = []
+		for index in range(combo_object.count()):
+			item = combo_object.itemText(index)
+			if item in seen:
+				duplicates.append(index)
+			else:
+				seen.add(item)
+
+		was_blocked = combo_object.blockSignals(True)
+		for index in reversed(duplicates):
+			combo_object.removeItem(index)
+		combo_object.blockSignals(was_blocked)
+
+		for item in array:
+			if item not in seen:
+				combo_object.addItem(item)
+				seen.add(item)
 	
 	def select_job(self):
 		"""Opens a folder dialog and populates the job combo box with available jobs."""
 		#job_root='C:/Users/smp-user/OneDrive - Smart Photonics/Test  Measurement - Engineering/Internal Projects/Job generation/'
 		job_root='C:/Users/HP/Smart Photonics/Engineering - Test & Measurement/Internal Projects/Job generation/'
 		self.job_folder_path1 = QFileDialog.getExistingDirectory(self,("Open Batch Folder"), job_root)
+		if not self.job_folder_path1:
+			return
 		self.jobs_combo_box.clear()
 		#Fill the first combo box with Jobs available
 		job_folder_selection = glob.glob(self.job_folder_path1+'/*JOB.yaml')
-		job_folder_corr = [r'{}'.format(i) for i in job_folder_selection]
-		job_folder_corr = [i.replace('\\','/') for i in job_folder_corr]
-		job_folder_corr = job_folder_corr[0]
 		self.update_combo_box(self.jobs_combo_box, job_folder_selection)
 	
 	def update_info(self, path1=''):
@@ -962,7 +1005,8 @@ class Ui(QtWidgets.QMainWindow):
 	
 	def bar_start(self):
 		"""Starts bar measurements for all checked bars."""
-		core_script = r"C:\Users\marco\Coding\cori.py"
+		#core_script = r"C:\Users\marco\Coding\cori.py"
+		core_script = r"C:\AMS\core.py"
 		#Get values from interface
 		stat_bar1 = self.check_bar1.isChecked()
 		stat_bar2 = self.check_bar2.isChecked()
@@ -1048,8 +1092,8 @@ class Ui(QtWidgets.QMainWindow):
 		for rep in range(repetition):
 			for job, user, x_td, y_td, check_bar, start_index, end_index, prog in  zip(job_file_arr, user_name_arr, x_td_arr, y_td_arr,stat_arr, cell_index_start, cell_index_end, prog_arr):
 				if check_bar:
-					cmd_arr = ['python', 
-								core_script, 
+					cmd_arr = [sys.executable, '-u',
+								core_script,
 								job, user, 
 								str(x_td), str(y_td), 
 								str(check_bar), 
@@ -1079,7 +1123,7 @@ class Ui(QtWidgets.QMainWindow):
 			prog = cmd[7]
 			self.start_index = cmd[7]
 			self.end_index = cmd[8]
-			self.data_folder = 'C:\\PRODUCTION\\'+self.cust_id.text()+'\\'+self.prod_id.text()+'\\'+self.batch_id.text()+'\\'+self.wafer_id.text()+'\\'
+			self.data_folder = 'D:\\PRODUCTION\\data\\'+self.cust_id.text()+'\\'+'\\'+self.batch_id.text()+'\\'+self.wafer_id.text()+'\\'
 			self.total_meas = self.get_total_meas(self.start_index, self.end_index)
 			self.files_before_starting = len(glob.glob(self.data_folder+'/*.txt'))
 			
@@ -1091,6 +1135,7 @@ class Ui(QtWidgets.QMainWindow):
 			self.worker = Ui.Worker(cmd, self)
 			self.worker.moveToThread(self.thread)
 			self.thread.started.connect(self.worker.run)
+			self.worker.output_ready.connect(self.display_subprocess_output)
 			self.worker.finished.connect(self.handle_result)
 			self.worker.finished.connect(self.thread.quit)
 			self.worker.finished.connect(self.worker.deleteLater)
@@ -1328,17 +1373,39 @@ class Ui(QtWidgets.QMainWindow):
 		#calling the job file gen
 		info_arr = [run_job_file, run_ccf_file, run_info, costumer, temp_arr_clean]
 		try:
-			subprocess.Popen([
-				'python',
+			cmd = [
+				sys.executable,
+				'-u',
 				info_arr[0],
 				info_arr[1],
 				repr(info_arr[2]),
 				info_arr[3],
 				repr(info_arr[4])
-			])
+			]
+			if self.jobgen_thread is not None and self.jobgen_thread.isRunning():
+				QMessageBox.about(self, "Job generation", "Job file generation is already running.")
+				return
+			self.jobgen_thread = QThread(self)
+			self.jobgen_worker = Ui.Worker(cmd, self)
+			self.jobgen_worker.moveToThread(self.jobgen_thread)
+			self.jobgen_thread.started.connect(self.jobgen_worker.run)
+			self.jobgen_worker.output_ready.connect(self.display_subprocess_output)
+			self.jobgen_worker.finished.connect(self.on_jobgen_finished)
+			self.jobgen_worker.finished.connect(self.jobgen_thread.quit)
+			self.jobgen_worker.finished.connect(self.jobgen_worker.deleteLater)
+			self.jobgen_thread.finished.connect(self.jobgen_thread.deleteLater)
+			self.jobgen_thread.finished.connect(self.on_jobgen_thread_finished)
+			self.jobgen_thread.start()
 		except Exception as e:
 			print(e)
 			QMessageBox.about(self, "Error", "Failed to start job file generation script:\n" + str(e))
+
+	def on_jobgen_finished(self, result):
+		print("Job file generation finished.", result)
+
+	def on_jobgen_thread_finished(self):
+		self.jobgen_thread = None
+		self.jobgen_worker = None
 	def refresh_bars_combo_box(self):
 		curr_dir = os.getcwd()
 		work_folder = os.path.join(curr_dir, 'Job_gen_files')
