@@ -162,7 +162,7 @@ class Ui(QtWidgets.QMainWindow):
 		####Qtimer
 		self.timer=QTimer(self)
 		self.timer.timeout.connect(self.up_var)
-		self.timer.start(1000)
+		self.timer.start(3000)
 		#touchdown methods
 		self.btn_touch1.clicked.connect(partial(self.touch_bar, 1))
 		self.btn_touch2.clicked.connect(partial(self.touch_bar, 2))
@@ -276,27 +276,38 @@ class Ui(QtWidgets.QMainWindow):
 		self.display_out(text)
 		self.display_terminal_output(text)
 
-	def get_total_meas(self, start_index, end_index):
-		"""Calculates the total meas based on the current mmf and bar used."""
+	def get_total_meas(self, start_index, end_index, job_file):
+		"""Calculate measurement count between inclusive MMF row labels."""
+		start_label = str(start_index).strip()
+		end_label = str(end_index).strip()
+		if not start_label or not end_label or start_label.lower() == 'nan' or end_label.lower() == 'nan':
+			raise ValueError(f"Invalid MMF range: start={start_index!r}, end={end_index!r}")
+
+		with open(job_file, encoding='utf-8') as stream:
+			job_data = yaml.safe_load(stream)
 		try:
-			job_file = self.job_id.text()
-			with open(job_file) as stream:
-				open_file = yaml.safe_load(stream)
-				try:
-					mmf_name = open_file['acquisition settings']['mmf']
-					mmf_path = os.path.dirname(job_file) + '\\'+mmf_name
-				except yaml.YAMLError as exc:
-					print(exc)
-			#calculating the amount of measurement to  be performed on the given bar id range
-			df = pd.read_csv(mmf_path,index_col='Dies/Measurements')
-			start_row = df.index.get_loc(start_index)
-			end_row   = df.index.get_loc(end_index)
-			df_sliced = df.iloc[start_row:end_row+1]
-			total_meas = sum(df_sliced.sum(axis = 1))
-			return total_meas
-		except Exception as error:
-			print(f'index slicing not working: {error}')
-			return 0
+			mmf_name = job_data['acquisition settings']['mmf']
+		except (TypeError, KeyError) as error:
+			raise ValueError(f"Job file has no acquisition settings MMF: {job_file}") from error
+
+		mmf_path = os.path.join(os.path.dirname(job_file), mmf_name)
+		df = pd.read_csv(mmf_path, index_col='Dies/Measurements')
+		row_labels = [str(label).strip() for label in df.index]
+		if len(row_labels) != len(set(row_labels)):
+			raise ValueError(f"MMF contains duplicate row labels: {mmf_path}")
+		try:
+			start_row = row_labels.index(start_label)
+			end_row = row_labels.index(end_label)
+		except ValueError as error:
+			raise ValueError(
+				f"MMF range not found in {mmf_path}: "
+				f"start={start_label!r}, end={end_label!r}"
+			) from error
+		first_row, last_row = sorted((start_row, end_row))
+		df_sliced = df.iloc[first_row:last_row + 1]
+		total_meas = df_sliced.sum(axis=1).sum()
+		print(f'total meas is : {total_meas}')
+		return total_meas
 
 	def plot_win(self, x, y1, y2 = None, cell = None):
 		"""Plots measurement data on the plot window. Handles both LIV and spectrum plots."""
@@ -1120,13 +1131,20 @@ class Ui(QtWidgets.QMainWindow):
 			cmd = self.commands[self.current_index]
 			
 			###setting the state of the button
-			prog = cmd[7]
-			self.start_index = cmd[7]
-			self.end_index = cmd[8]
-			self.data_folder = 'D:\\PRODUCTION\\data\\'+self.cust_id.text()+'\\'+'\\'+self.batch_id.text()+'\\'+self.wafer_id.text()+'\\'
-			self.total_meas = self.get_total_meas(self.start_index, self.end_index)
+			self.start_index = cmd[8]
+			self.end_index = cmd[9]
+			prog = cmd[10]
+			self.data_folder = 'D:\\PRODUCTION\\data\\'+self.cust_id.text()+'\\'+'\\'+self.batch_id.text()+'\\'+self.wafer_id.text()
+			try:
+				self.total_meas = self.get_total_meas(
+					start_index=self.start_index,
+					end_index=self.end_index,
+					job_file=cmd[3],
+				)
+			except (OSError, ValueError, yaml.YAMLError, pd.errors.ParserError) as error:
+				print(f"Could not count measurements for {cmd[3]}: {error}")
+				self.total_meas = 0
 			self.files_before_starting = len(glob.glob(self.data_folder+'/*.txt'))
-			
 			self.start_jobs_btn.setStyleSheet('background-color: rgb(255, 255, 0)')
 			self.start_jobs_btn.setText(f"{prog} in progress")
 			self.start_jobs_btn.repaint()
