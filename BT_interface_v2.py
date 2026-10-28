@@ -27,6 +27,7 @@ import codecs
 sys.path.insert(1, 'C:\\AMS')
 from smu.keithley2602B import Keithley2602B
 ktl = Keithley2602B()
+from Yokogawa import AQ6370D as osa
 
 
 class Ui(QtWidgets.QMainWindow):
@@ -237,36 +238,40 @@ class Ui(QtWidgets.QMainWindow):
 	def up_var(self):
 		"""Updates the UI with the latest touchdown value and progress bar for each wafer."""
 		if self.thread is not None and self.thread.isRunning():
-			if self.curr_files:
-				delta_files = len(glob.glob(self.data_folder+"/*.txt"))- self.curr_files
-			else:
-				delta_files = 0
-			files = glob.glob(self.data_folder+"/*.txt")
-			self.curr_files = len(files)
-			interval_ms = self.timer.interval()/1000  # Convert milliseconds to seconds
-			files_per_second = delta_files/interval_ms if interval_ms > 0 else 0
-			valid_files = self.curr_files-self.files_before_starting
-			progress = int((valid_files / self.total_meas) * 100 if self.total_meas > 0 else 0)
-			self.bar.setValue(progress)
-			time_to_finish = (self.total_meas - valid_files) / files_per_second if files_per_second > 0 else 0
-			total_time = self.total_meas / files_per_second if files_per_second > 0 else 0
+			try:
 			
-			self.time_left.setText(str(round(time_to_finish / 60, 1)))
-			self.time_total.setText(str(round(total_time / 60, 1)))
-			#arrange plot data
-			files.sort(key=os.path.getctime)
-			#get paramenter from epda files
-			fh=openepda.OpenEpdaDataLoader()
-			fh_read = fh.read_file(files[-1])
-			self.meas_plan = fh_read['Measurement plan'].split('_')[0]
-			self.cell = fh_read['Cell']
-			x  = fh_read['I_soa, A']
-			y1 = fh_read['V_soa, V']
-			if self.meas_plan=='LIV':
-				y2 = fh_read['P_PD, W']
-			else:
-				y2 = None
-			self.plot_win(x,y1,y2)
+				if self.curr_files:
+					delta_files = len(glob.glob(self.data_folder+"/*.txt"))- self.curr_files
+				else:
+					delta_files = 0
+				files = glob.glob(self.data_folder+"/*.txt")
+				self.curr_files = len(files)
+				interval_ms = self.timer.interval()/1000  # Convert milliseconds to seconds
+				files_per_second = delta_files/interval_ms if interval_ms > 0 else 0
+				valid_files = self.curr_files-self.files_before_starting
+				progress = int((valid_files / self.total_meas) * 100 if self.total_meas > 0 else 0)
+				self.bar.setValue(progress)
+				time_to_finish = (self.total_meas - valid_files) / files_per_second if files_per_second > 0 else 0
+				total_time = self.total_meas / files_per_second if files_per_second > 0 else 0
+				
+				self.time_left.setText(str(round(time_to_finish / 60, 1)))
+				self.time_total.setText(str(round(total_time / 60, 1)))
+				#arrange plot data
+				files.sort(key=os.path.getctime)
+				#get paramenter from epda files
+				fh=openepda.OpenEpdaDataLoader()
+				fh_read = fh.read_file(files[-1])
+				self.meas_plan = fh_read['Measurement plan'].split('_')[0]
+				self.cell = fh_read['Cell']
+				x  = fh_read['I_soa, A']
+				y1 = fh_read['V_soa, V']
+				if self.meas_plan=='LIV':
+					y2 = fh_read['P_PD, W']
+				else:
+					y2 = None
+				self.plot_win(x,y1,y2)
+			except Exception as err:
+				print(f'Var update failed: {err}')
 		else:
 			pass
 	def display_out(self, text):
@@ -394,23 +399,43 @@ class Ui(QtWidgets.QMainWindow):
 			self.clear_plot()
 			x_label = 'Wavelength(nm)'
 			y_label = 'Power (dBm)'
-			title = 'Spectrum'
 			self.p1.setLabels(left = y_label)
 			self.p1.setLabels(left = y_label)
 			val_x, val_y = x, y1
-			x_min = np.min(val_x)
-			x_max = np.max(val_x)
-			self.p1.vb.setXRange(x_min, x_max)
-			self.p1.vb.disableAutoRange(axis = pg.ViewBox.YAxis)
 			y_min = np.min(val_y)
 			y_max = np.max(val_y)
+			y_max_index = np.where(val_y == y_max)[0]
+			
+			x_min = np.min(val_x)
+			x_max = np.max(val_x)
+			x_max_peak = val_x[y_max_index]
+			
+			#print(f'index of max x is {x_max_index} value of max x is')
+			self.p1.vb.setXRange(x_min, x_max)
+			self.p1.vb.disableAutoRange(axis = pg.ViewBox.YAxis)
+			
 			self.p1.vb.setYRange(y_min, y_max)
 			self.p1.vb.disableAutoRange(axis = pg.ViewBox.YAxis)
 			self.p1.getAxis('bottom').setLabel('Wavelength(nm)')
-			self.p1.getAxis('left').setLabel('Power(W)', color = color1)
+			self.p1.getAxis('left').setLabel('Power(dBm)', color = color1)
 			self.p1.vb.disableAutoRange(axis = pg.ViewBox.YAxis)
-			self.set_graph(title, x_label, y_label)
+			
+			
 			self.p1.plot(val_x, val_y, pen = pen_t1, name = cell)
+			##INSERT MARKER
+			marker_x = x_max_peak
+			marker_y = y_max
+			title = f'Spectrum-peak @{x_max_peak[0]:.2f}nm,{y_max:.2f}dBm'
+			self.set_graph(title, x_label, y_label)
+			marker_point = pg.ScatterPlotItem(
+			x=[marker_x], 
+			y=[marker_y], 
+			size=5, 
+			pen=pg.mkPen('r'), 
+			brush=pg.mkBrush('r'), 
+			symbol='o'  # 'o' voor een cirkel, 'x' voor een kruis, 't' voor een driehoek
+			)
+			self.p1.addItem(marker_point)
 			pg.QtGui.QGuiApplication.processEvents()
 	
 	def ktl_meas(self):
@@ -529,7 +554,6 @@ class Ui(QtWidgets.QMainWindow):
 			power = [self.responsivity(i, 1550) for i in pd.magnitude]
 		elif LIV_settings["pl"] == 1310:
 			power = [self.responsivity(i, 1310) for i in pd.magnitude]
-		print(power)
 		self.plot_win(c, v, power)
 
 ############Moving/controlling the probe
