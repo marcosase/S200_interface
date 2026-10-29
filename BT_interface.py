@@ -300,20 +300,17 @@ class Ui(QtWidgets.QMainWindow):
 		volt = ktl.measure_voltage('a')
 		ktl.release()
 		self.volt_meas.setText(str(volt))
-
 	def ktl_on(self):
 		ktl.connect()
 		current = float(self.ktl_curr.value())/1000
 		ktl.set_current('a', current)
 		ktl.set_channel_state(channel='a', state='on')
 		ktl.release()
-
 	def ktl_off(self):
 		ktl.connect()
 		ktl.set_channel_state(channel='a', state='off')
 		ktl.release()
-
-############OSA methods
+############OSA + LIV methods
 	def acq_osa(self):
 		"""Acquires a spectrum from the OSA and plots the result."""
 		cont_mode_state = self.spec_cont_mode.isChecked()
@@ -323,7 +320,6 @@ class Ui(QtWidgets.QMainWindow):
 				cont_mode_state = self.spec_cont_mode.isChecked()
 		else:
 			self.get_spectrum()
-
 	def get_spectrum(self):
 		'''get 1 spectrum'''
 		Spectrum_settings = { # Settings for running Spectral measurements
@@ -367,7 +363,6 @@ class Ui(QtWidgets.QMainWindow):
 		except Exception as error:
 			print("Initialization failed ", error)
 			return [],[],[]
-			
 	def responsivity(self, v_meas, wavelength_nm, r_int=1):
 		photocurrent = v_meas*r_int
 		if wavelength_nm == 1310:
@@ -381,7 +376,6 @@ class Ui(QtWidgets.QMainWindow):
 		# Power = Current * (1/R)
 		power_W = photocurrent*inv_R
 		return power_W
-
 	def acq_liv(self):
 		"""Performs an LIV measurement"""
 		
@@ -417,7 +411,6 @@ class Ui(QtWidgets.QMainWindow):
 		#	print(power, file=f)
 		#print(r"Data saved in: C:\Users\HP\OneDrive - Smart Photonics\Documents\Current_LIV_data_S200\Get_LIV.txt")
 		self.plot_win(c, v, power)
-
 ############Moving/controlling the probe
 	def rel_mov(self, x_inc, y_inc):
 		"""Moves the prober stage by the specified x and y increments."""
@@ -429,6 +422,14 @@ class Ui(QtWidgets.QMainWindow):
 	def gross_up(self):
 		'''Method to do the gross up'''
 		self.send_command(b'GUP\n')
+	def read_gross_lift(self):
+		"""Checks the prober's Gross height value."""
+		value =  self.send_command(b'RKGM\n')
+		return value
+	def read_fine_lift(self):
+		"""Checks the prober's Gross height value."""
+		value =  self.send_command(b'RKFM\n')
+		return value
 	def gross_down(self):
 		'''Method to do the gross down'''
 		self.send_command(b'GDW\n')
@@ -465,7 +466,6 @@ class Ui(QtWidgets.QMainWindow):
 		getattr(self, f'table_bar{bar_index}').setItem(0, 2, QTableWidgetItem(str(th)))
 		self.file_save(self.collect())
 		self.reset_start_btn()
-
 	def change_pos(self):
 		"""Moves the prober to the change position."""
 		self.send_command(b'LDS\n')
@@ -492,6 +492,10 @@ class Ui(QtWidgets.QMainWindow):
 			return False
 
 ############Updating GUI
+	def up_z_set(self):
+		self.gup_display.setText(self.read_gross_lift)
+		self.fup_display.setText(self.read_fine_lift)
+		
 	def save_value(self):
 		"""Saves all current values from the interface."""
 		#method to save all values in interface

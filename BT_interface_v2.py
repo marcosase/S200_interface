@@ -212,6 +212,7 @@ class Ui(QtWidgets.QMainWindow):
 		self.btn_go_td7.clicked.connect(self.go_td7)
 		##
 		self.jobs_combo_box.currentTextChanged.connect(self.update_info)
+		self.refresh_z_set.clicked.connect(self.up_z_set)
 		###LIV/SPC Gui
 		self.liv_acq_btn.clicked.connect(self.acq_liv)
 		self.tec_btn.clicked.connect(self.get_temp)
@@ -263,11 +264,14 @@ class Ui(QtWidgets.QMainWindow):
 				fh_read = fh.read_file(files[-1])
 				self.meas_plan = fh_read['Measurement plan'].split('_')[0]
 				self.cell = fh_read['Cell']
-				x  = fh_read['I_soa, A']
-				y1 = fh_read['V_soa, V']
+				
 				if self.meas_plan=='LIV':
+					x  = fh_read['I_soa, A']
+					y1 = fh_read['V_soa, V']
 					y2 = fh_read['P_PD, W']
-				else:
+				elif self.meas_plan=='SPECTRUM':
+					x  = fh_read['Wavelength, nm']
+					y1 = fh_read['Power, dBm']
 					y2 = None
 				self.plot_win(x,y1,y2)
 			except Exception as err:
@@ -557,6 +561,21 @@ class Ui(QtWidgets.QMainWindow):
 		self.plot_win(c, v, power)
 
 ############Moving/controlling the probe
+	def read_gross_lift(self):
+		"""Checks the prober's Gross height value."""
+		value =  self.send_command(b'RKGM\n')
+		value = int(value.split(' ')[-1])
+		return value
+	def read_fine_lift(self):
+		"""Checks the prober's Gross height value."""
+		value =  self.send_command(b'RKFM\n')
+		value = int(value.split(' ')[-1])
+		return value
+	def read_overtravel(self):
+		"""Checks the prober's overtravel value."""
+		value =  self.send_command(b'RZIM\n')
+		value = int(value.split(' ')[-1])
+		return value
 	def rel_mov(self, x_inc, y_inc):
 		"""Moves the prober stage by the specified x and y increments."""
 		xy = self.send_command(b'PSXY\n')
@@ -632,6 +651,14 @@ class Ui(QtWidgets.QMainWindow):
 			return False
 
 ############Updating GUI
+	def up_z_set(self):
+		#print(self.read_gross_lift())
+		#print(self.read_fine_lift())
+		#print(self.read_overtravel())
+		self.gup_display.setText(str(self.read_gross_lift())+' um')
+		self.fup_display.setText(str(self.read_fine_lift())+' um')
+		self.overt_display.setText(str(self.read_overtravel())+' um')
+	
 	def save_value(self):
 		"""Saves all current values from the interface."""
 		#method to save all values in interface
