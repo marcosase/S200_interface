@@ -27,7 +27,6 @@
      <font>
       <family>Arial</family>
       <pointsize>21</pointsize>
-      <weight>75</weight>
       <bold>true</bold>
      </font>
     </property>
@@ -54,7 +53,6 @@
      <font>
       <family>Arial</family>
       <pointsize>21</pointsize>
-      <weight>75</weight>
       <bold>true</bold>
      </font>
     </property>
@@ -79,7 +77,6 @@
      <font>
       <family>Arial</family>
       <pointsize>21</pointsize>
-      <weight>75</weight>
       <bold>true</bold>
      </font>
     </property>
@@ -104,7 +101,6 @@
      <font>
       <family>Arial</family>
       <pointsize>21</pointsize>
-      <weight>75</weight>
       <bold>true</bold>
      </font>
     </property>
@@ -129,7 +125,6 @@ UP</string>
      <font>
       <family>Arial</family>
       <pointsize>21</pointsize>
-      <weight>75</weight>
       <bold>true</bold>
      </font>
     </property>
@@ -154,26 +149,25 @@ UP</string>
      <font>
       <family>Arial</family>
       <pointsize>12</pointsize>
-      <weight>50</weight>
       <italic>false</italic>
       <bold>false</bold>
      </font>
     </property>
     <property name="layoutDirection">
-     <enum>Qt::LeftToRight</enum>
+     <enum>Qt::LayoutDirection::LeftToRight</enum>
     </property>
     <property name="styleSheet">
      <string notr="true">background-color: rgb(226, 237, 255);
 </string>
     </property>
     <property name="inputMethodHints">
-     <set>Qt::ImhMultiLine</set>
+     <set>Qt::InputMethodHint::ImhMultiLine</set>
     </property>
     <property name="tabShape">
-     <enum>QTabWidget::Rounded</enum>
+     <enum>QTabWidget::TabShape::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <property name="iconSize">
      <size>
@@ -319,7 +313,6 @@ UP</string>
           <font>
            <family>Arial</family>
            <pointsize>12</pointsize>
-           <weight>50</weight>
            <italic>false</italic>
            <bold>false</bold>
           </font>
@@ -331,10 +324,10 @@ UP</string>
           <string notr="true">background-color: rgb(226, 237, 255);</string>
          </property>
          <property name="frameShape">
-          <enum>QFrame::Panel</enum>
+          <enum>QFrame::Shape::Panel</enum>
          </property>
          <property name="frameShadow">
-          <enum>QFrame::Raised</enum>
+          <enum>QFrame::Shadow::Raised</enum>
          </property>
          <property name="lineWidth">
           <number>3</number>
@@ -355,7 +348,6 @@ UP</string>
            <font>
             <family>Arial</family>
             <pointsize>12</pointsize>
-            <weight>50</weight>
             <italic>false</italic>
             <bold>false</bold>
            </font>
@@ -384,7 +376,6 @@ Job FOLDER</string>
            <font>
             <family>Arial</family>
             <pointsize>12</pointsize>
-            <weight>50</weight>
             <italic>false</italic>
             <bold>false</bold>
            </font>
@@ -406,7 +397,6 @@ Job FOLDER</string>
            <font>
             <family>Arial</family>
             <pointsize>12</pointsize>
-            <weight>50</weight>
             <italic>false</italic>
             <bold>false</bold>
            </font>
@@ -428,7 +418,6 @@ Job FOLDER</string>
            <font>
             <family>Arial</family>
             <pointsize>12</pointsize>
-            <weight>50</weight>
             <italic>false</italic>
             <bold>false</bold>
            </font>
@@ -450,7 +439,6 @@ Job FOLDER</string>
            <font>
             <family>Arial</family>
             <pointsize>12</pointsize>
-            <weight>50</weight>
             <italic>false</italic>
             <bold>false</bold>
            </font>
@@ -472,7 +460,6 @@ Job FOLDER</string>
            <font>
             <family>Arial</family>
             <pointsize>12</pointsize>
-            <weight>50</weight>
             <italic>false</italic>
             <bold>false</bold>
            </font>
@@ -497,7 +484,6 @@ Job FOLDER</string>
            <font>
             <family>Arial</family>
             <pointsize>12</pointsize>
-            <weight>50</weight>
             <italic>false</italic>
             <bold>false</bold>
            </font>
@@ -522,7 +508,6 @@ Job FOLDER</string>
            <font>
             <family>Arial</family>
             <pointsize>12</pointsize>
-            <weight>50</weight>
             <italic>false</italic>
             <bold>false</bold>
            </font>
@@ -547,7 +532,6 @@ Job FOLDER</string>
            <font>
             <family>Arial</family>
             <pointsize>12</pointsize>
-            <weight>50</weight>
             <italic>false</italic>
             <bold>false</bold>
            </font>
@@ -572,7 +556,6 @@ Job FOLDER</string>
            <font>
             <family>Arial</family>
             <pointsize>12</pointsize>
-            <weight>50</weight>
             <italic>false</italic>
             <bold>false</bold>
            </font>
@@ -594,7 +577,6 @@ Job FOLDER</string>
            <font>
             <family>Arial</family>
             <pointsize>12</pointsize>
-            <weight>50</weight>
             <italic>false</italic>
             <bold>false</bold>
            </font>
@@ -625,7 +607,6 @@ Job FOLDER</string>
            <font>
             <family>Arial</family>
             <pointsize>12</pointsize>
-            <weight>50</weight>
             <italic>false</italic>
             <bold>false</bold>
            </font>
@@ -647,7 +628,6 @@ Job FOLDER</string>
            <font>
             <family>Arial</family>
             <pointsize>12</pointsize>
-            <weight>50</weight>
             <italic>false</italic>
             <bold>false</bold>
            </font>
@@ -699,7 +679,6 @@ Job FOLDER</string>
            <font>
             <family>MS Shell Dlg 2</family>
             <pointsize>9</pointsize>
-            <weight>50</weight>
             <italic>false</italic>
             <bold>false</bold>
            </font>
@@ -723,7 +702,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
            <font>
             <family>Arial</family>
             <pointsize>12</pointsize>
-            <weight>50</weight>
             <italic>false</italic>
             <bold>false</bold>
            </font>
@@ -738,7 +716,7 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
            <number>0</number>
           </property>
           <property name="alignment">
-           <set>Qt::AlignCenter</set>
+           <set>Qt::AlignmentFlag::AlignCenter</set>
           </property>
           <property name="format">
            <string extracomment="Progress bar to follow the measurement">Bar progress: %p%</string>
@@ -757,7 +735,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
            <font>
             <family>Arial</family>
             <pointsize>12</pointsize>
-            <weight>50</weight>
             <italic>false</italic>
             <bold>false</bold>
            </font>
@@ -782,7 +759,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
            <font>
             <family>Arial</family>
             <pointsize>12</pointsize>
-            <weight>50</weight>
             <italic>false</italic>
             <bold>false</bold>
            </font>
@@ -791,7 +767,7 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Time left (min):&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="textFormat">
-           <enum>Qt::AutoText</enum>
+           <enum>Qt::TextFormat::AutoText</enum>
           </property>
          </widget>
          <widget class="QLabel" name="time_total">
@@ -807,7 +783,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
            <font>
             <family>Arial</family>
             <pointsize>12</pointsize>
-            <weight>50</weight>
             <italic>false</italic>
             <bold>false</bold>
            </font>
@@ -832,7 +807,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
            <font>
             <family>Arial</family>
             <pointsize>12</pointsize>
-            <weight>50</weight>
             <italic>false</italic>
             <bold>false</bold>
            </font>
@@ -858,8 +832,8 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>732</width>
-             <height>838</height>
+             <width>737</width>
+             <height>817</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout">
@@ -869,16 +843,15 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                <font>
                 <family>Arial</family>
                 <pointsize>12</pointsize>
-                <weight>50</weight>
                 <italic>false</italic>
                 <bold>false</bold>
                </font>
               </property>
               <property name="frameShape">
-               <enum>QFrame::Box</enum>
+               <enum>QFrame::Shape::Box</enum>
               </property>
               <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
+               <enum>QFrame::Shadow::Raised</enum>
               </property>
               <property name="lineWidth">
                <number>2</number>
@@ -890,7 +863,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -906,7 +878,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -925,7 +896,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -941,7 +911,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -960,7 +929,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -982,16 +950,16 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <number>5</number>
                  </property>
                  <property name="verticalScrollBarPolicy">
-                  <enum>Qt::ScrollBarAlwaysOff</enum>
+                  <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
                  </property>
                  <property name="horizontalScrollBarPolicy">
-                  <enum>Qt::ScrollBarAlwaysOff</enum>
+                  <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
                  </property>
                  <property name="autoScroll">
                   <bool>true</bool>
                  </property>
                  <property name="textElideMode">
-                  <enum>Qt::ElideMiddle</enum>
+                  <enum>Qt::TextElideMode::ElideMiddle</enum>
                  </property>
                  <property name="sortingEnabled">
                   <bool>false</bool>
@@ -1005,11 +973,11 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                  <attribute name="horizontalHeaderCascadingSectionResizes">
                   <bool>false</bool>
                  </attribute>
-                 <attribute name="horizontalHeaderDefaultSectionSize">
-                  <number>95</number>
-                 </attribute>
                  <attribute name="horizontalHeaderMinimumSectionSize">
                   <number>39</number>
+                 </attribute>
+                 <attribute name="horizontalHeaderDefaultSectionSize">
+                  <number>95</number>
                  </attribute>
                  <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
                   <bool>false</bool>
@@ -1020,14 +988,14 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                  <attribute name="verticalHeaderCascadingSectionResizes">
                   <bool>false</bool>
                  </attribute>
+                 <attribute name="verticalHeaderMinimumSectionSize">
+                  <number>2</number>
+                 </attribute>
                  <attribute name="verticalHeaderDefaultSectionSize">
                   <number>20</number>
                  </attribute>
                  <attribute name="verticalHeaderHighlightSections">
                   <bool>true</bool>
-                 </attribute>
-                 <attribute name="verticalHeaderMinimumSectionSize">
-                  <number>2</number>
                  </attribute>
                  <attribute name="verticalHeaderShowSortIndicator" stdset="0">
                   <bool>false</bool>
@@ -1043,12 +1011,8 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <property name="font">
                    <font>
                     <pointsize>10</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
-                  </property>
-                  <property name="textAlignment">
-                   <set>AlignCenter</set>
                   </property>
                   <property name="background">
                    <color>
@@ -1065,12 +1029,8 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <property name="font">
                    <font>
                     <pointsize>10</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
-                  </property>
-                  <property name="textAlignment">
-                   <set>AlignCenter</set>
                   </property>
                   <property name="background">
                    <color>
@@ -1087,12 +1047,8 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <property name="font">
                    <font>
                     <pointsize>10</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
-                  </property>
-                  <property name="textAlignment">
-                   <set>AlignCenter</set>
                   </property>
                  </column>
                  <item row="0" column="0">
@@ -1102,7 +1058,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <property name="font">
                    <font>
                     <pointsize>11</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
                   </property>
@@ -1117,7 +1072,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <property name="font">
                    <font>
                     <pointsize>11</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
                   </property>
@@ -1132,7 +1086,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <property name="font">
                    <font>
                     <pointsize>11</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
                   </property>
@@ -1148,7 +1101,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -1167,7 +1119,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -1186,7 +1137,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -1205,10 +1155,10 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
             <item>
              <widget class="QFrame" name="frame_2">
               <property name="frameShape">
-               <enum>QFrame::Box</enum>
+               <enum>QFrame::Shape::Box</enum>
               </property>
               <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
+               <enum>QFrame::Shadow::Raised</enum>
               </property>
               <property name="lineWidth">
                <number>2</number>
@@ -1220,7 +1170,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -1239,7 +1188,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -1255,7 +1203,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -1271,7 +1218,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -1290,7 +1236,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -1306,7 +1251,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -1331,16 +1275,16 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <number>5</number>
                  </property>
                  <property name="verticalScrollBarPolicy">
-                  <enum>Qt::ScrollBarAlwaysOff</enum>
+                  <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
                  </property>
                  <property name="horizontalScrollBarPolicy">
-                  <enum>Qt::ScrollBarAlwaysOff</enum>
+                  <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
                  </property>
                  <property name="autoScroll">
                   <bool>true</bool>
                  </property>
                  <property name="textElideMode">
-                  <enum>Qt::ElideMiddle</enum>
+                  <enum>Qt::TextElideMode::ElideMiddle</enum>
                  </property>
                  <property name="sortingEnabled">
                   <bool>false</bool>
@@ -1354,11 +1298,11 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                  <attribute name="horizontalHeaderCascadingSectionResizes">
                   <bool>false</bool>
                  </attribute>
-                 <attribute name="horizontalHeaderDefaultSectionSize">
-                  <number>95</number>
-                 </attribute>
                  <attribute name="horizontalHeaderMinimumSectionSize">
                   <number>39</number>
+                 </attribute>
+                 <attribute name="horizontalHeaderDefaultSectionSize">
+                  <number>95</number>
                  </attribute>
                  <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
                   <bool>false</bool>
@@ -1369,14 +1313,14 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                  <attribute name="verticalHeaderCascadingSectionResizes">
                   <bool>false</bool>
                  </attribute>
+                 <attribute name="verticalHeaderMinimumSectionSize">
+                  <number>2</number>
+                 </attribute>
                  <attribute name="verticalHeaderDefaultSectionSize">
                   <number>20</number>
                  </attribute>
                  <attribute name="verticalHeaderHighlightSections">
                   <bool>true</bool>
-                 </attribute>
-                 <attribute name="verticalHeaderMinimumSectionSize">
-                  <number>2</number>
                  </attribute>
                  <attribute name="verticalHeaderShowSortIndicator" stdset="0">
                   <bool>false</bool>
@@ -1392,12 +1336,8 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <property name="font">
                    <font>
                     <pointsize>10</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
-                  </property>
-                  <property name="textAlignment">
-                   <set>AlignCenter</set>
                   </property>
                   <property name="background">
                    <color>
@@ -1414,12 +1354,8 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <property name="font">
                    <font>
                     <pointsize>10</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
-                  </property>
-                  <property name="textAlignment">
-                   <set>AlignCenter</set>
                   </property>
                   <property name="background">
                    <color>
@@ -1436,12 +1372,8 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <property name="font">
                    <font>
                     <pointsize>10</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
-                  </property>
-                  <property name="textAlignment">
-                   <set>AlignCenter</set>
                   </property>
                  </column>
                  <item row="0" column="0">
@@ -1451,7 +1383,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <property name="font">
                    <font>
                     <pointsize>11</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
                   </property>
@@ -1466,7 +1397,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <property name="font">
                    <font>
                     <pointsize>11</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
                   </property>
@@ -1481,7 +1411,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <property name="font">
                    <font>
                     <pointsize>11</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
                   </property>
@@ -1497,7 +1426,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -1513,7 +1441,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -1529,10 +1456,10 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
             <item>
              <widget class="QFrame" name="frame_3">
               <property name="frameShape">
-               <enum>QFrame::Box</enum>
+               <enum>QFrame::Shape::Box</enum>
               </property>
               <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
+               <enum>QFrame::Shadow::Raised</enum>
               </property>
               <property name="lineWidth">
                <number>2</number>
@@ -1544,7 +1471,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -1560,7 +1486,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -1579,7 +1504,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -1598,7 +1522,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -1614,7 +1537,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -1630,7 +1552,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -1655,16 +1576,16 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <number>5</number>
                  </property>
                  <property name="verticalScrollBarPolicy">
-                  <enum>Qt::ScrollBarAlwaysOff</enum>
+                  <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
                  </property>
                  <property name="horizontalScrollBarPolicy">
-                  <enum>Qt::ScrollBarAlwaysOff</enum>
+                  <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
                  </property>
                  <property name="autoScroll">
                   <bool>true</bool>
                  </property>
                  <property name="textElideMode">
-                  <enum>Qt::ElideMiddle</enum>
+                  <enum>Qt::TextElideMode::ElideMiddle</enum>
                  </property>
                  <property name="sortingEnabled">
                   <bool>false</bool>
@@ -1678,11 +1599,11 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                  <attribute name="horizontalHeaderCascadingSectionResizes">
                   <bool>false</bool>
                  </attribute>
-                 <attribute name="horizontalHeaderDefaultSectionSize">
-                  <number>95</number>
-                 </attribute>
                  <attribute name="horizontalHeaderMinimumSectionSize">
                   <number>39</number>
+                 </attribute>
+                 <attribute name="horizontalHeaderDefaultSectionSize">
+                  <number>95</number>
                  </attribute>
                  <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
                   <bool>false</bool>
@@ -1693,14 +1614,14 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                  <attribute name="verticalHeaderCascadingSectionResizes">
                   <bool>false</bool>
                  </attribute>
+                 <attribute name="verticalHeaderMinimumSectionSize">
+                  <number>2</number>
+                 </attribute>
                  <attribute name="verticalHeaderDefaultSectionSize">
                   <number>20</number>
                  </attribute>
                  <attribute name="verticalHeaderHighlightSections">
                   <bool>true</bool>
-                 </attribute>
-                 <attribute name="verticalHeaderMinimumSectionSize">
-                  <number>2</number>
                  </attribute>
                  <attribute name="verticalHeaderShowSortIndicator" stdset="0">
                   <bool>false</bool>
@@ -1716,12 +1637,8 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <property name="font">
                    <font>
                     <pointsize>10</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
-                  </property>
-                  <property name="textAlignment">
-                   <set>AlignCenter</set>
                   </property>
                   <property name="background">
                    <color>
@@ -1738,12 +1655,8 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <property name="font">
                    <font>
                     <pointsize>10</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
-                  </property>
-                  <property name="textAlignment">
-                   <set>AlignCenter</set>
                   </property>
                   <property name="background">
                    <color>
@@ -1760,12 +1673,8 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <property name="font">
                    <font>
                     <pointsize>10</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
-                  </property>
-                  <property name="textAlignment">
-                   <set>AlignCenter</set>
                   </property>
                  </column>
                  <item row="0" column="0">
@@ -1775,7 +1684,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <property name="font">
                    <font>
                     <pointsize>11</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
                   </property>
@@ -1790,7 +1698,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <property name="font">
                    <font>
                     <pointsize>11</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
                   </property>
@@ -1805,7 +1712,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <property name="font">
                    <font>
                     <pointsize>11</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
                   </property>
@@ -1821,7 +1727,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -1837,7 +1742,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -1853,10 +1757,10 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
             <item>
              <widget class="QFrame" name="frame_4">
               <property name="frameShape">
-               <enum>QFrame::Box</enum>
+               <enum>QFrame::Shape::Box</enum>
               </property>
               <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
+               <enum>QFrame::Shadow::Raised</enum>
               </property>
               <property name="lineWidth">
                <number>2</number>
@@ -1868,7 +1772,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -1887,7 +1790,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -1903,7 +1805,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -1919,7 +1820,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -1938,7 +1838,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -1954,7 +1853,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -1979,16 +1877,16 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <number>5</number>
                  </property>
                  <property name="verticalScrollBarPolicy">
-                  <enum>Qt::ScrollBarAlwaysOff</enum>
+                  <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
                  </property>
                  <property name="horizontalScrollBarPolicy">
-                  <enum>Qt::ScrollBarAlwaysOff</enum>
+                  <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
                  </property>
                  <property name="autoScroll">
                   <bool>true</bool>
                  </property>
                  <property name="textElideMode">
-                  <enum>Qt::ElideMiddle</enum>
+                  <enum>Qt::TextElideMode::ElideMiddle</enum>
                  </property>
                  <property name="sortingEnabled">
                   <bool>false</bool>
@@ -2002,11 +1900,11 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                  <attribute name="horizontalHeaderCascadingSectionResizes">
                   <bool>false</bool>
                  </attribute>
-                 <attribute name="horizontalHeaderDefaultSectionSize">
-                  <number>95</number>
-                 </attribute>
                  <attribute name="horizontalHeaderMinimumSectionSize">
                   <number>39</number>
+                 </attribute>
+                 <attribute name="horizontalHeaderDefaultSectionSize">
+                  <number>95</number>
                  </attribute>
                  <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
                   <bool>false</bool>
@@ -2017,14 +1915,14 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                  <attribute name="verticalHeaderCascadingSectionResizes">
                   <bool>false</bool>
                  </attribute>
+                 <attribute name="verticalHeaderMinimumSectionSize">
+                  <number>2</number>
+                 </attribute>
                  <attribute name="verticalHeaderDefaultSectionSize">
                   <number>20</number>
                  </attribute>
                  <attribute name="verticalHeaderHighlightSections">
                   <bool>true</bool>
-                 </attribute>
-                 <attribute name="verticalHeaderMinimumSectionSize">
-                  <number>2</number>
                  </attribute>
                  <attribute name="verticalHeaderShowSortIndicator" stdset="0">
                   <bool>false</bool>
@@ -2040,12 +1938,8 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <property name="font">
                    <font>
                     <pointsize>10</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
-                  </property>
-                  <property name="textAlignment">
-                   <set>AlignCenter</set>
                   </property>
                   <property name="background">
                    <color>
@@ -2062,12 +1956,8 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <property name="font">
                    <font>
                     <pointsize>10</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
-                  </property>
-                  <property name="textAlignment">
-                   <set>AlignCenter</set>
                   </property>
                   <property name="background">
                    <color>
@@ -2084,12 +1974,8 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <property name="font">
                    <font>
                     <pointsize>10</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
-                  </property>
-                  <property name="textAlignment">
-                   <set>AlignCenter</set>
                   </property>
                  </column>
                  <item row="0" column="0">
@@ -2099,7 +1985,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <property name="font">
                    <font>
                     <pointsize>11</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
                   </property>
@@ -2114,7 +1999,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <property name="font">
                    <font>
                     <pointsize>11</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
                   </property>
@@ -2129,7 +2013,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <property name="font">
                    <font>
                     <pointsize>11</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
                   </property>
@@ -2145,7 +2028,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -2161,7 +2043,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -2177,10 +2058,10 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
             <item>
              <widget class="QFrame" name="frame_5">
               <property name="frameShape">
-               <enum>QFrame::Box</enum>
+               <enum>QFrame::Shape::Box</enum>
               </property>
               <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
+               <enum>QFrame::Shadow::Raised</enum>
               </property>
               <property name="lineWidth">
                <number>2</number>
@@ -2192,7 +2073,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -2211,7 +2091,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -2230,7 +2109,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -2252,16 +2130,16 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <number>5</number>
                  </property>
                  <property name="verticalScrollBarPolicy">
-                  <enum>Qt::ScrollBarAlwaysOff</enum>
+                  <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
                  </property>
                  <property name="horizontalScrollBarPolicy">
-                  <enum>Qt::ScrollBarAlwaysOff</enum>
+                  <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
                  </property>
                  <property name="autoScroll">
                   <bool>true</bool>
                  </property>
                  <property name="textElideMode">
-                  <enum>Qt::ElideMiddle</enum>
+                  <enum>Qt::TextElideMode::ElideMiddle</enum>
                  </property>
                  <property name="sortingEnabled">
                   <bool>false</bool>
@@ -2275,11 +2153,11 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                  <attribute name="horizontalHeaderCascadingSectionResizes">
                   <bool>false</bool>
                  </attribute>
-                 <attribute name="horizontalHeaderDefaultSectionSize">
-                  <number>95</number>
-                 </attribute>
                  <attribute name="horizontalHeaderMinimumSectionSize">
                   <number>39</number>
+                 </attribute>
+                 <attribute name="horizontalHeaderDefaultSectionSize">
+                  <number>95</number>
                  </attribute>
                  <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
                   <bool>false</bool>
@@ -2290,14 +2168,14 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                  <attribute name="verticalHeaderCascadingSectionResizes">
                   <bool>false</bool>
                  </attribute>
+                 <attribute name="verticalHeaderMinimumSectionSize">
+                  <number>2</number>
+                 </attribute>
                  <attribute name="verticalHeaderDefaultSectionSize">
                   <number>20</number>
                  </attribute>
                  <attribute name="verticalHeaderHighlightSections">
                   <bool>true</bool>
-                 </attribute>
-                 <attribute name="verticalHeaderMinimumSectionSize">
-                  <number>2</number>
                  </attribute>
                  <attribute name="verticalHeaderShowSortIndicator" stdset="0">
                   <bool>false</bool>
@@ -2313,12 +2191,8 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <property name="font">
                    <font>
                     <pointsize>10</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
-                  </property>
-                  <property name="textAlignment">
-                   <set>AlignCenter</set>
                   </property>
                   <property name="background">
                    <color>
@@ -2335,12 +2209,8 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <property name="font">
                    <font>
                     <pointsize>10</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
-                  </property>
-                  <property name="textAlignment">
-                   <set>AlignCenter</set>
                   </property>
                   <property name="background">
                    <color>
@@ -2357,12 +2227,8 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <property name="font">
                    <font>
                     <pointsize>10</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
-                  </property>
-                  <property name="textAlignment">
-                   <set>AlignCenter</set>
                   </property>
                  </column>
                  <item row="0" column="0">
@@ -2372,7 +2238,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <property name="font">
                    <font>
                     <pointsize>11</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
                   </property>
@@ -2387,7 +2252,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <property name="font">
                    <font>
                     <pointsize>11</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
                   </property>
@@ -2402,7 +2266,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <property name="font">
                    <font>
                     <pointsize>11</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
                   </property>
@@ -2418,7 +2281,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -2434,7 +2296,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -2450,7 +2311,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -2469,7 +2329,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -2485,7 +2344,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -2501,10 +2359,10 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
             <item>
              <widget class="QFrame" name="frame_8">
               <property name="frameShape">
-               <enum>QFrame::Box</enum>
+               <enum>QFrame::Shape::Box</enum>
               </property>
               <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
+               <enum>QFrame::Shadow::Raised</enum>
               </property>
               <property name="lineWidth">
                <number>2</number>
@@ -2522,16 +2380,16 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <number>5</number>
                  </property>
                  <property name="verticalScrollBarPolicy">
-                  <enum>Qt::ScrollBarAlwaysOff</enum>
+                  <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
                  </property>
                  <property name="horizontalScrollBarPolicy">
-                  <enum>Qt::ScrollBarAlwaysOff</enum>
+                  <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
                  </property>
                  <property name="autoScroll">
                   <bool>true</bool>
                  </property>
                  <property name="textElideMode">
-                  <enum>Qt::ElideMiddle</enum>
+                  <enum>Qt::TextElideMode::ElideMiddle</enum>
                  </property>
                  <property name="sortingEnabled">
                   <bool>false</bool>
@@ -2545,11 +2403,11 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                  <attribute name="horizontalHeaderCascadingSectionResizes">
                   <bool>false</bool>
                  </attribute>
-                 <attribute name="horizontalHeaderDefaultSectionSize">
-                  <number>95</number>
-                 </attribute>
                  <attribute name="horizontalHeaderMinimumSectionSize">
                   <number>39</number>
+                 </attribute>
+                 <attribute name="horizontalHeaderDefaultSectionSize">
+                  <number>95</number>
                  </attribute>
                  <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
                   <bool>false</bool>
@@ -2560,14 +2418,14 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                  <attribute name="verticalHeaderCascadingSectionResizes">
                   <bool>false</bool>
                  </attribute>
+                 <attribute name="verticalHeaderMinimumSectionSize">
+                  <number>2</number>
+                 </attribute>
                  <attribute name="verticalHeaderDefaultSectionSize">
                   <number>20</number>
                  </attribute>
                  <attribute name="verticalHeaderHighlightSections">
                   <bool>true</bool>
-                 </attribute>
-                 <attribute name="verticalHeaderMinimumSectionSize">
-                  <number>2</number>
                  </attribute>
                  <attribute name="verticalHeaderShowSortIndicator" stdset="0">
                   <bool>false</bool>
@@ -2583,12 +2441,8 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <property name="font">
                    <font>
                     <pointsize>10</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
-                  </property>
-                  <property name="textAlignment">
-                   <set>AlignCenter</set>
                   </property>
                   <property name="background">
                    <color>
@@ -2605,12 +2459,8 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <property name="font">
                    <font>
                     <pointsize>10</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
-                  </property>
-                  <property name="textAlignment">
-                   <set>AlignCenter</set>
                   </property>
                   <property name="background">
                    <color>
@@ -2627,12 +2477,8 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <property name="font">
                    <font>
                     <pointsize>10</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
-                  </property>
-                  <property name="textAlignment">
-                   <set>AlignCenter</set>
                   </property>
                  </column>
                  <item row="0" column="0">
@@ -2642,7 +2488,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <property name="font">
                    <font>
                     <pointsize>11</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
                   </property>
@@ -2657,7 +2502,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <property name="font">
                    <font>
                     <pointsize>11</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
                   </property>
@@ -2672,7 +2516,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <property name="font">
                    <font>
                     <pointsize>11</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
                   </property>
@@ -2688,7 +2531,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -2704,7 +2546,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -2720,7 +2561,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -2736,7 +2576,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -2755,7 +2594,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -2774,7 +2612,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -2793,7 +2630,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -2809,7 +2645,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -2825,10 +2660,10 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
             <item>
              <widget class="QFrame" name="frame_9">
               <property name="frameShape">
-               <enum>QFrame::Box</enum>
+               <enum>QFrame::Shape::Box</enum>
               </property>
               <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
+               <enum>QFrame::Shadow::Raised</enum>
               </property>
               <property name="lineWidth">
                <number>2</number>
@@ -2846,16 +2681,16 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <number>5</number>
                  </property>
                  <property name="verticalScrollBarPolicy">
-                  <enum>Qt::ScrollBarAlwaysOff</enum>
+                  <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
                  </property>
                  <property name="horizontalScrollBarPolicy">
-                  <enum>Qt::ScrollBarAlwaysOff</enum>
+                  <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
                  </property>
                  <property name="autoScroll">
                   <bool>true</bool>
                  </property>
                  <property name="textElideMode">
-                  <enum>Qt::ElideMiddle</enum>
+                  <enum>Qt::TextElideMode::ElideMiddle</enum>
                  </property>
                  <property name="sortingEnabled">
                   <bool>false</bool>
@@ -2869,11 +2704,11 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                  <attribute name="horizontalHeaderCascadingSectionResizes">
                   <bool>false</bool>
                  </attribute>
-                 <attribute name="horizontalHeaderDefaultSectionSize">
-                  <number>95</number>
-                 </attribute>
                  <attribute name="horizontalHeaderMinimumSectionSize">
                   <number>39</number>
+                 </attribute>
+                 <attribute name="horizontalHeaderDefaultSectionSize">
+                  <number>95</number>
                  </attribute>
                  <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
                   <bool>false</bool>
@@ -2884,14 +2719,14 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                  <attribute name="verticalHeaderCascadingSectionResizes">
                   <bool>false</bool>
                  </attribute>
+                 <attribute name="verticalHeaderMinimumSectionSize">
+                  <number>2</number>
+                 </attribute>
                  <attribute name="verticalHeaderDefaultSectionSize">
                   <number>20</number>
                  </attribute>
                  <attribute name="verticalHeaderHighlightSections">
                   <bool>true</bool>
-                 </attribute>
-                 <attribute name="verticalHeaderMinimumSectionSize">
-                  <number>2</number>
                  </attribute>
                  <attribute name="verticalHeaderShowSortIndicator" stdset="0">
                   <bool>false</bool>
@@ -2907,12 +2742,8 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <property name="font">
                    <font>
                     <pointsize>10</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
-                  </property>
-                  <property name="textAlignment">
-                   <set>AlignCenter</set>
                   </property>
                   <property name="background">
                    <color>
@@ -2929,12 +2760,8 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <property name="font">
                    <font>
                     <pointsize>10</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
-                  </property>
-                  <property name="textAlignment">
-                   <set>AlignCenter</set>
                   </property>
                   <property name="background">
                    <color>
@@ -2951,12 +2778,8 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <property name="font">
                    <font>
                     <pointsize>10</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
-                  </property>
-                  <property name="textAlignment">
-                   <set>AlignCenter</set>
                   </property>
                  </column>
                  <item row="0" column="0">
@@ -2966,7 +2789,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <property name="font">
                    <font>
                     <pointsize>11</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
                   </property>
@@ -2981,7 +2803,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <property name="font">
                    <font>
                     <pointsize>11</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
                   </property>
@@ -2996,7 +2817,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <property name="font">
                    <font>
                     <pointsize>11</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
                   </property>
@@ -3012,7 +2832,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -3028,7 +2847,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -3044,7 +2862,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -3060,7 +2877,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -3079,7 +2895,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -3098,7 +2913,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -3117,7 +2931,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -3133,7 +2946,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
                   <font>
                    <family>Arial</family>
                    <pointsize>12</pointsize>
-                   <weight>50</weight>
                    <italic>false</italic>
                    <bold>false</bold>
                   </font>
@@ -3289,7 +3101,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
        <font>
         <family>Arial</family>
         <pointsize>12</pointsize>
-        <weight>50</weight>
         <italic>false</italic>
         <bold>false</bold>
        </font>
@@ -3301,10 +3112,10 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
        <string notr="true">background-color: rgb(226, 237, 255);</string>
       </property>
       <property name="frameShape">
-       <enum>QFrame::Panel</enum>
+       <enum>QFrame::Shape::Panel</enum>
       </property>
       <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
+       <enum>QFrame::Shadow::Raised</enum>
       </property>
       <property name="lineWidth">
        <number>3</number>
@@ -3312,35 +3123,6 @@ font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
       <property name="midLineWidth">
        <number>2</number>
       </property>
-      <widget class="QPushButton" name="die_btn_job">
-       <property name="geometry">
-        <rect>
-         <x>20</x>
-         <y>140</y>
-         <width>101</width>
-         <height>41</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <family>Arial</family>
-         <pointsize>12</pointsize>
-         <weight>50</weight>
-         <italic>false</italic>
-         <bold>false</bold>
-        </font>
-       </property>
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the folder which contains the .yaml job files&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">background-color: rgb(0, 170, 255);</string>
-       </property>
-       <property name="text">
-        <string>Select
-Job FOLDER</string>
-       </property>
-      </widget>
       <widget class="QLabel" name="label_41">
        <property name="geometry">
         <rect>
@@ -3354,7 +3136,6 @@ Job FOLDER</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -3376,7 +3157,6 @@ Job FOLDER</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -3398,7 +3178,6 @@ Job FOLDER</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -3420,7 +3199,6 @@ Job FOLDER</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -3442,7 +3220,6 @@ Job FOLDER</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -3467,7 +3244,6 @@ Job FOLDER</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -3492,7 +3268,6 @@ Job FOLDER</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -3517,7 +3292,6 @@ Job FOLDER</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -3542,7 +3316,6 @@ Job FOLDER</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -3564,7 +3337,6 @@ Job FOLDER</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -3611,8 +3383,8 @@ Job FOLDER</string>
       <widget class="QComboBox" name="die_jobs_combo_box">
        <property name="geometry">
         <rect>
-         <x>150</x>
-         <y>140</y>
+         <x>120</x>
+         <y>110</y>
          <width>641</width>
          <height>31</height>
         </rect>
@@ -3636,7 +3408,6 @@ background-color: rgb(255, 255, 0);
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -3651,7 +3422,7 @@ background-color: rgb(255, 255, 0);
         <number>0</number>
        </property>
        <property name="alignment">
-        <set>Qt::AlignCenter</set>
+        <set>Qt::AlignmentFlag::AlignCenter</set>
        </property>
        <property name="format">
         <string extracomment="Progress bar to follow the measurement">Bar progress: %p%</string>
@@ -3661,7 +3432,7 @@ background-color: rgb(255, 255, 0);
        <property name="geometry">
         <rect>
          <x>20</x>
-         <y>480</y>
+         <y>210</y>
          <width>101</width>
          <height>51</height>
         </rect>
@@ -3670,7 +3441,6 @@ background-color: rgb(255, 255, 0);
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -3683,7 +3453,7 @@ background-color: rgb(255, 255, 0);
        <property name="geometry">
         <rect>
          <x>130</x>
-         <y>490</y>
+         <y>220</y>
          <width>51</width>
          <height>21</height>
         </rect>
@@ -3692,7 +3462,6 @@ background-color: rgb(255, 255, 0);
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -3739,8 +3508,8 @@ background-color: rgb(255, 255, 0);
       <widget class="QComboBox" name="die_list_combo_box">
        <property name="geometry">
         <rect>
-         <x>150</x>
-         <y>190</y>
+         <x>120</x>
+         <y>170</y>
          <width>641</width>
          <height>31</height>
         </rect>
@@ -3755,7 +3524,7 @@ background-color: rgb(255, 255, 0);
        <property name="geometry">
         <rect>
          <x>20</x>
-         <y>540</y>
+         <y>490</y>
          <width>121</width>
          <height>21</height>
         </rect>
@@ -3764,7 +3533,6 @@ background-color: rgb(255, 255, 0);
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -3777,7 +3545,7 @@ background-color: rgb(255, 255, 0);
        <property name="geometry">
         <rect>
          <x>130</x>
-         <y>540</y>
+         <y>490</y>
          <width>631</width>
          <height>31</height>
         </rect>
@@ -3786,7 +3554,6 @@ background-color: rgb(255, 255, 0);
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -3808,7 +3575,6 @@ background-color: rgb(255, 255, 0);
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -3830,7 +3596,6 @@ background-color: rgb(255, 255, 0);
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -3855,7 +3620,6 @@ background-color: rgb(255, 255, 0);
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -3877,7 +3641,6 @@ background-color: rgb(255, 255, 0);
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -3893,7 +3656,7 @@ background-color: rgb(255, 255, 0);
        <property name="geometry">
         <rect>
          <x>20</x>
-         <y>200</y>
+         <y>180</y>
          <width>91</width>
          <height>21</height>
         </rect>
@@ -3902,7 +3665,6 @@ background-color: rgb(255, 255, 0);
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -3911,37 +3673,12 @@ background-color: rgb(255, 255, 0);
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Cell ID files:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="scan_travel">
-       <property name="geometry">
-        <rect>
-         <x>150</x>
-         <y>60</y>
-         <width>291</width>
-         <height>31</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <family>Arial</family>
-         <pointsize>12</pointsize>
-         <weight>50</weight>
-         <italic>false</italic>
-         <bold>false</bold>
-        </font>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">background-color: rgb(85, 255, 127);</string>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="mes_search_job">
+      <widget class="QPushButton" name="load_folder_die_liv">
        <property name="geometry">
         <rect>
          <x>20</x>
          <y>50</y>
-         <width>111</width>
+         <width>141</width>
          <height>51</height>
         </rect>
        </property>
@@ -3949,7 +3686,6 @@ background-color: rgb(255, 255, 0);
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -3961,8 +3697,71 @@ background-color: rgb(255, 255, 0);
         <string notr="true">background-color: rgb(0, 170, 255);</string>
        </property>
        <property name="text">
-        <string>Search
-Job/config File</string>
+        <string>Load
+ config Folder</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_69">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>120</y>
+         <width>91</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>12</pointsize>
+         <italic>false</italic>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Config files:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="all_cells">
+       <property name="geometry">
+        <rect>
+         <x>130</x>
+         <y>530</y>
+         <width>631</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>12</pointsize>
+         <italic>false</italic>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_66">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>530</y>
+         <width>81</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>12</pointsize>
+         <italic>false</italic>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Total cells:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
       </widget>
      </widget>
@@ -3984,7 +3783,6 @@ Job/config File</string>
        <font>
         <family>Arial</family>
         <pointsize>12</pointsize>
-        <weight>50</weight>
         <italic>false</italic>
         <bold>false</bold>
        </font>
@@ -4006,7 +3804,6 @@ Job/config File</string>
        <font>
         <family>Arial</family>
         <pointsize>12</pointsize>
-        <weight>50</weight>
         <italic>false</italic>
         <bold>false</bold>
        </font>
@@ -4028,7 +3825,6 @@ Job/config File</string>
        <font>
         <family>Arial</family>
         <pointsize>12</pointsize>
-        <weight>50</weight>
         <italic>false</italic>
         <bold>false</bold>
        </font>
@@ -4075,7 +3871,6 @@ Job/config File</string>
        <font>
         <family>Arial</family>
         <pointsize>12</pointsize>
-        <weight>50</weight>
         <italic>false</italic>
         <bold>false</bold>
        </font>
@@ -4097,7 +3892,6 @@ Job/config File</string>
        <font>
         <family>Arial</family>
         <pointsize>12</pointsize>
-        <weight>50</weight>
         <italic>false</italic>
         <bold>false</bold>
        </font>
@@ -4119,7 +3913,6 @@ Job/config File</string>
        <font>
         <family>Arial</family>
         <pointsize>12</pointsize>
-        <weight>50</weight>
         <italic>false</italic>
         <bold>false</bold>
        </font>
@@ -4144,7 +3937,6 @@ Job/config File</string>
        <font>
         <family>Arial</family>
         <pointsize>12</pointsize>
-        <weight>50</weight>
         <italic>false</italic>
         <bold>false</bold>
        </font>
@@ -4175,7 +3967,6 @@ Job/config File</string>
        <font>
         <family>Arial</family>
         <pointsize>12</pointsize>
-        <weight>50</weight>
         <italic>false</italic>
         <bold>false</bold>
        </font>
@@ -4197,7 +3988,6 @@ Job/config File</string>
        <font>
         <family>Arial</family>
         <pointsize>12</pointsize>
-        <weight>50</weight>
         <italic>false</italic>
         <bold>false</bold>
        </font>
@@ -4222,7 +4012,6 @@ Job/config File</string>
        <font>
         <family>Arial</family>
         <pointsize>12</pointsize>
-        <weight>50</weight>
         <italic>false</italic>
         <bold>false</bold>
        </font>
@@ -4247,7 +4036,6 @@ Job/config File</string>
        <font>
         <family>Arial</family>
         <pointsize>12</pointsize>
-        <weight>50</weight>
         <italic>false</italic>
         <bold>false</bold>
        </font>
@@ -4275,7 +4063,6 @@ Job/config File</string>
        <font>
         <family>Arial</family>
         <pointsize>12</pointsize>
-        <weight>50</weight>
         <italic>false</italic>
         <bold>false</bold>
        </font>
@@ -4297,7 +4084,6 @@ Job/config File</string>
        <font>
         <family>Arial</family>
         <pointsize>12</pointsize>
-        <weight>50</weight>
         <italic>false</italic>
         <bold>false</bold>
        </font>
@@ -4319,7 +4105,6 @@ Job/config File</string>
        <font>
         <family>Arial</family>
         <pointsize>12</pointsize>
-        <weight>50</weight>
         <italic>false</italic>
         <bold>false</bold>
        </font>
@@ -4360,7 +4145,6 @@ Job/config File</string>
        <font>
         <family>Arial</family>
         <pointsize>12</pointsize>
-        <weight>50</weight>
         <italic>false</italic>
         <bold>false</bold>
        </font>
@@ -4393,10 +4177,10 @@ Job/config File</string>
        <string notr="true">background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(228, 230, 255, 255), stop:1 rgba(255, 255, 255, 255));</string>
       </property>
       <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
+       <enum>QFrame::Shape::StyledPanel</enum>
       </property>
       <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
+       <enum>QFrame::Shadow::Raised</enum>
       </property>
       <widget class="QComboBox" name="liv_meas_box">
        <property name="geometry">
@@ -4411,7 +4195,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -4443,7 +4226,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -4465,7 +4247,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -4487,7 +4268,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -4509,7 +4289,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -4531,7 +4310,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -4553,7 +4331,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -4595,7 +4372,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -4620,7 +4396,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -4645,7 +4420,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -4667,7 +4441,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -4699,7 +4472,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -4721,7 +4493,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>14</pointsize>
-         <weight>75</weight>
          <italic>false</italic>
          <bold>true</bold>
         </font>
@@ -4730,7 +4501,7 @@ Job/config File</string>
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;T1 config maker&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="textFormat">
-        <enum>Qt::AutoText</enum>
+        <enum>Qt::TextFormat::AutoText</enum>
        </property>
       </widget>
       <widget class="QPushButton" name="liv_gen_btn">
@@ -4746,7 +4517,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -4774,7 +4544,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -4806,7 +4575,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -4828,7 +4596,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -4863,7 +4630,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -4898,7 +4664,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -4950,7 +4715,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -4972,7 +4736,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -4994,7 +4757,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -5026,7 +4788,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -5049,10 +4810,10 @@ Job/config File</string>
        <string notr="true">background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(228, 230, 255, 255), stop:1 rgba(255, 255, 255, 255));</string>
       </property>
       <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
+       <enum>QFrame::Shape::StyledPanel</enum>
       </property>
       <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
+       <enum>QFrame::Shadow::Raised</enum>
       </property>
       <widget class="QLabel" name="label_63">
        <property name="geometry">
@@ -5067,7 +4828,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>14</pointsize>
-         <weight>75</weight>
          <italic>false</italic>
          <bold>true</bold>
         </font>
@@ -5076,7 +4836,7 @@ Job/config File</string>
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Keithley/OSA Test&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="textFormat">
-        <enum>Qt::AutoText</enum>
+        <enum>Qt::TextFormat::AutoText</enum>
        </property>
       </widget>
       <widget class="QLabel" name="volt_meas">
@@ -5092,7 +4852,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -5117,7 +4876,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -5139,7 +4897,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -5167,7 +4924,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -5211,7 +4967,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -5239,7 +4994,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -5267,7 +5021,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -5289,10 +5042,10 @@ Job/config File</string>
         <string notr="true">background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(228, 230, 255, 255), stop:1 rgba(255, 255, 255, 255));</string>
        </property>
        <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
+        <enum>QFrame::Shape::StyledPanel</enum>
        </property>
        <property name="frameShadow">
-        <enum>QFrame::Raised</enum>
+        <enum>QFrame::Shadow::Raised</enum>
        </property>
        <widget class="QLabel" name="label_74">
         <property name="geometry">
@@ -5307,7 +5060,6 @@ Job/config File</string>
          <font>
           <family>Arial</family>
           <pointsize>14</pointsize>
-          <weight>75</weight>
           <italic>false</italic>
           <bold>true</bold>
          </font>
@@ -5316,7 +5068,7 @@ Job/config File</string>
          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Detectors&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="textFormat">
-         <enum>Qt::AutoText</enum>
+         <enum>Qt::TextFormat::AutoText</enum>
         </property>
        </widget>
        <widget class="QPushButton" name="btn_move_fiber">
@@ -5332,7 +5084,6 @@ Job/config File</string>
          <font>
           <family>Arial</family>
           <pointsize>12</pointsize>
-          <weight>50</weight>
           <italic>false</italic>
           <bold>false</bold>
          </font>
@@ -5360,7 +5111,6 @@ Job/config File</string>
          <font>
           <family>Arial</family>
           <pointsize>12</pointsize>
-          <weight>50</weight>
           <italic>false</italic>
           <bold>false</bold>
          </font>
@@ -5395,7 +5145,6 @@ Job/config File</string>
          <font>
           <family>Arial</family>
           <pointsize>12</pointsize>
-          <weight>50</weight>
           <italic>false</italic>
           <bold>false</bold>
          </font>
@@ -5424,7 +5173,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -5452,10 +5200,10 @@ Job/config File</string>
         <string notr="true">background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(228, 230, 255, 255), stop:1 rgba(255, 255, 255, 255));</string>
        </property>
        <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
+        <enum>QFrame::Shape::StyledPanel</enum>
        </property>
        <property name="frameShadow">
-        <enum>QFrame::Raised</enum>
+        <enum>QFrame::Shadow::Raised</enum>
        </property>
        <widget class="QLabel" name="label_79">
         <property name="geometry">
@@ -5470,7 +5218,6 @@ Job/config File</string>
          <font>
           <family>Arial</family>
           <pointsize>12</pointsize>
-          <weight>50</weight>
           <italic>false</italic>
           <bold>false</bold>
          </font>
@@ -5505,7 +5252,6 @@ Job/config File</string>
          <font>
           <family>Arial</family>
           <pointsize>12</pointsize>
-          <weight>50</weight>
           <italic>false</italic>
           <bold>false</bold>
          </font>
@@ -5527,7 +5273,6 @@ Job/config File</string>
          <font>
           <family>Arial</family>
           <pointsize>12</pointsize>
-          <weight>50</weight>
           <italic>false</italic>
           <bold>false</bold>
          </font>
@@ -5552,7 +5297,6 @@ Job/config File</string>
          <font>
           <family>Arial</family>
           <pointsize>12</pointsize>
-          <weight>50</weight>
           <italic>false</italic>
           <bold>false</bold>
          </font>
@@ -5577,7 +5321,6 @@ Job/config File</string>
          <font>
           <family>Arial</family>
           <pointsize>12</pointsize>
-          <weight>50</weight>
           <italic>false</italic>
           <bold>false</bold>
          </font>
@@ -5600,7 +5343,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -5623,10 +5365,10 @@ Job/config File</string>
        <string notr="true">background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(228, 230, 255, 255), stop:1 rgba(255, 255, 255, 255));</string>
       </property>
       <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
+       <enum>QFrame::Shape::StyledPanel</enum>
       </property>
       <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
+       <enum>QFrame::Shadow::Raised</enum>
       </property>
       <widget class="QLabel" name="label_67">
        <property name="geometry">
@@ -5641,7 +5383,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>14</pointsize>
-         <weight>75</weight>
          <italic>false</italic>
          <bold>true</bold>
         </font>
@@ -5650,7 +5391,7 @@ Job/config File</string>
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bar2 JobGen (under constrc.)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="textFormat">
-        <enum>Qt::AutoText</enum>
+        <enum>Qt::TextFormat::AutoText</enum>
        </property>
       </widget>
       <widget class="QLabel" name="label_71">
@@ -5666,7 +5407,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -5688,7 +5428,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -5710,7 +5449,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -5732,7 +5470,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -5754,7 +5491,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -5776,7 +5512,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -5798,7 +5533,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -5823,7 +5557,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -5848,7 +5581,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -5870,7 +5602,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -5892,7 +5623,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -5914,7 +5644,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -5942,7 +5671,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -5970,7 +5698,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -5993,10 +5720,10 @@ Job/config File</string>
        <string notr="true">background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(228, 230, 255, 255), stop:1 rgba(255, 255, 255, 255));</string>
       </property>
       <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
+       <enum>QFrame::Shape::StyledPanel</enum>
       </property>
       <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
+       <enum>QFrame::Shadow::Raised</enum>
       </property>
       <widget class="QLabel" name="label_36">
        <property name="geometry">
@@ -6011,7 +5738,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -6039,7 +5765,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -6064,7 +5789,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -6086,7 +5810,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -6111,7 +5834,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -6136,7 +5858,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -6168,7 +5889,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -6190,7 +5910,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -6212,7 +5931,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -6234,7 +5952,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -6259,7 +5976,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -6287,7 +6003,6 @@ Job/config File</string>
         <font>
          <family>Arial</family>
          <pointsize>14</pointsize>
-         <weight>75</weight>
          <italic>false</italic>
          <bold>true</bold>
         </font>
@@ -6296,7 +6011,7 @@ Job/config File</string>
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Batch MES search&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="textFormat">
-        <enum>Qt::AutoText</enum>
+        <enum>Qt::TextFormat::AutoText</enum>
        </property>
       </widget>
      </widget>
@@ -6328,7 +6043,6 @@ Job/config File</string>
      <font>
       <family>Arial</family>
       <pointsize>12</pointsize>
-      <weight>50</weight>
       <italic>false</italic>
       <bold>false</bold>
      </font>
@@ -6350,7 +6064,6 @@ Job/config File</string>
      <font>
       <family>Arial</family>
       <pointsize>12</pointsize>
-      <weight>50</weight>
       <italic>false</italic>
       <bold>false</bold>
      </font>
@@ -6372,7 +6085,6 @@ Job/config File</string>
      <font>
       <family>Arial</family>
       <pointsize>12</pointsize>
-      <weight>50</weight>
       <italic>false</italic>
       <bold>false</bold>
      </font>
@@ -6444,7 +6156,6 @@ Job/config File</string>
      <font>
       <family>Arial</family>
       <pointsize>21</pointsize>
-      <weight>75</weight>
       <bold>true</bold>
      </font>
     </property>
@@ -6469,7 +6180,6 @@ Job/config File</string>
      <font>
       <family>Arial</family>
       <pointsize>8</pointsize>
-      <weight>75</weight>
       <bold>true</bold>
      </font>
     </property>
@@ -6493,7 +6203,6 @@ Job/config File</string>
      <font>
       <family>Arial</family>
       <pointsize>8</pointsize>
-      <weight>75</weight>
       <bold>true</bold>
      </font>
     </property>
@@ -6517,7 +6226,6 @@ Job/config File</string>
      <font>
       <family>Arial</family>
       <pointsize>21</pointsize>
-      <weight>75</weight>
       <bold>true</bold>
      </font>
     </property>
@@ -6554,7 +6262,6 @@ QPushButton:hover{
      <font>
       <family>Arial</family>
       <pointsize>8</pointsize>
-      <weight>75</weight>
       <bold>true</bold>
      </font>
     </property>
@@ -6578,7 +6285,6 @@ QPushButton:hover{
      <font>
       <family>Arial</family>
       <pointsize>8</pointsize>
-      <weight>75</weight>
       <bold>true</bold>
      </font>
     </property>
@@ -6612,10 +6318,10 @@ QPushButton:hover{
      <string notr="true">background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(228, 230, 255, 255), stop:1 rgba(255, 255, 255, 255));</string>
     </property>
     <property name="frameShape">
-     <enum>QFrame::StyledPanel</enum>
+     <enum>QFrame::Shape::StyledPanel</enum>
     </property>
     <property name="frameShadow">
-     <enum>QFrame::Raised</enum>
+     <enum>QFrame::Shadow::Raised</enum>
     </property>
     <widget class="QLabel" name="label_68">
      <property name="geometry">
@@ -6630,7 +6336,6 @@ QPushButton:hover{
       <font>
        <family>Arial</family>
        <pointsize>14</pointsize>
-       <weight>75</weight>
        <italic>false</italic>
        <bold>true</bold>
       </font>
@@ -6639,7 +6344,7 @@ QPushButton:hover{
       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Z-height config&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="textFormat">
-      <enum>Qt::AutoText</enum>
+      <enum>Qt::TextFormat::AutoText</enum>
      </property>
     </widget>
     <widget class="QLabel" name="label_75">
@@ -6655,7 +6360,6 @@ QPushButton:hover{
       <font>
        <family>Arial</family>
        <pointsize>12</pointsize>
-       <weight>50</weight>
        <italic>false</italic>
        <bold>false</bold>
       </font>
@@ -6677,7 +6381,6 @@ QPushButton:hover{
       <font>
        <family>Arial</family>
        <pointsize>12</pointsize>
-       <weight>50</weight>
        <italic>false</italic>
        <bold>false</bold>
       </font>
@@ -6699,7 +6402,6 @@ QPushButton:hover{
       <font>
        <family>Arial</family>
        <pointsize>12</pointsize>
-       <weight>50</weight>
        <italic>false</italic>
        <bold>false</bold>
       </font>
@@ -6759,7 +6461,6 @@ QPushButton:hover{
       <font>
        <family>Arial</family>
        <pointsize>12</pointsize>
-       <weight>50</weight>
        <italic>false</italic>
        <bold>false</bold>
       </font>
@@ -6792,7 +6493,7 @@ QPushButton:hover{
      <x>0</x>
      <y>0</y>
      <width>1875</width>
-     <height>21</height>
+     <height>33</height>
     </rect>
    </property>
   </widget>

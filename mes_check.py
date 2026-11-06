@@ -4,16 +4,11 @@ import time
 import logging
 import pika
 import sys
-#sys.path.insert(1, 'C:/Users/MarcosDaSilvaEleoter/OneDrive - Smart Photonics/Test & Measurement/Software/s200_wp1')
-#from settings import settings
-
 __logger__ = logging.getLogger("AMS.ezmes")
 
 
 class RmqRpcClient:
-
     vhost = "/"
-
     def __init__(self, host, port, rpc_channel, reply_queue, username, password, vhost="/"):
 
         self.host = "mq-central.smartphotonics.loc"
@@ -21,7 +16,6 @@ class RmqRpcClient:
         self.rpc_channel = rpc_channel
         self.reply_queue = reply_queue
         self.vhost = "/pac"
-
         credentials = pika.PlainCredentials(username, password)
         __logger__.info("Setting up RabbitMQ client to %s on vhost %s:%s for channels %s and %s...",
                         host, port, vhost, rpc_channel, reply_queue)
@@ -34,19 +28,14 @@ class RmqRpcClient:
             )
         )
         __logger__.info("RabbitMQ initialized succesfully")
-
-
         self.channel = self.connection.channel()
-
         result = self.channel.queue_declare(queue="", exclusive=True)
         self.callback_queue = result.method.queue
-
         self.channel.basic_consume(
             queue=self.reply_queue,
             on_message_callback=self.on_response,
             auto_ack=True,
         )
-
         self.response = {}
         self.corr_id = None
 
@@ -224,40 +213,7 @@ if __name__ == "__main__":
     from pprint import pprint
 
     rpc = EzMesClient()
-
-    
-
     # Check wafer id
     response = rpc.mes_generic_transaction_request('FR2605-000093231')
     
     print(response)
-    
-__ezmes_instance__ = None
-
-def get_ezmes_client():
-    global __ezmes_instance__
-    # Failed before
-    if __ezmes_instance__ is False:
-        return None
-    if __ezmes_instance__:
-        return __ezmes_instance__
-    try:
-        __ezmes_instance__ = EzMesClient()
-        __logger__.info("Successfully initiated EzMesClient for validation of mes data")
-    except:
-        __ezmes_instance__ = False
-        __logger__.error("Failed to initiate EzMesClient for validation of mes data")
-    return __ezmes_instance__
-
-if __name__ == "__main__":
-    print("setup client...")
-    client = EzMesClient()
-    print("Client active")
-
-    token = client._request_authentication_token_()
-    print("Token: ", token)
-
-    generic = client.mes_generic_transaction_request("1NS23036PFE 005 AC-02")
-    print("Generic data", generic)
-
-    print("Now validating traveler")

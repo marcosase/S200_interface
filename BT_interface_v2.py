@@ -8,6 +8,7 @@ from datetime import datetime
 from time import strftime, localtime
 import sys, os
 import numpy as np
+import io
 from PyQt5 import QtWidgets, uic, QtCore
 from PyQt5.QtWidgets import QTableWidgetItem, QFileDialog, QApplication, QMessageBox
 from PyQt5.QtGui import QFont 
@@ -19,15 +20,18 @@ import pyqtgraph as pg
 import serial
 from functools import partial
 import re
+import matplotlib.pyplot as plt 
 import yaml
 import glob
 import subprocess
 from subprocess import call
 import codecs
-sys.path.insert(1, 'C:\\AMS')
+sys.path.insert(1, 'C:\\GIT_MAIN\\AMS')
 from smu.keithley2602B import Keithley2602B
 ktl = Keithley2602B()
 from Yokogawa import AQ6370D as osa
+from tec import tec
+import mes_check as MesCom
 
 
 class Ui(QtWidgets.QMainWindow):
@@ -148,7 +152,14 @@ class Ui(QtWidgets.QMainWindow):
 		pg.setConfigOption('background', 'w') #before loading widget
 		pg.setConfigOption('foreground', 'k')
 		super(Ui, self).__init__() # Call the inherited classes __init__ method
-		uic.loadUi('BT_interface.ui', self) # Load the .ui file
+		with open('BT_interface.ui', encoding='utf-8') as ui_file:
+			ui_xml = ui_file.read()
+		ui_xml = re.sub(
+			r'(<(?:enum|set)>[^<:]+::)[^:]+::([^<]+)(</(?:enum|set)>)',
+			r'\1\2\3',
+			ui_xml,
+		)
+		uic.loadUi(io.StringIO(ui_xml), self) # Load the .ui file
 		# redirecting terminal  display  to GUI item
 		self._original_stdout = sys.stdout
 		self._original_stderr = sys.stderr
@@ -162,7 +173,15 @@ class Ui(QtWidgets.QMainWindow):
 		self.thread = None
 		self.jobgen_thread = None
 		self.jobgen_worker = None
+		self.ext_fig=None 
 		self.curr_files = 0
+		self.cell_id_arr = []
+		self.cell_id_vf1 = []
+		self.peak_wvl = []
+		self.ipd_max = []
+		self.z_height_spec = []
+		self.z_height_liv = []
+		self.cell_spectrum = []
 		###Variable
 		self.job_folder_path1 = ''
 		self.job_folder_path2 = ''
@@ -212,6 +231,7 @@ class Ui(QtWidgets.QMainWindow):
 		self.btn_go_td7.clicked.connect(self.go_td7)
 		##
 		self.jobs_combo_box.currentTextChanged.connect(self.update_info)
+		
 		self.refresh_z_set.clicked.connect(self.up_z_set)
 		###LIV/SPC Gui
 		self.liv_acq_btn.clicked.connect(self.acq_liv)
@@ -220,10 +240,9 @@ class Ui(QtWidgets.QMainWindow):
 		self.liv_gen_btn.clicked.connect(self.gen_liv_config)
 		self.btn_mes_check.clicked.connect( lambda:self.run_mes_check(True))
 		#####
-		self.die_btn_job.clicked.connect(self.select_die_config)
+		self.load_folder_die_liv.clicked.connect(self.select_die_config)
 		self.die_jobs_combo_box.currentTextChanged.connect(self.die_update_info)
-		self.die_loaded_cell.currentTextChanged.connect(self.update_load_cells)
-		self.mes_search_job.clicked.connect(self.search_jobs)
+		self.die_list_combo_box.currentTextChanged.connect(self.die_update_info)
 		self.gen_bar_job.clicked.connect(self.gen_bars_job)
 		self.bars_job_refresh.clicked.connect(self.refresh_bars_combo_box)
 		self.show() # Show the GUI
@@ -231,6 +250,7 @@ class Ui(QtWidgets.QMainWindow):
 		self.write_values()
 		self.showMaximized()
 		#######Die measurement stuff
+		self.die_loaded_cell.currentTextChanged.connect(self.die_update_info)
 		################Keithley controls
 		self.ktl_meas_btn.clicked.connect(self.ktl_meas)
 		self.ktl_on_btn.clicked.connect(self.ktl_on)
@@ -246,6 +266,8 @@ class Ui(QtWidgets.QMainWindow):
 				else:
 					delta_files = 0
 				files = glob.glob(self.data_folder+"/*.txt")
+				print(f'data folder from up_var method is {self.data_folder}')
+
 				self.curr_files = len(files)
 				interval_ms = self.timer.interval()/1000  # Convert milliseconds to seconds
 				files_per_second = delta_files/interval_ms if interval_ms > 0 else 0
@@ -266,14 +288,23 @@ class Ui(QtWidgets.QMainWindow):
 				self.cell = fh_read['Cell']
 				
 				if self.meas_plan=='LIV':
-					x  = fh_read['I_soa, A']
-					y1 = fh_read['V_soa, V']
-					y2 = fh_read['P_PD, W']
+					try:
+						x  = fh_read['I_soa, A']
+						y1 = fh_read['V_soa, V']
+						y2 = fh_read['P_PD, W']
+						self.z_height_liv.append(fh_read['chuck_UP_height'])
+					except:
+						x = fh_read["Current LD, [A]"]
+						y1 = fh_read["Voltage LD, [V]"]
+						y2 = fh_read["Power PD, [W]"]
+						self.z_height_liv.append(fh_read['chuck_UP_height'])
+
 				elif self.meas_plan=='SPECTRUM':
 					x  = fh_read['Wavelength, nm']
 					y1 = fh_read['Power, dBm']
 					y2 = None
-				self.plot_win(x,y1,y2)
+					self.z_height_spec.append(fh_read['chuck_UP_height'])
+				self.plot_win(x,y1,y2,self.cell)
 			except Exception as err:
 				print(f'Var update failed: {err}')
 		else:
@@ -336,15 +367,60 @@ class Ui(QtWidgets.QMainWindow):
 		pen_t2 = pg.mkPen(color=(255, 0, 0), width=3, style=QtCore.Qt.SolidLine)
 		color1 = '#%02x%02x%02x' % t1
 		color2 = '#%02x%02x%02x' % t2
+		#print(f'values passed to  plot x: {x}, y1: {y1} and y2: {y2}')
 		if y2 is not None:
 			#ic(x, y1, y2)
 			x_label = 'Current(A)'
 			y_label = 'voltage(V)'
 			y2_label = 'Power(W)'
-			title = f'LIV_{self.cell}'
+			try:
+				title = f'LIV_{self.cell}'
+				volt = np.asarray(getattr(y1, 'magnitude', y1), dtype=float)
+				power = np.asarray(getattr(y2, 'magnitude', y2), dtype=float)
+				self.cell_id_vf1.append(float(volt[0]))
+				self.ipd_max.append(float(power.max()) )
+				self.cell_id_arr.append(self.cell)
+				
+				if self.ext_fig is None or not plt.fignum_exists(self.ext_fig.number):
+					self.ext_fig, self.ext_ax = plt.subplots()
+				else:
+					# Remove the old colorbar if it exists to prevent duplicates
+					if hasattr(self, 'cbar') and self.cbar:
+						self.cbar.remove()
+					# Clear the old plot lines/labels but keep the window frame open
+					self.ext_ax.clear()
+					
+				sc = self.ext_ax.scatter(
+					self.ipd_max, 
+					self.cell_id_arr, 
+					c=self.z_height_liv,       # List of hue values (must be the same length as ipd_max)
+					cmap='viridis',       # Choose a colormap (e.g., 'viridis', 'plasma', 'coolwarm')
+					s=100,
+					marker='o',
+					edgecolors='none',
+					label='IPD_max' 
+					)
+				#self.ext_ax.scatter(self.self.ipd_max, self.cell_id_arr, label='IPDMax',color='red',marker='o')
+				self.ext_ax.set_xlabel('IPDMax')
+				self.ext_ax.set_ylabel('Cell IDs')
+				self.ext_ax.grid(True)
+				
+				# 2. Add a colorbar to serve as the visual legend for the hue
+				self.cbar = self.ext_fig.colorbar(sc, ax=self.ext_ax)
+				self.cbar.set_label('Z height') 
+				
+				self.ext_ax.legend()
+				self.ext_ax.ticklabel_format(style='plain', axis='x')
+				self.ext_fig.canvas.draw()
+				self.ext_fig.canvas.flush_events()
+				plt.show(block=False)
+				
+			except:
+				title = 'LIV'
 			self.p1 = self.plotter.plotItem
 			self.p1.setLabels(left = y_label)
 			#Create a new ViewBox
+			self.p2 = pg.ViewBox()
 			self.p2 = pg.ViewBox()
 			self.p1.showAxis('right')
 			self.p1.scene().addItem(self.p2)
@@ -357,10 +433,10 @@ class Ui(QtWidgets.QMainWindow):
 			self.updateViews()
 			self.set_graph(title, x_label, y_label)
 			self.clear_plot()
+			volt = np.asarray(getattr(y1, 'magnitude', y1), dtype=float)
+			pcurr = np.asarray(getattr(x, 'magnitude', x), dtype=float)
+			power = np.asarray(getattr(y2, 'magnitude', y2), dtype=float)
 			
-			volt = np.array(y1)
-			pcurr = np.array(x)
-			power = np.array(y2)
 			self.plotter.clear()
 			try:
 				
@@ -406,31 +482,82 @@ class Ui(QtWidgets.QMainWindow):
 			self.p1.setLabels(left = y_label)
 			self.p1.setLabels(left = y_label)
 			val_x, val_y = x, y1
-			y_min = np.min(val_y)
-			y_max = np.max(val_y)
+			y_min = float(np.min(val_y))
+			y_max = float(np.max(val_y))
 			y_max_index = np.where(val_y == y_max)[0]
-			
-			x_min = np.min(val_x)
-			x_max = np.max(val_x)
+			x_min = float(np.min(val_x))
+			x_max = float(np.max(val_x))
 			x_max_peak = val_x[y_max_index]
 			
+			plot_extra = True
+			if plot_extra:
+				self.peak_wvl.append(x_max_peak)
+				#
+				#External plot window for extra variables
+				self.cell_spectrum.append(cell)
+				if self.ext_fig is None or not plt.fignum_exists(self.ext_fig.number):
+					self.ext_fig, self.ext_ax = plt.subplots()
+				else:
+					# Remove the old colorbar if it exists to prevent duplicates
+					if hasattr(self, 'cbar') and self.cbar:
+						try:
+							self.cbar.remove()
+						except Exception:
+							pass
+						self.cbar = None
+					# Clear the old plot lines/labels but keep the window frame open
+					self.ext_ax.clear()
+					
+				sc = self.ext_ax.scatter(
+					self.peak_wvl, 
+					self.cell_spectrum, 
+					c=self.z_height_spec,       # List of hue values (must be the same length as ipd_max)
+					cmap='viridis',       # Choose a colormap (e.g., 'viridis', 'plasma', 'coolwarm')
+					s=100,
+					marker='o',
+					edgecolors='none',
+					label='Peak WVL'
+					)
+				self.ext_ax.set_xlabel('Wavelength (nm)')
+				self.ext_ax.set_ylabel('Cell IDs')
+				self.ext_ax.grid(True)
+				try:
+					# 2. Add a colorbar to serve as the visual legend for the hue
+					self.cbar = self.ext_fig.colorbar(sc, ax=self.ext_ax)
+					self.cbar.set_label('Z height')
+				except Exception:
+					self.cbar = None
+				self.ext_ax.legend(loc = 'upper right')
+				self.ext_ax.ticklabel_format(style='plain', axis='x')
+				self.ext_fig.canvas.draw()
+				self.ext_fig.canvas.flush_events()
+				plt.show(block=False)
+				####
 			#print(f'index of max x is {x_max_index} value of max x is')
 			self.p1.vb.setXRange(x_min, x_max)
 			self.p1.vb.disableAutoRange(axis = pg.ViewBox.YAxis)
-			
 			self.p1.vb.setYRange(y_min, y_max)
 			self.p1.vb.disableAutoRange(axis = pg.ViewBox.YAxis)
 			self.p1.getAxis('bottom').setLabel('Wavelength(nm)')
 			self.p1.getAxis('left').setLabel('Power(dBm)', color = color1)
 			self.p1.vb.disableAutoRange(axis = pg.ViewBox.YAxis)
-			
-			
 			self.p1.plot(val_x, val_y, pen = pen_t1, name = cell)
 			##INSERT MARKER
 			marker_x = x_max_peak
 			marker_y = y_max
 			title = f'Spectrum-peak @{x_max_peak[0]:.2f}nm,{y_max:.2f}dBm'
 			self.set_graph(title, x_label, y_label)
+			
+			if isinstance(marker_x, list):
+				marker_x = marker_x[0]  # Gets the array out of the list
+			if isinstance(marker_x, np.ndarray):
+				marker_x = marker_x.item()  # Converts array([1309.28]) to a clean float 1309.28
+			# Do the same for marker_y just to be perfectly safe
+			if isinstance(marker_y, list):
+				marker_y = marker_y[0]
+			if isinstance(marker_y, np.ndarray):
+				marker_y = marker_y.item()
+				
 			marker_point = pg.ScatterPlotItem(
 			x=[marker_x], 
 			y=[marker_y], 
@@ -478,6 +605,13 @@ class Ui(QtWidgets.QMainWindow):
 
 	def get_spectrum(self):
 		"""Acquire one OSA spectrum, plot it, and return wavelength, power, and peak data."""
+		self.cell_id_arr = []
+		self.cell_id_vf1 = []
+		self.peak_wvl = []
+		self.cell_spectrum = []
+		self.ipd_max = []
+		self.z_height_spec = []
+		self.z_height_liv = []
 		Spectrum_settings = { # Settings for running Spectral measurements
 			"resolution": 1,  # 0 = low, 1 = high
 			"sensitivity": 1,  # 0 = low, 1 = medium low, 2 = medium high, 3 = high
@@ -507,7 +641,7 @@ class Ui(QtWidgets.QMainWindow):
 			power = y
 			peak = max(x)
 			peak_index = np.where(power==peak)
-			self.plot_win(wavelength, power, None)
+			self.plot_win(wavelength, power, None,'Test cell')
 			try:
 				o.release()
 			except Exception as err:
@@ -719,9 +853,9 @@ class Ui(QtWidgets.QMainWindow):
 			return True
 	
 	def ser_connect(self):
-		"""Establishes and returns a serial connection to the prober. Changed COM5 to COM1"""
+		"""Establishes and returns a serial connection to the prober. Changed COM5 to COM5"""
 		try:
-			self.ser = serial.Serial(port = 'COM1', baudrate = 38400, parity = serial.PARITY_EVEN, bytesize = serial.SEVENBITS, stopbits = serial.STOPBITS_TWO, timeout = 0.2)
+			self.ser = serial.Serial(port = 'COM5', baudrate = 38400, parity = serial.PARITY_EVEN, bytesize = serial.SEVENBITS, stopbits = serial.STOPBITS_TWO, timeout = 0.2)
 			return self.ser
 		except ValueError:
 			self.ser.close()
@@ -830,7 +964,7 @@ class Ui(QtWidgets.QMainWindow):
 #############Die LIV measurement methods
 	def select_die_config(self):
 			"""Selects the die measurement configuration file and updates the interface."""
-			job_root='C:/Users/smp-user/OneDrive - Smart Photonics/Test  Measurement - Engineering/Internal Projects/Job generation'
+			job_root='C:/Users/smp-user/OneDrive - Smart Photonics/Shortcuts/Engineering - Test & Measurement/Internal Projects/Job generation'
 			self.die_job_folder_path = QFileDialog.getExistingDirectory(self,("Open Batch Folder"), job_root)
 			self.die_jobs_combo_box.clear()
 			#Fill the first combo box with Jobs available
@@ -852,59 +986,89 @@ class Ui(QtWidgets.QMainWindow):
 					f.close()
 			else: 
 				job_dict = {}
-			#Get parameters from the job dictionary
-			customer_id   = job_dict.get("batch_information").get('customer')
-			lot_id        = job_dict.get("batch_information").get("lot")
-			product_id    = job_dict.get("batch_information").get("product")
-			wafer_id      = job_dict.get("batch_information").get("wafer")
-			temp_set      = job_dict.get("acquisition settings").get("T_set")
-			temp_set      = " ".join(str(x) for x in temp_set)
-			liv           = job_dict.get("acquisition settings").get("LIV")
-			spectrum      = job_dict.get("acquisition settings").get("Spectrum")
-			i_soa         = job_dict.get("acquisition settings").get("Spectrum I_SOA")
-			cell_type     = job_dict.get("acquisition settings").get("cell_type")
-			cell_ids      = pd.read_csv(cell_list)
-			pl            = job_dict.get("acquisition settings").get("PL")
-			amf           = job_dict.get("acquisition settings").get("amf")
-			combi_mode    = job_dict.get("acquisition settings").get("combi_mode")
-			cells_loaded  = self.die_loaded_cell.currentText()
 			
-			#Update the interface with the job parameters
-			self.die_cust_id.setText(str(customer_id))
-			self.die_batch_id.setText(str(lot_id))
-			self.die_wafer_id.setText(str(wafer_id))
-			self.die_prod_id.setText(str(product_id))
-			self.die_pl.setText(str(pl))
-			self.die_temp.setText(temp_set)
-			self.liv_cells_loaded.setText(cell_ids[0:cells_loaded])
+			try:
+				#Get parameters from the job dictionary
+				customer_id   = job_dict.get("batch_information").get('customer')
+				lot_id        = job_dict.get("batch_information").get("lot")
+				product_id    = job_dict.get("batch_information").get("product")
+				wafer_id      = job_dict.get("batch_information").get("wafer")
+				self.temp_set_arr      = job_dict.get("acquisition settings").get("T_set")
+				temp_set      = " ".join(str(x) for x in self.temp_set_arr)
+				liv           = job_dict.get("acquisition settings").get("LIV")
+				spectrum      = job_dict.get("acquisition settings").get("Spectrum")
+				i_soa         = job_dict.get("acquisition settings").get("Spectrum I_SOA")
+				cell_type     = job_dict.get("acquisition settings").get("cell_type")
+				cell_ids      = pd.read_csv(cell_list,header=None)
+				pl            = job_dict.get("acquisition settings").get("PL")
+				amf           = job_dict.get("acquisition settings").get("amf")
+				combi_mode    = job_dict.get("acquisition settings").get("combi_mode")
+				cells_loaded  = int(self.die_loaded_cell.currentText())
+				
+				all_id_list = cell_ids[0].values.tolist()[0:-1]
+				all_id_list = [i.upper() for i in all_id_list]
+				try:
+					all_id_list = [i.split(cell_type)[-1] for i in all_id_list]
+				except:
+					cell_id_list = 'failed to load cells'
+				
+				cell_id_list = all_id_list[0:cells_loaded]
+				
+				cell_loaded_text = " ".join(cell_id_list)
+				to_be_measured_text = " ".join(all_id_list)
+				
+				#Update the interface with the job parameters
+				self.die_cust_id.setText(str(customer_id))
+				self.die_batch_id.setText(str(lot_id))
+				self.die_wafer_id.setText(str(wafer_id))
+				self.die_prod_id.setText(str(product_id))
+				self.die_pl.setText(str(pl))
+				self.die_temp.setText(temp_set)
+				self.liv_cells_loaded.setText(cell_loaded_text)
+				self.all_cells.setText(to_be_measured_text)
+			except Exception as err:
+				print(f'failed to load info: {err}')
+####Methods for T1 measuring
 
-	def update_load_cells(self):
-		"""Update the displayed loaded-cell list from the selected cell-list CSV."""
-		cell_list     =self.die_list_combo_box.currentText()
-		cell_ids      = pd.read_csv(cell_list).values
-		cells_loaded  = self.die_loaded_cell.currentText()
-		self.liv_cells_loaded.setText(cell_ids[0:cells_loaded])
+	def select_die_config_folder(self):
+		"""Opens a folder dialog and populates the job combo box with available jobs."""
+		job_root='C:/Users/smp-user/OneDrive - Smart Photonics/Shortcuts/Engineering - Test & Measurement/Internal Projects/Job generation/'
+		self.job_folder_path1 = QFileDialog.getExistingDirectory(self,("Open die test config folder"), job_root)
+		if not self.job_folder_path1:
+			return
+		self.jobs_combo_box.clear()
+		#Fill the first combo box with Jobs available
+		job_folder_selection = glob.glob(self.job_folder_path1+'/*JOB.yaml')
+		cell_folder_selection = glob.glob(self.job_folder_path1+'/*.csv')
+		self.update_combo_box(self.die_jobs_combo_box, job_folder_selection)
+		self.update_combo_box(self.die_list_combo_box, cell_folder_selection)
 
-	def search_jobs(self):
-		"""Retrieve traveler details and populate die job and cell-list selections."""
-		try:
-			work_order,prod_id,lot_id = self.run_mes_check(False)
-			print(work_order,prod_id,lot_id)
-			folder_path = 'C:/Users/smp-user/OneDrive - Smart Photonics/Test  Measurement - Engineering/Internal Projects/Job generation/'+work_order+'/'+prod_id+'/'+lot_id+'/'+'TM0002'
-			#folder_path = 'C:/Users/MarcosDaSilvaEleoter/OneDrive - Smart Photonics/Test & Measurement/Internal Projects/Job generation/'+work_order+'/'+prod_id+'/'+lot_id+'/'+'TM0002'
-			print(folder_path)
-			job_folder_selection = glob.glob(folder_path+'/*_JOB.yaml')
-			self.update_combo_box(self.die_jobs_combo_box, job_folder_selection)
-			
-			job_folder_selection = glob.glob(folder_path+'/*.csv')
-			self.update_combo_box(self.die_list_combo_box, job_folder_selection)
-		except Exception as err:
-			print(err)
 	def die_start(self):
 		"""Starts die measurements. (Currently not implemented)"""
+		self.product_t1 = self.die_prod_id.text()
+		self.customer_t1 = self.die_cust_id.text()
+		self.lot_id_t1 = self.die_batch_id.text()
+		self.liv_script = "C:\\GIT_MAIN\\AMS\\2520_manual_LIV_scripted.py"
+		self.data_folder = f'C:\\PRODUCTION\\data\\{self.customer_t1}\\manual_BT_liv\\{self.product_t1}_{self.lot_id_t1}'
+		print(f'data folder from dies start method is {self.data_folder}')
+		operator = self.die_op_id.currentText()
 		job_file = self.die_jobs_combo_box.currentText()
 		cell_file = self.die_list_combo_box.currentText()
-
+		self.number_cells = self.die_loaded_cell.currentText()
+		commands = []
+		self.stop_requested = False
+		
+		cmd_arr = [sys.executable, '-u',
+					self.liv_script,
+					operator,
+					job_file,
+					cell_file,
+					self.number_cells,
+					'T1_LIV'
+					]
+		commands.append(cmd_arr)
+		# Start processing the job queue
+		self.run_core(commands)
 ############# TOUCHDOWN METHODS
 	def touch_bar(self, bar_index):
 		"""Performs touchdown for the specified bar and updates the interface with X/Y values."""
@@ -949,8 +1113,7 @@ class Ui(QtWidgets.QMainWindow):
 	
 	def select_job(self):
 		"""Opens a folder dialog and populates the job combo box with available jobs."""
-		#job_root='C:/Users/smp-user/OneDrive - Smart Photonics/Test  Measurement - Engineering/Internal Projects/Job generation/'
-		job_root='C:/Users/HP/Smart Photonics/Engineering - Test & Measurement/Internal Projects/Job generation/'
+		job_root='C:/Users/smp-user/OneDrive - Smart Photonics/Shortcuts/Engineering - Test & Measurement/Internal Projects/Job generation/'
 		self.job_folder_path1 = QFileDialog.getExistingDirectory(self,("Open Batch Folder"), job_root)
 		if not self.job_folder_path1:
 			return
@@ -1085,8 +1248,14 @@ class Ui(QtWidgets.QMainWindow):
 	
 	def bar_start(self):
 		"""Starts bar measurements for all checked bars."""
-		#core_script = r"C:\Users\marco\Coding\cori.py"
-		core_script = r"C:\AMS\core.py"
+		self.cell_id_arr = []
+		self.cell_id_vf1 = []
+		self.peak_wvl = []
+		self.cell_spectrum = []
+		self.ipd_max = []
+		self.z_height_spec = []
+		self.z_height_liv = []
+		core_script = r"C:\\GIT_MAIN\\AMS\core.py"
 		#Get values from interface
 		stat_bar1 = self.check_bar1.isChecked()
 		stat_bar2 = self.check_bar2.isChecked()
@@ -1198,21 +1367,25 @@ class Ui(QtWidgets.QMainWindow):
 				self.gross_down()
 				return
 			cmd = self.commands[self.current_index]
-			
-			###setting the state of the button
-			self.start_index = cmd[8]
-			self.end_index = cmd[9]
-			prog = cmd[10]
-			self.data_folder = 'D:\\PRODUCTION\\data\\'+self.cust_id.text()+'\\'+'\\'+self.batch_id.text()+'\\'+self.wafer_id.text()
-			try:
-				self.total_meas = self.get_total_meas(
-					start_index=self.start_index,
-					end_index=self.end_index,
-					job_file=cmd[3],
-				)
-			except (OSError, ValueError, yaml.YAMLError, pd.errors.ParserError) as error:
-				print(f"Could not count measurements for {cmd[3]}: {error}")
-				self.total_meas = 0
+			if cmd[7] == 'T1_LIV':
+				self.data_folder = f'C:\\PRODUCTION\\data\\{self.customer_t1}\\manual_BT_liv\\{self.product_t1}_{self.lot_id_t1}'
+				prog = 'bar'
+				self.total_meas = int(self.number_cells)*4*len(self.temp_set_arr)
+			else:
+				###setting the state of the button
+				self.start_index = cmd[8]
+				self.end_index = cmd[9]
+				prog = cmd[10]
+				self.data_folder = 'C:\\PRODUCTION\\data\\'+self.cust_id.text()+'\\'+self.batch_id.text()+'\\'+self.wafer_id.text()
+				try:
+					self.total_meas = self.get_total_meas(
+						start_index=self.start_index,
+						end_index=self.end_index,
+						job_file=cmd[3],
+					)
+				except (OSError, ValueError, yaml.YAMLError, pd.errors.ParserError) as error:
+					print(f"Could not count measurements for {cmd[3]}: {error}")
+					self.total_meas = 0
 			self.files_before_starting = len(glob.glob(self.data_folder+'/*.txt'))
 			self.start_jobs_btn.setStyleSheet('background-color: rgb(255, 255, 0)')
 			self.start_jobs_btn.setText(f"{prog} in progress")
@@ -1364,7 +1537,7 @@ class Ui(QtWidgets.QMainWindow):
 			curr_step = traveler_info['CurrentStep']
 			wafers_arr = [wafers[i]['WaferId'] for i, key in enumerate(wafers)]
 			work_order = traveler_info['WorkOrder']
-			match = re.search(r'BLN03|PNC15|DFB01|DFB03|DFB04|BLN01|PNC21|PNC06|MPO06|MPS25|MPC057|OLSG2|T1|OMP05|MAC01|AOT01|MAC02|RSL01|WGM01', prod_id)
+			match = re.search(r'BLN03|MPS06|BLN04|AUG01|GHP01|PNC15|DFB01|DFB03|DFB04|BLN01|PNC21|PNC06|MPO06|MPS25|MPC057|OLSG2|T1|OMP05|MAC01|AOT01|MAC02|RSL01|WGM01', prod_id)
 			if match:
 				prod_id = match.group(0)
 			else:
